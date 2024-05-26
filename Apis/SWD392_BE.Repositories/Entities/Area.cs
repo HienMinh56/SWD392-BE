@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace SWD392_BE.Repositories.Entities;
 
-public partial class Area
+public partial class Area : BaseEntity
 {
-    public int Id { get; set; }
-
     public string AreaId { get; set; } = null!;
 
     public string Name { get; set; } = null!;

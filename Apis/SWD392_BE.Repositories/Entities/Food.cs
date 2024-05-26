@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace SWD392_BE.Repositories.Entities;
 
-public partial class Food
+public partial class Food : BaseEntity
 {
-    public int Id { get; set; }
-
     public string FoodId { get; set; } = null!;
 
     public string Name { get; set; } = null!;

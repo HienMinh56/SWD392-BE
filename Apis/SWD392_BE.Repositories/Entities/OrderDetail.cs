@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace SWD392_BE.Repositories.Entities;
 
-public partial class OrderDetail
+public partial class OrderDetail : BaseEntity
 {
-    public int Id { get; set; }
-
     public string OrderDetailId { get; set; } = null!;
 
     public string OrderId { get; set; } = null!;

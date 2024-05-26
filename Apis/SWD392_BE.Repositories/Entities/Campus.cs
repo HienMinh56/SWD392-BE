@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace SWD392_BE.Repositories.Entities;
 
-public partial class Campus
+public partial class Campus : BaseEntity
 {
-    public int Id { get; set; }
-
     public string CampusId { get; set; } = null!;
 
     public string AreaId { get; set; } = null!;

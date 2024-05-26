@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace SWD392_BE.Repositories.Entities;
 
-public partial class Session
+public partial class Session : BaseEntity
 {
-    public int Id { get; set; }
-
     public string SessionId { get; set; } = null!;
 
     public TimeSpan StartTime { get; set; }

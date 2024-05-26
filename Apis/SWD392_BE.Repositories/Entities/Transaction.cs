@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace SWD392_BE.Repositories.Entities;
 
-public partial class Transaction
+public partial class Transaction : BaseEntity
 {
-    public int Id { get; set; }
-
     public string TransationId { get; set; } = null!;
 
     public string UserId { get; set; } = null!;
