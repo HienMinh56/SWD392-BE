@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SWD392_BE.Repositories.Entities;
-using SWD392_BE.Repositories.ViewModels.UserModel;
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.Services;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SWD392_BE.API.Controllers
 {
@@ -12,26 +9,17 @@ namespace SWD392_BE.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly IAccountService _accountService;
-
-
-        public UserController(IAccountService accountService)
+        private readonly IUserService _userService;
+        public UserController(IUserService userService)
         {
-            _accountService = accountService;
+            _userService = userService;
         }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(string email, string password)
+        [HttpGet("view-all-users")]
+        public async Task<IActionResult> ViewAllUsers()
         {
-            bool isLoginSuccessful = await _accountService.Login(email, password);
-
-            if (!isLoginSuccessful)
-            {
-                return Unauthorized("Invalid email or password");
-            }
-
-            return Ok();
+            var result = await _userService.ViewAllUsers();
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }
-
 }

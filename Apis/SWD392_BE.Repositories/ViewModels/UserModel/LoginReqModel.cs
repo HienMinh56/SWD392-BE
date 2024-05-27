@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.ViewModels.UserModel
 {
-    public class LoginModel
+    public class LoginReqModel
     {
         [EmailAddress]
         [Required(ErrorMessage = "Email is required")]
