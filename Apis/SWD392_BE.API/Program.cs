@@ -55,6 +55,9 @@ builder.Services.AddControllers()
         });
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+
 // db local
 
 builder.Services.AddDbContext<CampusFoodSystemContext>(options =>

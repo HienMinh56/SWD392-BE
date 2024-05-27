@@ -12,7 +12,8 @@ namespace SWD392_BE.Services.MapperProfile
     {
         public UserMapper()
         {
-            //CreateMap<User, UserResModel>   
+            //CreateMap<User, UserResModel>()
+            //    .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
         }
     }
 }
