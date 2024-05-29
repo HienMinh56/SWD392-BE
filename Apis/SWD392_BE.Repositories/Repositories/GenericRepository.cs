@@ -4,45 +4,66 @@ using SWD392_BE.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Repositories
 {
-    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : BaseEntity
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly DbSet<TEntity> _dbSet;
-        private readonly CampusFoodSystemContext _dbContext;
+        private readonly DbContext _context;
+        private readonly DbSet<T> _dbSet;
 
-        public GenericRepository(CampusFoodSystemContext dbContext) 
+        public GenericRepository(DbContext context)
         {
-            _dbSet = dbContext.Set<TEntity>();
-            _dbContext = dbContext;
+            _context = context;
+            _dbSet = context.Set<T>();
         }
 
-        public async Task<TEntity> AddAsync(TEntity entity)
-        {           
-            await _dbSet.AddAsync(entity);
-            await _dbContext.SaveChangesAsync();
-            return entity;
-        }
-
-        public Task<List<TEntity>> GetAllAsync()
+        public void Add(T entity)
         {
-            return _dbSet.ToListAsync();
+            _dbSet.Add(entity);
         }
 
-        public async Task<TEntity?> GetByIdAsync(int id)
+        public void AddRange(IEnumerable<T> entities)
         {
-            var result = await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
-            return result;
+            _dbSet.AddRange(entities);
         }
 
-        public async Task<bool> Update(TEntity entity)
-        {           
-            _dbSet.Update(entity);
-            await _dbContext.SaveChangesAsync();
-            return true;
+        public IEnumerable<T> GetList(Expression<Func<T, bool>> predicate = null)
+        {
+            if (predicate != null)
+            {
+                return _dbSet.Where(predicate).ToList();
+            }
+            return _dbSet.ToList();
+        }
+
+        public T Get(Expression<Func<T, bool>> predicate)
+        {
+            return _dbSet.FirstOrDefault(predicate);
+        }
+
+        public void Update(T entity)
+        {
+            _dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
+        }
+
+        public void Delete(T entity)
+        {
+            if (_context.Entry(entity).State == EntityState.Detached)
+            {
+                _dbSet.Attach(entity);
+            }
+            _dbSet.Remove(entity);
+        }
+
+        public void SaveChanges()
+        {
+            _context.SaveChanges();
         }
     }
+
 }

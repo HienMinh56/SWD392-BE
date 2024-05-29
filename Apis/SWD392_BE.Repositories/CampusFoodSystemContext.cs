@@ -37,18 +37,18 @@ public partial class CampusFoodSystemContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(GetConnectionString());
-    }
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //{
+    //    optionsBuilder.UseSqlServer(GetConnectionString());
+    //}
 
-    private string GetConnectionString()
-    {
-        IConfiguration configuration = new ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json", true, true).Build();
-        return configuration["ConnectionStrings:LocalDB"];
-    }
+    //private string GetConnectionString()
+    //{
+    //    IConfiguration configuration = new ConfigurationBuilder()
+    //    .SetBasePath(Directory.GetCurrentDirectory())
+    //    .AddJsonFile("appsettings.json", true, true).Build();
+    //    return configuration["ConnectionStrings:LocalDB"];
+    //}
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Area>(entity =>
