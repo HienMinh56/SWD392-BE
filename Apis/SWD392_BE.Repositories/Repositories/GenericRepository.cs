@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Repositories
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
     {
         private readonly DbContext _context;
         private readonly DbSet<T> _dbSet;
