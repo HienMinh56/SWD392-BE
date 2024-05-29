@@ -73,7 +73,7 @@ builder.Services.AddDbContext<CampusFoodSystemContext>(options =>
 //var connection = String.Empty;
 //if (builder.Environment.IsDevelopment())
 //{
-//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.Development.json");
+//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.json");
 //    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
 //}
 //else
