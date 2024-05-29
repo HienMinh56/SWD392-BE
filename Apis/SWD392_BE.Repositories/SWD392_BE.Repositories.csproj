@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Folder Include="Utils\" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>
