@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWD392_BE.Services.Interfaces
+namespace SWD392_BE.Repositories.ViewModels.UserModel
 {
-    public class IUserService
+    public class UserResModel
     {
-
     }
 }
