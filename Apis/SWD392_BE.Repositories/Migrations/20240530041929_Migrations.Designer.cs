@@ -5,26 +5,28 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using SWD392_BE.Repositories.Models;
 
 #nullable disable
 
 namespace SWD392_BE.Repositories.Migrations
 {
     [DbContext(typeof(CampusFoodSystemContext))]
-    [Migration("20240526025154_CampusFoodSystem")]
-    partial class CampusFoodSystem
+    [Migration("20240530041929_Migrations")]
+    partial class Migrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .UseCollation("Vietnamese_CI_AS")
                 .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Area", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Area", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -37,6 +39,27 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasMaxLength(50)
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("DeletedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -46,54 +69,15 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__Area__3214EC07B26BFC36");
+                        .HasName("PK__Area__3214EC079CAF76E2");
 
-                    b.HasIndex(new[] { "AreaId" }, "UQ__Area__70B82049341DE850")
+                    b.HasIndex(new[] { "AreaId" }, "UQ__Area__70B820491680D86A")
                         .IsUnique();
 
                     b.ToTable("Area", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.AreaSession", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AreaId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("AreaSessionId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("SessionId")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
-
-                    b.HasKey("Id")
-                        .HasName("PK__AreaSess__3214EC076D60CD96");
-
-                    b.HasIndex("AreaId");
-
-                    b.HasIndex("SessionId");
-
-                    b.HasIndex(new[] { "AreaSessionId" }, "UQ__AreaSess__E80F50256BAAC6F0")
-                        .IsUnique();
-
-                    b.ToTable("AreaSession", (string)null);
-                });
-
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Campus", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Campus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -113,6 +97,27 @@ namespace SWD392_BE.Repositories.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("DeletedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -121,17 +126,17 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__Campus__3214EC07A5723796");
+                        .HasName("PK__Campus__3214EC077B2628DA");
 
                     b.HasIndex("AreaId");
 
-                    b.HasIndex(new[] { "CampusId" }, "UQ__Campus__FD598DD7CC2976B3")
+                    b.HasIndex(new[] { "CampusId" }, "UQ__Campus__FD598DD7B20764EA")
                         .IsUnique();
 
                     b.ToTable("Campus", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Food", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Food", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -141,6 +146,20 @@ namespace SWD392_BE.Repositories.Migrations
 
                     b.Property<int>("Cate")
                         .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("DeletedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -156,6 +175,13 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasMaxLength(1)
                         .IsUnicode(false)
                         .HasColumnType("varchar(1)");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -179,17 +205,17 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Food__3214EC078EFC4B87");
+                        .HasName("PK__Food__3214EC07C7E84DA7");
 
                     b.HasIndex("StoreId");
 
-                    b.HasIndex(new[] { "FoodId" }, "UQ__Food__856DB3EA0A736D4B")
+                    b.HasIndex(new[] { "FoodId" }, "UQ__Food__856DB3EAC803D9F9")
                         .IsUnique();
 
                     b.ToTable("Food", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Order", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -197,11 +223,22 @@ namespace SWD392_BE.Repositories.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AreaSessionId")
-                        .IsRequired()
-                        .HasMaxLength(50)
+                    b.Property<string>("CreatedBy")
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<TimeSpan>("CreatedTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime");
 
                     b.Property<string>("OrderId")
                         .IsRequired()
@@ -214,6 +251,12 @@ namespace SWD392_BE.Repositories.Migrations
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
+
+                    b.Property<string>("SessionId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -237,9 +280,9 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Order__3214EC07C8EDD9E8");
+                        .HasName("PK__Order__3214EC07CCDC7598");
 
-                    b.HasIndex("AreaSessionId");
+                    b.HasIndex("SessionId");
 
                     b.HasIndex("StoreId");
 
@@ -247,13 +290,13 @@ namespace SWD392_BE.Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex(new[] { "OrderId" }, "UQ__Order__C3905BCED0AE1AF1")
+                    b.HasIndex(new[] { "OrderId" }, "UQ__Order__C3905BCE483BB568")
                         .IsUnique();
 
                     b.ToTable("Order", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.OrderDetail", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.OrderDetail", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -292,19 +335,19 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__OrderDet__3214EC07531AB5AA");
+                        .HasName("PK__OrderDet__3214EC0711CB4869");
 
                     b.HasIndex("FoodId");
 
                     b.HasIndex("OrderId");
 
-                    b.HasIndex(new[] { "OrderDetailId" }, "UQ__OrderDet__D3B9D36D90383D15")
+                    b.HasIndex(new[] { "OrderDetailId" }, "UQ__OrderDet__D3B9D36D5AF1F417")
                         .IsUnique();
 
                     b.ToTable("OrderDetail", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Session", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Session", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -312,8 +355,29 @@ namespace SWD392_BE.Repositories.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("DeletedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date");
+
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("SessionId")
                         .IsRequired()
@@ -325,15 +389,15 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("time");
 
                     b.HasKey("Id")
-                        .HasName("PK__Session__3214EC07E8C8F427");
+                        .HasName("PK__Session__3214EC079ABC5FB3");
 
-                    b.HasIndex(new[] { "SessionId" }, "UQ__Session__C9F49291B4A69BBB")
+                    b.HasIndex(new[] { "SessionId" }, "UQ__Session__C9F49291EA42D802")
                         .IsUnique();
 
                     b.ToTable("Session", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Store", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Store", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -351,9 +415,36 @@ namespace SWD392_BE.Repositories.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<TimeSpan>("CloseTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("DeletedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeSpan>("OpenTime")
+                        .HasColumnType("time");
 
                     b.Property<int>("Phone")
                         .HasColumnType("int");
@@ -368,17 +459,56 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Store__3214EC07F087FC19");
+                        .HasName("PK__Store__3214EC0776229960");
 
                     b.HasIndex("AreaId");
 
-                    b.HasIndex(new[] { "StoreId" }, "UQ__Store__3B82F100A9787477")
+                    b.HasIndex(new[] { "StoreId" }, "UQ__Store__3B82F1006731C5ED")
                         .IsUnique();
 
                     b.ToTable("Store", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Transaction", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.StoreSession", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("SessionId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("StoreId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("StoreSessionId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id")
+                        .HasName("PK__StoreSes__3214EC07C073EE8D");
+
+                    b.HasIndex("SessionId");
+
+                    b.HasIndex("StoreId");
+
+                    b.HasIndex(new[] { "StoreSessionId" }, "UQ__StoreSes__6E52FC495720368B")
+                        .IsUnique();
+
+                    b.ToTable("StoreSession", (string)null);
+                });
+
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Transaction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -389,11 +519,18 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Property<int>("Amonut")
                         .HasColumnType("int");
 
+                    b.Property<TimeSpan?>("CreatTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("Time")
-                        .HasColumnType("datetime");
 
                     b.Property<string>("TransationId")
                         .IsRequired()
@@ -411,17 +548,17 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Transact__3214EC0711B818F5");
+                        .HasName("PK__Transact__3214EC07466B0EBC");
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex(new[] { "TransationId" }, "UQ__Transact__B1E7315490DC15CB")
+                    b.HasIndex(new[] { "TransationId" }, "UQ__Transact__B1E731541DD0AF25")
                         .IsUnique();
 
                     b.ToTable("Transaction", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.User", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -442,20 +579,41 @@ namespace SWD392_BE.Repositories.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<string>("CreatedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("DeletedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("date");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
 
+                    b.Property<string>("ModifiedBy")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("varchar(50)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<int>("Phone")
                         .HasColumnType("int");
@@ -483,40 +641,19 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__User__3214EC07644E0073");
+                        .HasName("PK__User__3214EC078230A9E0");
 
                     b.HasIndex("CampusId");
 
-                    b.HasIndex(new[] { "UserId" }, "UQ__User__1788CC4D63AAACC1")
+                    b.HasIndex(new[] { "UserId" }, "UQ__User__1788CC4D67B058A3")
                         .IsUnique();
 
                     b.ToTable("User", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.AreaSession", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Campus", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Entities.Area", "Area")
-                        .WithMany("AreaSessions")
-                        .HasForeignKey("AreaId")
-                        .HasPrincipalKey("AreaId")
-                        .IsRequired()
-                        .HasConstraintName("FK_AreaSession_Area");
-
-                    b.HasOne("SWD392_BE.Repositories.Entities.Session", "Session")
-                        .WithMany("AreaSessions")
-                        .HasForeignKey("SessionId")
-                        .HasPrincipalKey("SessionId")
-                        .IsRequired()
-                        .HasConstraintName("FK_AreaSession_Session");
-
-                    b.Navigation("Area");
-
-                    b.Navigation("Session");
-                });
-
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Campus", b =>
-                {
-                    b.HasOne("SWD392_BE.Repositories.Entities.Area", "Area")
+                    b.HasOne("SWD392_BE.Repositories.Models.Area", "Area")
                         .WithMany("Campuses")
                         .HasForeignKey("AreaId")
                         .HasPrincipalKey("AreaId")
@@ -526,9 +663,9 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("Area");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Food", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Food", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Entities.Store", "Store")
+                    b.HasOne("SWD392_BE.Repositories.Models.Store", "Store")
                         .WithMany("Foods")
                         .HasForeignKey("StoreId")
                         .HasPrincipalKey("StoreId")
@@ -538,37 +675,37 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("Store");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Order", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Order", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Entities.AreaSession", "AreaSession")
+                    b.HasOne("SWD392_BE.Repositories.Models.Session", "Session")
                         .WithMany("Orders")
-                        .HasForeignKey("AreaSessionId")
-                        .HasPrincipalKey("AreaSessionId")
+                        .HasForeignKey("SessionId")
+                        .HasPrincipalKey("SessionId")
                         .IsRequired()
-                        .HasConstraintName("FK_Order_AreaSession");
+                        .HasConstraintName("FK_Order_Session");
 
-                    b.HasOne("SWD392_BE.Repositories.Entities.Store", "Store")
+                    b.HasOne("SWD392_BE.Repositories.Models.Store", "Store")
                         .WithMany("Orders")
                         .HasForeignKey("StoreId")
                         .HasPrincipalKey("StoreId")
                         .IsRequired()
                         .HasConstraintName("FK_Order_Store");
 
-                    b.HasOne("SWD392_BE.Repositories.Entities.Transaction", "Transation")
+                    b.HasOne("SWD392_BE.Repositories.Models.Transaction", "Transation")
                         .WithMany("Orders")
                         .HasForeignKey("TransationId")
                         .HasPrincipalKey("TransationId")
                         .IsRequired()
                         .HasConstraintName("FK_Order_Transaction");
 
-                    b.HasOne("SWD392_BE.Repositories.Entities.User", "User")
+                    b.HasOne("SWD392_BE.Repositories.Models.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .HasPrincipalKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK_Order_User");
 
-                    b.Navigation("AreaSession");
+                    b.Navigation("Session");
 
                     b.Navigation("Store");
 
@@ -577,16 +714,16 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.OrderDetail", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.OrderDetail", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Entities.Food", "Food")
+                    b.HasOne("SWD392_BE.Repositories.Models.Food", "Food")
                         .WithMany("OrderDetails")
                         .HasForeignKey("FoodId")
                         .HasPrincipalKey("FoodId")
                         .IsRequired()
                         .HasConstraintName("FK_OrderDetail_Food");
 
-                    b.HasOne("SWD392_BE.Repositories.Entities.Order", "Order")
+                    b.HasOne("SWD392_BE.Repositories.Models.Order", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
                         .HasPrincipalKey("OrderId")
@@ -598,9 +735,9 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Store", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Store", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Entities.Area", "Area")
+                    b.HasOne("SWD392_BE.Repositories.Models.Area", "Area")
                         .WithMany("Stores")
                         .HasForeignKey("AreaId")
                         .HasPrincipalKey("AreaId")
@@ -610,9 +747,30 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("Area");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Transaction", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.StoreSession", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Entities.User", "User")
+                    b.HasOne("SWD392_BE.Repositories.Models.Session", "Session")
+                        .WithMany("StoreSessions")
+                        .HasForeignKey("SessionId")
+                        .HasPrincipalKey("SessionId")
+                        .IsRequired()
+                        .HasConstraintName("FK_StoreSession_Session");
+
+                    b.HasOne("SWD392_BE.Repositories.Models.Store", "Store")
+                        .WithMany("StoreSessions")
+                        .HasForeignKey("StoreId")
+                        .HasPrincipalKey("StoreId")
+                        .IsRequired()
+                        .HasConstraintName("FK_StoreSession_Store");
+
+                    b.Navigation("Session");
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Transaction", b =>
+                {
+                    b.HasOne("SWD392_BE.Repositories.Models.User", "User")
                         .WithMany("Transactions")
                         .HasForeignKey("UserId")
                         .HasPrincipalKey("UserId")
@@ -622,9 +780,9 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.User", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.User", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Entities.Campus", "Campus")
+                    b.HasOne("SWD392_BE.Repositories.Models.Campus", "Campus")
                         .WithMany("Users")
                         .HasForeignKey("CampusId")
                         .HasPrincipalKey("CampusId")
@@ -634,53 +792,50 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("Campus");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Area", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Area", b =>
                 {
-                    b.Navigation("AreaSessions");
-
                     b.Navigation("Campuses");
 
                     b.Navigation("Stores");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.AreaSession", b =>
-                {
-                    b.Navigation("Orders");
-                });
-
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Campus", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Campus", b =>
                 {
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Food", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Food", b =>
                 {
                     b.Navigation("OrderDetails");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Order", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Order", b =>
                 {
                     b.Navigation("OrderDetails");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Session", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Session", b =>
                 {
-                    b.Navigation("AreaSessions");
+                    b.Navigation("Orders");
+
+                    b.Navigation("StoreSessions");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Store", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Store", b =>
                 {
                     b.Navigation("Foods");
 
                     b.Navigation("Orders");
+
+                    b.Navigation("StoreSessions");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Transaction", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.Transaction", b =>
                 {
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Entities.User", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Models.User", b =>
                 {
                     b.Navigation("Orders");
 

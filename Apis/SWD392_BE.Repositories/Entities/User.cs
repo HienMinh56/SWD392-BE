@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SWD392_BE.Repositories.Entities;
+namespace SWD392_BE.Repositories.Models;
 
-public partial class User : BaseEntity
+public partial class User
 {
+    public int Id { get; set; }
+
     public string UserId { get; set; } = null!;
 
     public string Name { get; set; } = null!;
@@ -24,6 +26,18 @@ public partial class User : BaseEntity
     public int Balance { get; set; }
 
     public int Status { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
+
+    public string? CreatedBy { get; set; }
+
+    public DateTime? ModifiedDate { get; set; }
+
+    public string? ModifiedBy { get; set; }
+
+    public DateTime? DeletedDate { get; set; }
+
+    public string? DeletedBy { get; set; }
 
     public string? AccessToken { get; set; }
 

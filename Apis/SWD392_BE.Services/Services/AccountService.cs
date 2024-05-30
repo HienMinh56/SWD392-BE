@@ -26,7 +26,7 @@ namespace SWD392_BE.Services.Services
                 return false;
             }
 
-            bool isPasswordValid = user.Password == password; 
+            bool isPasswordValid = user.Password == password;
             return isPasswordValid;
 
         }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SWD392_BE.Repositories.Entities;
+namespace SWD392_BE.Repositories.Models;
 
-public partial class Transaction : BaseEntity
+public partial class Transaction
 {
+    public int Id { get; set; }
+
     public string TransationId { get; set; } = null!;
 
     public string UserId { get; set; } = null!;
@@ -15,7 +17,11 @@ public partial class Transaction : BaseEntity
 
     public int Status { get; set; }
 
-    public DateTime Time { get; set; }
+    public TimeSpan? CreatTime { get; set; }
+
+    public DateTime? CreatedDate { get; set; }
+
+    public string? CreatedBy { get; set; }
 
     public virtual ICollection<Order> Orders { get; } = new List<Order>();
 
