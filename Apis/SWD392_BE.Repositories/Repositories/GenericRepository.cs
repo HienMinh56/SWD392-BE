@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Repositories
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly DbContext _context;
         private readonly DbSet<T> _dbSet;
