@@ -34,7 +34,7 @@ namespace SWD392_BE.Services.Services
                     result.Message = "Email is not exist";
                     return result;
                 }
-                if (getUser.Status == 0)
+                if (getUser.Status != 1 && getUser.Status != 2 & getUser.Status != 3)
                 {
                     result.IsSuccess = false;
                     result.Code = (int)HttpStatusCode.Forbidden;
@@ -60,6 +60,7 @@ namespace SWD392_BE.Services.Services
                     role = getUser.Role,
                     balance = getUser.Balance,
                     status = getUser.Status
+
                 };
                 result.IsSuccess = true;
                 result.Code = 200;
