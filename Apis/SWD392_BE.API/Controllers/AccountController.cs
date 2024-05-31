@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SWD392_BE.Repositories.Helper;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
 using SWD392_BE.Services.Interfaces;
@@ -13,12 +14,16 @@ namespace SWD392_BE.API.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
+        private readonly JWTTokenHelper _jWTToken;
 
 
-        public AccountController(IAccountService accountService)
+        public AccountController(IAccountService accountService, JWTTokenHelper jWTToken)
         {
             _accountService = accountService;
+            _jWTToken = jWTToken;
         }
+
+        public JWTTokenHelper JWTToken { get; }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginReqModel User)

@@ -18,6 +18,7 @@ namespace SWD392_BE.Repositories.ViewModels.UserModel
         public int role { get; set; }
         public int balance { get; set; }
         public int status { get; set; }
+        public string Token { get; set; }
 
     }
 }
