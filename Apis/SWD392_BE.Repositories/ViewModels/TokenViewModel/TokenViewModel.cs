@@ -10,5 +10,6 @@ namespace SWD392_BE.Repositories.ViewModels.TokenViewModel
     {
         public string AccessTokenToken { get; set; }
         public string RefreshToken { get; set; }
+        public DateTime? ExpiredAt { get; set; }
     }
 }

@@ -39,12 +39,6 @@ public partial class User
 
     public string? DeletedBy { get; set; }
 
-    public DateTime? ExpiredTime { get; set; }
-
-    public string? AccessToken { get; set; }
-
-    public string? RefreshToken { get; set; }
-
     public virtual Campus Campus { get; set; } = null!;
 
     public virtual ICollection<Order> Orders { get; } = new List<Order>();

@@ -12,15 +12,14 @@ using SWD392_BE.Repositories;
 namespace SWD392_BE.Repositories.Migrations
 {
     [DbContext(typeof(CampusFoodSystemContext))]
-    [Migration("20240531134400_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240531202754_InitialDB")]
+    partial class InitialDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseCollation("Vietnamese_CI_AS")
                 .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -69,9 +68,9 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__Area__3214EC07DACEE40D");
+                        .HasName("PK__Area__3214EC071DFF569C");
 
-                    b.HasIndex(new[] { "AreaId" }, "UQ__Area__70B82049349C7700")
+                    b.HasIndex(new[] { "AreaId" }, "UQ__Area__70B8204973549EFB")
                         .IsUnique();
 
                     b.ToTable("Area", (string)null);
@@ -126,11 +125,11 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__Campus__3214EC078D73DAA8");
+                        .HasName("PK__Campus__3214EC07A851F89E");
 
                     b.HasIndex("AreaId");
 
-                    b.HasIndex(new[] { "CampusId" }, "UQ__Campus__FD598DD7BDF961FA")
+                    b.HasIndex(new[] { "CampusId" }, "UQ__Campus__FD598DD7FE1B7E12")
                         .IsUnique();
 
                     b.ToTable("Campus", (string)null);
@@ -205,11 +204,11 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Food__3214EC07C6EE02D4");
+                        .HasName("PK__Food__3214EC079B402A5A");
 
                     b.HasIndex("StoreId");
 
-                    b.HasIndex(new[] { "FoodId" }, "UQ__Food__856DB3EA65497FB9")
+                    b.HasIndex(new[] { "FoodId" }, "UQ__Food__856DB3EA742E09D5")
                         .IsUnique();
 
                     b.ToTable("Food", (string)null);
@@ -280,7 +279,7 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Order__3214EC072A0BF0CF");
+                        .HasName("PK__Order__3214EC070031D191");
 
                     b.HasIndex("SessionId");
 
@@ -290,7 +289,7 @@ namespace SWD392_BE.Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex(new[] { "OrderId" }, "UQ__Order__C3905BCEB119036F")
+                    b.HasIndex(new[] { "OrderId" }, "UQ__Order__C3905BCE737DC6C9")
                         .IsUnique();
 
                     b.ToTable("Order", (string)null);
@@ -335,13 +334,13 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__OrderDet__3214EC073C8E73B6");
+                        .HasName("PK__OrderDet__3214EC071900BD60");
 
                     b.HasIndex("FoodId");
 
                     b.HasIndex("OrderId");
 
-                    b.HasIndex(new[] { "OrderDetailId" }, "UQ__OrderDet__D3B9D36DC19372B6")
+                    b.HasIndex(new[] { "OrderDetailId" }, "UQ__OrderDet__D3B9D36D0465B6B3")
                         .IsUnique();
 
                     b.ToTable("OrderDetail", (string)null);
@@ -389,9 +388,9 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("time");
 
                     b.HasKey("Id")
-                        .HasName("PK__Session__3214EC073C0BAEBA");
+                        .HasName("PK__Session__3214EC07F1EEACD1");
 
-                    b.HasIndex(new[] { "SessionId" }, "UQ__Session__C9F49291C03CF9EF")
+                    b.HasIndex(new[] { "SessionId" }, "UQ__Session__C9F4929131FE58DD")
                         .IsUnique();
 
                     b.ToTable("Session", (string)null);
@@ -459,11 +458,11 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Store__3214EC07235653ED");
+                        .HasName("PK__Store__3214EC077E4B1607");
 
                     b.HasIndex("AreaId");
 
-                    b.HasIndex(new[] { "StoreId" }, "UQ__Store__3B82F100DC25AF52")
+                    b.HasIndex(new[] { "StoreId" }, "UQ__Store__3B82F10073ADD8AD")
                         .IsUnique();
 
                     b.ToTable("Store", (string)null);
@@ -496,16 +495,43 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__StoreSes__3214EC07DC96FA69");
+                        .HasName("PK__StoreSes__3214EC07293B41CD");
 
                     b.HasIndex("SessionId");
 
                     b.HasIndex("StoreId");
 
-                    b.HasIndex(new[] { "StoreSessionId" }, "UQ__StoreSes__6E52FC49DB3F1CF2")
+                    b.HasIndex(new[] { "StoreSessionId" }, "UQ__StoreSes__6E52FC49E18488C5")
                         .IsUnique();
 
                     b.ToTable("StoreSession", (string)null);
+                });
+
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Token", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("AccessToken")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("ExpiredTime")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("RefreshToken")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId")
+                        .HasName("PK__Token__1788CC4C3E606ADF");
+
+                    b.ToTable("Token", (string)null);
                 });
 
             modelBuilder.Entity("SWD392_BE.Repositories.Entities.Transaction", b =>
@@ -548,11 +574,11 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Transact__3214EC07959606AF");
+                        .HasName("PK__Transact__3214EC07B30908F0");
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex(new[] { "TransationId" }, "UQ__Transact__B1E73154D27C704C")
+                    b.HasIndex(new[] { "TransationId" }, "UQ__Transact__B1E73154FF9DBDDC")
                         .IsUnique();
 
                     b.ToTable("Transaction", (string)null);
@@ -565,10 +591,6 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AccessToken")
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
 
                     b.Property<int>("Balance")
                         .HasColumnType("int");
@@ -598,9 +620,6 @@ namespace SWD392_BE.Repositories.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
 
-                    b.Property<DateTime?>("ExpiredTime")
-                        .HasColumnType("datetime");
-
                     b.Property<string>("ModifiedBy")
                         .IsUnicode(false)
                         .HasColumnType("varchar(max)");
@@ -621,10 +640,6 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Property<int>("Phone")
                         .HasColumnType("int");
 
-                    b.Property<string>("RefreshToken")
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
-
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
@@ -644,11 +659,11 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__User__3214EC0727067109");
+                        .HasName("PK__User__3214EC07FCD3F876");
 
                     b.HasIndex("CampusId");
 
-                    b.HasIndex(new[] { "UserId" }, "UQ__User__1788CC4DE145363B")
+                    b.HasIndex(new[] { "UserId" }, "UQ__User__1788CC4D9F3A1450")
                         .IsUnique();
 
                     b.ToTable("User", (string)null);

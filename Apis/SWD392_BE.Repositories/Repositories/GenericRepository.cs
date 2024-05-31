@@ -53,10 +53,10 @@ namespace SWD392_BE.Repositories.Repositories
         }
 
 
-        public virtual void Delete(Guid id)
+        public virtual void Remove(T enity)
         {
-            var entity = _dbSet.Find(id);
-            _dbSet.Remove(entity);
+
+            _dbSet.Remove(enity);
         }
 
         public virtual void Delete(string id)
@@ -65,11 +65,7 @@ namespace SWD392_BE.Repositories.Repositories
             _dbSet.Remove(entity);
         }
 
-        public virtual void Remove(T enity)
-        {
 
-            _dbSet.Remove(enity);
-        }
 
         public void ClearTrackers()
         {
