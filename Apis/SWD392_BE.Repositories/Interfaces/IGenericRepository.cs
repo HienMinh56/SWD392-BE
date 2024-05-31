@@ -9,12 +9,16 @@ namespace SWD392_BE.Repositories.Interfaces
 {
     public interface IGenericRepository<T> where T : class
     {
-        void Add(T entity);
-        void AddRange(IEnumerable<T> entities);
-        IEnumerable<T> GetList(Expression<Func<T, bool>> predicate = null);
-        T Get(Expression<Func<T, bool>> predicate);
+        ICollection<T> GetAll();
+        ICollection<T> GetList(Expression<Func<T, bool>> expression);
+        T Get(Expression<Func<T, bool>> expression);
+        T Add(T entity);
+        void AddRange(ICollection<T> entities);
         void Update(T entity);
-        void Delete(T entity);
-        void SaveChanges();
+        void Delete(Guid id);
+        void ClearTrackers();
+        int SaveChanges();
+        Task SaveChangesAsync();
+        void Dispose();
     }
 }
