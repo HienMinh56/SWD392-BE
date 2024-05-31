@@ -1,5 +1,4 @@
-﻿using SWD392_BE.Repositories.Entities;
-using SWD392_BE.Repositories.Interfaces;
+﻿using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
 using SWD392_BE.Services.Interfaces;
@@ -34,7 +33,7 @@ namespace SWD392_BE.Services.Services
                     result.Message = "Email is not exist";
                     return result;
                 }
-                if (getUser.Status != 1 && getUser.Status != 2 & getUser.Status != 3)
+                if (getUser.Status != 1 && getUser.Status != 2 && getUser.Status != 3)
                 {
                     result.IsSuccess = false;
                     result.Code = (int)HttpStatusCode.Forbidden;
