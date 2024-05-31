@@ -1,4 +1,4 @@
-﻿using SWD392_BE.Repositories.Models;
+﻿using SWD392_BE.Repositories.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserRepository : IGenericRepository<User>
     {
-        Task<List<User>> GetAllUsers();
+
     }
 }

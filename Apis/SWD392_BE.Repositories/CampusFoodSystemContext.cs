@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using SWD392_BE.Repositories.Models;
+using SWD392_BE.Repositories.Entities;
 
 namespace SWD392_BE.Repositories;
 
@@ -56,11 +56,11 @@ public partial class CampusFoodSystemContext : DbContext
 
         modelBuilder.Entity<Area>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Area__3214EC079CAF76E2");
+            entity.HasKey(e => e.Id).HasName("PK__Area__3214EC07DACEE40D");
 
             entity.ToTable("Area");
 
-            entity.HasIndex(e => e.AreaId, "UQ__Area__70B820491680D86A").IsUnique();
+            entity.HasIndex(e => e.AreaId, "UQ__Area__70B82049349C7700").IsUnique();
 
             entity.Property(e => e.AreaId)
                 .HasMaxLength(50)
@@ -75,11 +75,11 @@ public partial class CampusFoodSystemContext : DbContext
 
         modelBuilder.Entity<Campus>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Campus__3214EC077B2628DA");
+            entity.HasKey(e => e.Id).HasName("PK__Campus__3214EC078D73DAA8");
 
             entity.ToTable("Campus");
 
-            entity.HasIndex(e => e.CampusId, "UQ__Campus__FD598DD7B20764EA").IsUnique();
+            entity.HasIndex(e => e.CampusId, "UQ__Campus__FD598DD7BDF961FA").IsUnique();
 
             entity.Property(e => e.AreaId)
                 .HasMaxLength(50)
@@ -103,11 +103,11 @@ public partial class CampusFoodSystemContext : DbContext
 
         modelBuilder.Entity<Food>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Food__3214EC07C7E84DA7");
+            entity.HasKey(e => e.Id).HasName("PK__Food__3214EC07C6EE02D4");
 
             entity.ToTable("Food");
 
-            entity.HasIndex(e => e.FoodId, "UQ__Food__856DB3EAC803D9F9").IsUnique();
+            entity.HasIndex(e => e.FoodId, "UQ__Food__856DB3EA65497FB9").IsUnique();
 
             entity.Property(e => e.CreatedBy).IsUnicode(false);
             entity.Property(e => e.CreatedDate).HasColumnType("date");
@@ -135,11 +135,11 @@ public partial class CampusFoodSystemContext : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC07CCDC7598");
+            entity.HasKey(e => e.Id).HasName("PK__Order__3214EC072A0BF0CF");
 
             entity.ToTable("Order");
 
-            entity.HasIndex(e => e.OrderId, "UQ__Order__C3905BCE483BB568").IsUnique();
+            entity.HasIndex(e => e.OrderId, "UQ__Order__C3905BCEB119036F").IsUnique();
 
             entity.Property(e => e.CreatedBy).IsUnicode(false);
             entity.Property(e => e.CreatedDate).HasColumnType("date");
@@ -188,11 +188,11 @@ public partial class CampusFoodSystemContext : DbContext
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__OrderDet__3214EC0711CB4869");
+            entity.HasKey(e => e.Id).HasName("PK__OrderDet__3214EC073C8E73B6");
 
             entity.ToTable("OrderDetail");
 
-            entity.HasIndex(e => e.OrderDetailId, "UQ__OrderDet__D3B9D36D5AF1F417").IsUnique();
+            entity.HasIndex(e => e.OrderDetailId, "UQ__OrderDet__D3B9D36DC19372B6").IsUnique();
 
             entity.Property(e => e.FoodId)
                 .HasMaxLength(50)
@@ -219,11 +219,11 @@ public partial class CampusFoodSystemContext : DbContext
 
         modelBuilder.Entity<Session>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Session__3214EC079ABC5FB3");
+            entity.HasKey(e => e.Id).HasName("PK__Session__3214EC073C0BAEBA");
 
             entity.ToTable("Session");
 
-            entity.HasIndex(e => e.SessionId, "UQ__Session__C9F49291EA42D802").IsUnique();
+            entity.HasIndex(e => e.SessionId, "UQ__Session__C9F49291C03CF9EF").IsUnique();
 
             entity.Property(e => e.CreatedBy).IsUnicode(false);
             entity.Property(e => e.CreatedDate).HasColumnType("date");
@@ -238,11 +238,11 @@ public partial class CampusFoodSystemContext : DbContext
 
         modelBuilder.Entity<Store>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Store__3214EC0776229960");
+            entity.HasKey(e => e.Id).HasName("PK__Store__3214EC07235653ED");
 
             entity.ToTable("Store");
 
-            entity.HasIndex(e => e.StoreId, "UQ__Store__3B82F1006731C5ED").IsUnique();
+            entity.HasIndex(e => e.StoreId, "UQ__Store__3B82F100DC25AF52").IsUnique();
 
             entity.Property(e => e.AreaId)
                 .HasMaxLength(50)
@@ -266,11 +266,11 @@ public partial class CampusFoodSystemContext : DbContext
 
         modelBuilder.Entity<StoreSession>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__StoreSes__3214EC07C073EE8D");
+            entity.HasKey(e => e.Id).HasName("PK__StoreSes__3214EC07DC96FA69");
 
             entity.ToTable("StoreSession");
 
-            entity.HasIndex(e => e.StoreSessionId, "UQ__StoreSes__6E52FC495720368B").IsUnique();
+            entity.HasIndex(e => e.StoreSessionId, "UQ__StoreSes__6E52FC49DB3F1CF2").IsUnique();
 
             entity.Property(e => e.SessionId)
                 .HasMaxLength(50)
@@ -297,11 +297,11 @@ public partial class CampusFoodSystemContext : DbContext
 
         modelBuilder.Entity<Transaction>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Transact__3214EC07466B0EBC");
+            entity.HasKey(e => e.Id).HasName("PK__Transact__3214EC07959606AF");
 
             entity.ToTable("Transaction");
 
-            entity.HasIndex(e => e.TransationId, "UQ__Transact__B1E731541DD0AF25").IsUnique();
+            entity.HasIndex(e => e.TransationId, "UQ__Transact__B1E73154D27C704C").IsUnique();
 
             entity.Property(e => e.CreatedBy).IsUnicode(false);
             entity.Property(e => e.CreatedDate).HasColumnType("date");
@@ -321,11 +321,11 @@ public partial class CampusFoodSystemContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__User__3214EC078230A9E0");
+            entity.HasKey(e => e.Id).HasName("PK__User__3214EC0727067109");
 
             entity.ToTable("User");
 
-            entity.HasIndex(e => e.UserId, "UQ__User__1788CC4D67B058A3").IsUnique();
+            entity.HasIndex(e => e.UserId, "UQ__User__1788CC4DE145363B").IsUnique();
 
             entity.Property(e => e.AccessToken).IsUnicode(false);
             entity.Property(e => e.CampusId)
@@ -336,6 +336,7 @@ public partial class CampusFoodSystemContext : DbContext
             entity.Property(e => e.DeletedBy).IsUnicode(false);
             entity.Property(e => e.DeletedDate).HasColumnType("date");
             entity.Property(e => e.Email).IsUnicode(false);
+            entity.Property(e => e.ExpiredTime).HasColumnType("datetime");
             entity.Property(e => e.ModifiedBy).IsUnicode(false);
             entity.Property(e => e.ModifiedDate).HasColumnType("date");
             entity.Property(e => e.Name).IsUnicode(false);

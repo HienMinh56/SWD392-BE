@@ -4,13 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SWD392_BE.Repositories.ViewModels.UserModel
+namespace SWD392_BE.Repositories.ViewModels.TokenViewModel
 {
-    public class LoginResModel
+    public class TokenViewModel
     {
-        public string Token { get; set; }
+        public string AccessTokenToken { get; set; }
         public string RefreshToken { get; set; }
-        public DateTime ExpiredTime { get; set; }
-
     }
 }

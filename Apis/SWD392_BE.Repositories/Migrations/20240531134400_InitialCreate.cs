@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SWD392_BE.Repositories.Migrations
 {
     /// <inheritdoc />
-    public partial class Migrations : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,7 +29,7 @@ namespace SWD392_BE.Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Area__3214EC079CAF76E2", x => x.Id);
+                    table.PrimaryKey("PK__Area__3214EC07DACEE40D", x => x.Id);
                     table.UniqueConstraint("AK_Area_AreaId", x => x.AreaId);
                 });
 
@@ -51,7 +51,7 @@ namespace SWD392_BE.Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Session__3214EC079ABC5FB3", x => x.Id);
+                    table.PrimaryKey("PK__Session__3214EC073C0BAEBA", x => x.Id);
                     table.UniqueConstraint("AK_Session_SessionId", x => x.SessionId);
                 });
 
@@ -74,7 +74,7 @@ namespace SWD392_BE.Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Campus__3214EC077B2628DA", x => x.Id);
+                    table.PrimaryKey("PK__Campus__3214EC078D73DAA8", x => x.Id);
                     table.UniqueConstraint("AK_Campus_CampusId", x => x.CampusId);
                     table.ForeignKey(
                         name: "FK_Campus_Area",
@@ -106,7 +106,7 @@ namespace SWD392_BE.Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Store__3214EC0776229960", x => x.Id);
+                    table.PrimaryKey("PK__Store__3214EC07235653ED", x => x.Id);
                     table.UniqueConstraint("AK_Store_StoreId", x => x.StoreId);
                     table.ForeignKey(
                         name: "FK_Store_Area",
@@ -137,12 +137,13 @@ namespace SWD392_BE.Repositories.Migrations
                     ModifiedBy = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
                     DeletedDate = table.Column<DateTime>(type: "date", nullable: true),
                     DeletedBy = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
+                    ExpiredTime = table.Column<DateTime>(type: "datetime", nullable: true),
                     AccessToken = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true),
                     RefreshToken = table.Column<string>(type: "varchar(max)", unicode: false, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__User__3214EC078230A9E0", x => x.Id);
+                    table.PrimaryKey("PK__User__3214EC0727067109", x => x.Id);
                     table.UniqueConstraint("AK_User_UserId", x => x.UserId);
                     table.ForeignKey(
                         name: "FK_User_Campus",
@@ -175,7 +176,7 @@ namespace SWD392_BE.Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Food__3214EC07C7E84DA7", x => x.Id);
+                    table.PrimaryKey("PK__Food__3214EC07C6EE02D4", x => x.Id);
                     table.UniqueConstraint("AK_Food_FoodId", x => x.FoodId);
                     table.ForeignKey(
                         name: "FK_Food_Store",
@@ -196,7 +197,7 @@ namespace SWD392_BE.Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__StoreSes__3214EC07C073EE8D", x => x.Id);
+                    table.PrimaryKey("PK__StoreSes__3214EC07DC96FA69", x => x.Id);
                     table.ForeignKey(
                         name: "FK_StoreSession_Session",
                         column: x => x.SessionId,
@@ -226,7 +227,7 @@ namespace SWD392_BE.Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Transact__3214EC07466B0EBC", x => x.Id);
+                    table.PrimaryKey("PK__Transact__3214EC07959606AF", x => x.Id);
                     table.UniqueConstraint("AK_Transaction_TransationId", x => x.TransationId);
                     table.ForeignKey(
                         name: "FK_Transaction_User",
@@ -257,7 +258,7 @@ namespace SWD392_BE.Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Order__3214EC07CCDC7598", x => x.Id);
+                    table.PrimaryKey("PK__Order__3214EC072A0BF0CF", x => x.Id);
                     table.UniqueConstraint("AK_Order_OrderId", x => x.OrderId);
                     table.ForeignKey(
                         name: "FK_Order_Session",
@@ -297,7 +298,7 @@ namespace SWD392_BE.Repositories.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__OrderDet__3214EC0711CB4869", x => x.Id);
+                    table.PrimaryKey("PK__OrderDet__3214EC073C8E73B6", x => x.Id);
                     table.ForeignKey(
                         name: "FK_OrderDetail_Food",
                         column: x => x.FoodId,
@@ -311,7 +312,7 @@ namespace SWD392_BE.Repositories.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Area__70B820491680D86A",
+                name: "UQ__Area__70B82049349C7700",
                 table: "Area",
                 column: "AreaId",
                 unique: true);
@@ -322,7 +323,7 @@ namespace SWD392_BE.Repositories.Migrations
                 column: "AreaId");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Campus__FD598DD7B20764EA",
+                name: "UQ__Campus__FD598DD7BDF961FA",
                 table: "Campus",
                 column: "CampusId",
                 unique: true);
@@ -333,7 +334,7 @@ namespace SWD392_BE.Repositories.Migrations
                 column: "StoreId");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Food__856DB3EAC803D9F9",
+                name: "UQ__Food__856DB3EA65497FB9",
                 table: "Food",
                 column: "FoodId",
                 unique: true);
@@ -359,7 +360,7 @@ namespace SWD392_BE.Repositories.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Order__C3905BCE483BB568",
+                name: "UQ__Order__C3905BCEB119036F",
                 table: "Order",
                 column: "OrderId",
                 unique: true);
@@ -375,13 +376,13 @@ namespace SWD392_BE.Repositories.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__OrderDet__D3B9D36D5AF1F417",
+                name: "UQ__OrderDet__D3B9D36DC19372B6",
                 table: "OrderDetail",
                 column: "OrderDetailId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Session__C9F49291EA42D802",
+                name: "UQ__Session__C9F49291C03CF9EF",
                 table: "Session",
                 column: "SessionId",
                 unique: true);
@@ -392,7 +393,7 @@ namespace SWD392_BE.Repositories.Migrations
                 column: "AreaId");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Store__3B82F1006731C5ED",
+                name: "UQ__Store__3B82F100DC25AF52",
                 table: "Store",
                 column: "StoreId",
                 unique: true);
@@ -408,7 +409,7 @@ namespace SWD392_BE.Repositories.Migrations
                 column: "StoreId");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__StoreSes__6E52FC495720368B",
+                name: "UQ__StoreSes__6E52FC49DB3F1CF2",
                 table: "StoreSession",
                 column: "StoreSessionId",
                 unique: true);
@@ -419,7 +420,7 @@ namespace SWD392_BE.Repositories.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__Transact__B1E731541DD0AF25",
+                name: "UQ__Transact__B1E73154D27C704C",
                 table: "Transaction",
                 column: "TransationId",
                 unique: true);
@@ -430,7 +431,7 @@ namespace SWD392_BE.Repositories.Migrations
                 column: "CampusId");
 
             migrationBuilder.CreateIndex(
-                name: "UQ__User__1788CC4D67B058A3",
+                name: "UQ__User__1788CC4DE145363B",
                 table: "User",
                 column: "UserId",
                 unique: true);

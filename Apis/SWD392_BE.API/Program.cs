@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SWD392_BE.Repositories;
+using SWD392_BE.Repositories.Helper;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Repositories;
 using SWD392_BE.Services.Interfaces;
+using SWD392_BE.Services.MapperProfile;
 using SWD392_BE.Services.Services;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -48,6 +50,10 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+//add automapper
+builder.Services.AddAutoMapper(typeof(UserMapper));
+
 builder.Services.AddControllers()
         .AddJsonOptions(options =>
         {
@@ -57,6 +63,7 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddSingleton<JWTTokenHelper>();
 
 // db local
 
@@ -65,29 +72,6 @@ builder.Services.AddDbContext<CampusFoodSystemContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDB"));
 });
 
-// builder.Services.AddControllers()
-//         .AddJsonOptions(options =>
-//         {
-//             options.JsonSerializerOptions.IgnoreNullValues = true;
-//         });
-
-// ===================== FOR DEPLOY AZURE =======================
-
-//var connection = String.Empty;
-//if (builder.Environment.IsDevelopment())
-//{
-//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.json");
-//    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
-//}
-//else
-//{
-//    connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
-//}
-
-//builder.Services.AddDbContext<CampusFoodSystemContext>(options =>
-//  options.UseSqlServer(connection));
-
-// ==================== NO EDIT OR REMOVE COMMENT =======================
 
 builder.Services.AddCors(options =>
 {
@@ -124,12 +108,7 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
+
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
