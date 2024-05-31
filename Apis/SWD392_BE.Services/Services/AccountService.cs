@@ -54,15 +54,6 @@ namespace SWD392_BE.Services.Services
                 var token = _jWTTokenHelper.GenerateToken(getUser.UserId, getUser.UserName, getUser.Role.ToString());
                 LoginResModel userModel = new LoginResModel()
                 {
-                    userId = getUser.UserId,
-                    name = getUser.Name,
-                    userName = getUser.UserName,
-                    email = getUser.Email,
-                    campusId = getUser.CampusId,
-                    phone = getUser.Phone,
-                    role = getUser.Role,
-                    balance = getUser.Balance,
-                    status = getUser.Status,
                     Token = token
                 };
                 result.IsSuccess = true;

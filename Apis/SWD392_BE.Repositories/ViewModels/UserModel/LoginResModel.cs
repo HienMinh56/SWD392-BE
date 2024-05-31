@@ -8,16 +8,6 @@ namespace SWD392_BE.Repositories.ViewModels.UserModel
 {
     public class LoginResModel
     {
-        public string userId { get; set; } = null!;
-        public string name { get; set; }
-        public string userName { get; set; }
-        public string password { get; set; }
-        public string email { get; set; }
-        public string campusId { get; set; }
-        public int phone { get; set; }
-        public int role { get; set; }
-        public int balance { get; set; }
-        public int status { get; set; }
         public string Token { get; set; }
 
     }
