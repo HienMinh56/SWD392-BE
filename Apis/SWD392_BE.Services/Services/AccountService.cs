@@ -7,6 +7,7 @@ using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.Sercurity;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -50,30 +51,37 @@ namespace SWD392_BE.Services.Services
                     throw new Exception("Incorrect password");
                 }
 
-                // Check if refresh token is expired
-                bool isRefreshTokenExpired = getUser.ExpiredTime <= DateTime.Now;
+                // Decode the Access Token to check its expiration time
+                var handler = new JwtSecurityTokenHandler();
+                var token = handler.ReadJwtToken(getUser.AccessToken);
 
-                // If refresh token is expired, refresh both tokens
-                if (isRefreshTokenExpired)
+                // Extract the expiration time from the Access Token
+                var accessTokenExpiration = token.ValidTo;
+
+                // Check if the Access Token has expired
+                if (accessTokenExpiration <= DateTime.Now)
                 {
-                    // Generate JWT token
-                    var token = _jWTTokenHelper.GenerateToken(
+                    // Access Token has expired, generate a new one
+                    var newAccessToken = _jWTTokenHelper.GenerateToken(
                         getUser.UserId,
                         getUser.Name,
                         getUser.Role.ToString()
                     );
 
-                    // Generate RefreshToken
-                    string refreshToken = _jWTTokenHelper.GenerateRefreshToken(getUser);
+                    // Update user with the new Access Token and its expiration time
+                    getUser.AccessToken = newAccessToken;
+                    accessTokenExpiration = DateTime.Now.AddMinutes(int.Parse(_configuration["JWT:TokenValidityInMinutes"]));
+                }
 
-                    // Set ExpiredTime for both access token and refresh token
-                    DateTime accessTokenExpiredTime = DateTime.Now.AddMinutes(int.Parse(_configuration["JWT:TokenValidityInMinutes"]));
-                    DateTime refreshTokenExpiredTime = DateTime.Now.AddDays(int.Parse(_configuration["JWT:RefreshTokenValidityInDays"]));
+                // Check if the Refresh Token has expired
+                if (getUser.ExpiredTime <= DateTime.Now)
+                {
+                    // Refresh Token has expired, generate a new one
+                    var newRefreshToken = _jWTTokenHelper.GenerateRefreshToken(getUser);
 
-                    // Update user with refresh token and expired time
-                    getUser.AccessToken = token;
-                    getUser.RefreshToken = refreshToken;
-                    getUser.ExpiredTime = refreshTokenExpiredTime;
+                    // Update user with the new Refresh Token and its expiration time
+                    getUser.RefreshToken = newRefreshToken;
+                    getUser.ExpiredTime = DateTime.Now.AddDays(int.Parse(_configuration["JWT:RefreshTokenValidityInDays"]));
                 }
 
                 // Save changes to the user entity
