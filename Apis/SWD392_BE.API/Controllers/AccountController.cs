@@ -23,12 +23,34 @@ namespace SWD392_BE.API.Controllers
             _jWTToken = jWTToken;
         }
 
+        public JWTTokenHelper JWTToken { get; }
+
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginReqModel User)
+        public async Task<ActionResult<ResultModel>> Login(LoginReqModel user)
         {
-            ResultModel result = await _accountService.Login(User);
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            try
+            {
+                var loginResult = await _accountService.Login(user);
+                var result = new ResultModel
+                {
+                    IsSuccess = true,
+                    Code = 200,
+                    Data = loginResult
+                };
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                var result = new ResultModel
+                {
+                    IsSuccess = false,
+                    Code = 500,
+                    Message = ex.Message
+                };
+                return StatusCode(500, result);
+            }
         }
+
     }
 
 }

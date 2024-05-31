@@ -2,7 +2,7 @@
 
 namespace SWD392_BE.Repositories.Interfaces
 {
-    public interface IAccountRepository
+    public interface IAccountRepository : IGenericRepository<User>
     {
         public Task<User> GetUserByUserName(string userName);
 

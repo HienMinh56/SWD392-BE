@@ -10,6 +10,6 @@ namespace SWD392_BE.Services.Interfaces
 {
     public interface IAccountService
     {
-        public Task<ResultModel> Login(LoginReqModel User);
+        public Task<LoginResModel> Login(LoginReqModel User);
     }
 }

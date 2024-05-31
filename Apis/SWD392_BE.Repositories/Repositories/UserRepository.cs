@@ -10,9 +10,11 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : GenericRepository<User>, IUserRepository
     {
-
+        public UserRepository(CampusFoodSystemContext context) : base(context)
+        {
+        }
 
         public async Task<List<User>> GetAllUsers()
         {

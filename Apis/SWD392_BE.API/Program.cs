@@ -67,29 +67,6 @@ builder.Services.AddDbContext<CampusFoodSystemContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("LocalDB"));
 });
 
-// builder.Services.AddControllers()
-//         .AddJsonOptions(options =>
-//         {
-//             options.JsonSerializerOptions.IgnoreNullValues = true;
-//         });
-
-// ===================== FOR DEPLOY AZURE =======================
-
-//var connection = String.Empty;
-//if (builder.Environment.IsDevelopment())
-//{
-//    builder.Configuration.AddEnvironmentVariables().AddJsonFile("appsettings.json");
-//    connection = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
-//}
-//else
-//{
-//    connection = Environment.GetEnvironmentVariable("AZURE_SQL_CONNECTIONSTRING");
-//}
-
-//builder.Services.AddDbContext<CampusFoodSystemContext>(options =>
-//  options.UseSqlServer(connection));
-
-// ==================== NO EDIT OR REMOVE COMMENT =======================
 
 builder.Services.AddCors(options =>
 {
@@ -126,12 +103,7 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
+
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>

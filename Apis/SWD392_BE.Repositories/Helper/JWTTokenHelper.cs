@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.DataProtection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
+using SWD392_BE.Repositories.Entities;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Helper
 {
@@ -41,5 +40,17 @@ namespace SWD392_BE.Repositories.Helper
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+        public string GenerateRefreshToken(User user)
+        {
+            var randomBytes = new byte[64];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomBytes);
+            }
+
+            var refreshToken = Convert.ToBase64String(randomBytes);
+            return refreshToken;
+        }
+
     }
 }
