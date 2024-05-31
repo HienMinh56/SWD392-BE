@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SWD392_BE.Repositories.Models;
+namespace SWD392_BE.Repositories.Entities;
 
 public partial class StoreSession
 {

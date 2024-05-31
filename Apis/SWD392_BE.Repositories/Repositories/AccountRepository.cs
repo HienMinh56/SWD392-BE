@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
-using SWD392_BE.Repositories.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Repositories
 {
-    public class AccountRepository : GenericRepository<User>,IAccountRepository
+    public class AccountRepository : GenericRepository<User>, IAccountRepository
     {
         private readonly CampusFoodSystemContext _dbContext;
 
@@ -18,18 +18,18 @@ namespace SWD392_BE.Repositories.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<User> GetUserByEmail(string email)
+        public async Task<User> GetUserByUserName(string userName)
         {
             return await _dbContext.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Email.Equals(email));
+                .FirstOrDefaultAsync(x => x.UserName.Equals(userName));
         }
 
-        public async Task<User> CheckLogin(string email, string password)
+        public async Task<User> CheckLogin(string userName, string password)
         {
             return await _dbContext.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Email.Equals(email) && x.Password.Equals(password));
+                .FirstOrDefaultAsync(x => x.UserName.Equals(userName) && x.Password.Equals(password));
         }
 
 

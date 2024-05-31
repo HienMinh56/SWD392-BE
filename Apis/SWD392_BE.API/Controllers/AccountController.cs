@@ -23,8 +23,6 @@ namespace SWD392_BE.API.Controllers
             _jWTToken = jWTToken;
         }
 
-        public JWTTokenHelper JWTToken { get; }
-
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginReqModel User)
         {

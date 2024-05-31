@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
+using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
-using SWD392_BE.Repositories.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -21,7 +21,7 @@ namespace SWD392_BE.Repositories.Helper
             _configuration = configuration;
         }
 
-        public string GenerateToken(string userId, string userName, string role)
+        public string GenerateToken(string userId, string Name, string role)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(_configuration["JWT:SecretKey"]);
@@ -30,7 +30,7 @@ namespace SWD392_BE.Repositories.Helper
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(ClaimTypes.Name, userName),
+                new Claim(ClaimTypes.Name, Name),
                 new Claim(ClaimTypes.Role, role)
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["JWT:TokenValidityInMinutes"])),
