@@ -18,6 +18,8 @@ namespace SWD392_BE.Repositories.ViewModels.UserModel
         public int role { get; set; }
         public int balance { get; set; }
         public int status { get; set; }
+        public DateTime? createdDate { get; set; }
+        public string? createdBy { get; set; }
 
     }
 }

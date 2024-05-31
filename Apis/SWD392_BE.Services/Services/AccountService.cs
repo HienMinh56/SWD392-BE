@@ -26,12 +26,12 @@ namespace SWD392_BE.Services.Services
             ResultModel result = new ResultModel();
             try
             {
-                var getUser = await _accountRepo.GetUserByEmail(user.Email);
+                var getUser = await _accountRepo.GetUserByUserName(user.UserName);
                 if (getUser == null)
                 {
                     result.IsSuccess = false;
                     result.Code = 400;
-                    result.Message = "Email is not exist";
+                    result.Message = "UserName is not exist";
                     return result;
                 }
                 if (getUser.Status != 1 && getUser.Status != 2 & getUser.Status != 3)
@@ -59,7 +59,9 @@ namespace SWD392_BE.Services.Services
                     phone = getUser.Phone,
                     role = getUser.Role,
                     balance = getUser.Balance,
-                    status = getUser.Status
+                    status = getUser.Status,
+                    createdDate = getUser.CreatedDate,
+                    createdBy = getUser.CreatedBy
 
                 };
                 result.IsSuccess = true;

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Repositories
 {
-    public class AccountRepository : GenericRepository<User>,IAccountRepository
+    public class AccountRepository : GenericRepository<User>, IAccountRepository
     {
         private readonly CampusFoodSystemContext _dbContext;
 
@@ -18,11 +18,11 @@ namespace SWD392_BE.Repositories.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<User> GetUserByEmail(string email)
+        public async Task<User> GetUserByUserName(string userName)
         {
             return await _dbContext.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Email.Equals(email));
+                .FirstOrDefaultAsync(x => x.UserName.Equals(userName));
         }
 
         public async Task<User> CheckLogin(string email, string password)

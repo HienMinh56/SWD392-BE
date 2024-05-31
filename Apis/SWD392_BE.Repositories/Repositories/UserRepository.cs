@@ -29,7 +29,9 @@ namespace SWD392_BE.Repositories.Repositories
                     Phone = x.Phone,
                     Role = x.Role,
                     Balance = x.Balance,
-                    Status = x.Status
+                    Status = x.Status,
+                    CreatedDate = x.CreatedDate,
+                    CreatedBy = x.CreatedBy,
                 })
                 .AsNoTracking()
                 .ToListAsync();
