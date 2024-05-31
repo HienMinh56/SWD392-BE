@@ -14,54 +14,95 @@ namespace SWD392_BE.Repositories.Repositories
         private readonly DbContext _context;
         private readonly DbSet<T> _dbSet;
 
-        public GenericRepository(DbContext context)
+        public GenericRepository(CampusFoodSystemContext context)
         {
             _context = context;
             _dbSet = context.Set<T>();
         }
 
-        public void Add(T entity)
+        public virtual ICollection<T> GetAll()
         {
-            _dbSet.Add(entity);
+            return _dbSet.ToList();
         }
 
-        public void AddRange(IEnumerable<T> entities)
+        public ICollection<T> GetList(Expression<Func<T, bool>> expression)
+        {
+            return _dbSet.Where(expression).ToList();
+        }
+
+        public virtual T Get(Expression<Func<T, bool>> expression)
+        {
+            return _dbSet.FirstOrDefault(expression);
+        }
+
+        public virtual T Add(T entity)
+        {
+            _dbSet.Add(entity);
+            return entity;
+        }
+
+        public void AddRange(ICollection<T> entities)
         {
             _dbSet.AddRange(entities);
         }
 
-        public IEnumerable<T> GetList(Expression<Func<T, bool>> predicate = null)
-        {
-            if (predicate != null)
-            {
-                return _dbSet.Where(predicate).ToList();
-            }
-            return _dbSet.ToList();
-        }
-
-        public T Get(Expression<Func<T, bool>> predicate)
-        {
-            return _dbSet.FirstOrDefault(predicate);
-        }
-
-        public void Update(T entity)
+        public virtual void Update(T entity)
         {
             _dbSet.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
         }
 
-        public void Delete(T entity)
+
+        public virtual void Delete(Guid id)
         {
-            if (_context.Entry(entity).State == EntityState.Detached)
-            {
-                _dbSet.Attach(entity);
-            }
+            var entity = _dbSet.Find(id);
             _dbSet.Remove(entity);
         }
 
-        public void SaveChanges()
+        public virtual void Delete(string id)
         {
-            _context.SaveChanges();
+            var entity = _dbSet.Find(id);
+            _dbSet.Remove(entity);
+        }
+
+        public virtual void Remove(T enity)
+        {
+
+            _dbSet.Remove(enity);
+        }
+
+        public void ClearTrackers()
+        {
+            _context.ChangeTracker.Clear();
+        }
+        public virtual int SaveChanges()
+        {
+            try
+            {
+                return _context.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                // Handle or log the exception
+                throw new Exception(ex.Message);
+            }
+        }
+        public virtual async Task SaveChangesAsync()
+        {
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                // Handle or log the exception
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public void Dispose()
+        {
+            _context.Dispose();
         }
     }
 
