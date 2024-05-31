@@ -1,48 +1,109 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Repositories
 {
-    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : BaseEntity
+    public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        private readonly DbSet<TEntity> _dbSet;
-        private readonly CampusFoodSystemContext _dbContext;
+        private readonly DbContext _context;
+        private readonly DbSet<T> _dbSet;
 
-        public GenericRepository(CampusFoodSystemContext dbContext) 
+        public GenericRepository(CampusFoodSystemContext context)
         {
-            _dbSet = dbContext.Set<TEntity>();
-            _dbContext = dbContext;
+            _context = context;
+            _dbSet = context.Set<T>();
         }
 
-        public async Task<TEntity> AddAsync(TEntity entity)
-        {           
-            await _dbSet.AddAsync(entity);
-            await _dbContext.SaveChangesAsync();
+        public virtual ICollection<T> GetAll()
+        {
+            return _dbSet.ToList();
+        }
+
+        public ICollection<T> GetList(Expression<Func<T, bool>> expression)
+        {
+            return _dbSet.Where(expression).ToList();
+        }
+
+        public virtual T Get(Expression<Func<T, bool>> expression)
+        {
+            return _dbSet.FirstOrDefault(expression);
+        }
+
+        public virtual T Add(T entity)
+        {
+            _dbSet.Add(entity);
             return entity;
         }
 
-        public Task<List<TEntity>> GetAllAsync()
+        public void AddRange(ICollection<T> entities)
         {
-            return _dbSet.ToListAsync();
+            _dbSet.AddRange(entities);
         }
 
-        public async Task<TEntity?> GetByIdAsync(int id)
+        public virtual void Update(T entity)
         {
-            var result = await _dbSet.FirstOrDefaultAsync(x => x.Id == id);
-            return result;
+            _dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
         }
 
-        public async Task<bool> Update(TEntity entity)
-        {           
-            _dbSet.Update(entity);
-            await _dbContext.SaveChangesAsync();
-            return true;
+
+        public virtual void Delete(Guid id)
+        {
+            var entity = _dbSet.Find(id);
+            _dbSet.Remove(entity);
+        }
+
+        public virtual void Delete(string id)
+        {
+            var entity = _dbSet.Find(id);
+            _dbSet.Remove(entity);
+        }
+
+        public virtual void Remove(T enity)
+        {
+
+            _dbSet.Remove(enity);
+        }
+
+        public void ClearTrackers()
+        {
+            _context.ChangeTracker.Clear();
+        }
+        public virtual int SaveChanges()
+        {
+            try
+            {
+                return _context.SaveChanges();
+            }
+            catch (DbUpdateException ex)
+            {
+                // Handle or log the exception
+                throw new Exception(ex.Message);
+            }
+        }
+        public virtual async Task SaveChangesAsync()
+        {
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                // Handle or log the exception
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public void Dispose()
+        {
+            _context.Dispose();
         }
     }
+
 }

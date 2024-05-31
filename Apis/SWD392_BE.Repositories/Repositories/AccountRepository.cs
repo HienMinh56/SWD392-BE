@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
+using SWD392_BE.Repositories.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Repositories
 {
-    public class AccountRepository : IAccountRepository
+    public class AccountRepository : GenericRepository<User>,IAccountRepository
     {
         private readonly CampusFoodSystemContext _dbContext;
 
-        public AccountRepository(CampusFoodSystemContext dbContext)
+        public AccountRepository(CampusFoodSystemContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
         }

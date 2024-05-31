@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
+using SWD392_BE.Repositories.ViewModels.UserModel;
+
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.Services;
 
