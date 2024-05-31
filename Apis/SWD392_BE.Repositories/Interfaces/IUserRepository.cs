@@ -9,6 +9,6 @@ namespace SWD392_BE.Repositories.Interfaces
 {
     public interface IUserRepository : IGenericRepository<User>
     {
-        Task<List<User>> GetAllUsers();
+
     }
 }

@@ -57,7 +57,7 @@ namespace SWD392_BE.Services.Services
                 string refreshToken = _jWTTokenHelper.GenerateRefreshToken(getUser);
 
                 // Set ExpiredTime
-                DateTime expiredTime = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["JWT:TokenValidityInMinutes"]));
+                DateTime expiredTime = DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["JWT:TokenValidityInMinutes"]));
 
                 // Update user with refresh token and expired time
                 getUser.AccessToken = token;

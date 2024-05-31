@@ -16,26 +16,6 @@ namespace SWD392_BE.Repositories.Repositories
         {
         }
 
-        public async Task<List<User>> GetAllUsers()
-        {
-            using var context = new CampusFoodSystemContext();
-            return await context.Users
-                .Select(x => new User
-                {
-                    UserId = x.UserId,
-                    Name = x.Name,
-                    UserName = x.UserName,
-                    Password = x.Password,
-                    Email = x.Email,
-                    CampusId = x.CampusId,
-                    Phone = x.Phone,
-                    Role = x.Role,
-                    Balance = x.Balance,
-                    Status = x.Status
-                })
-                .AsNoTracking()
-                .ToListAsync();
-
-        }
+       
     }
 }

@@ -7,6 +7,7 @@ using SWD392_BE.Repositories.Helper;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Repositories;
 using SWD392_BE.Services.Interfaces;
+using SWD392_BE.Services.MapperProfile;
 using SWD392_BE.Services.Services;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -49,6 +50,10 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+//add automapper
+builder.Services.AddAutoMapper(typeof(UserMapper));
+
 builder.Services.AddControllers()
         .AddJsonOptions(options =>
         {
