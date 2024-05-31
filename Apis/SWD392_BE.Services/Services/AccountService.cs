@@ -31,7 +31,7 @@ namespace SWD392_BE.Services.Services
             try
             {
                 // Retrieve user by username
-                var getUser = await _accountRepo.GetUserByUserName(user.UserName);
+                var getUser = _accountRepo.Get(u => u.UserName == user.UserName);
                 if (getUser == null)
                 {
                     throw new Exception("UserName does not exist");
@@ -50,28 +50,42 @@ namespace SWD392_BE.Services.Services
                     throw new Exception("Incorrect password");
                 }
 
-                // Generate JWT token
-                var token = _jWTTokenHelper.GenerateToken(getUser.UserId, getUser.Name, getUser.Role.ToString());
+                // Check if refresh token is expired
+                bool isRefreshTokenExpired = getUser.ExpiredTime <= DateTime.Now;
 
-                // Generate RefreshToken
-                string refreshToken = _jWTTokenHelper.GenerateRefreshToken(getUser);
+                // If refresh token is expired, refresh both tokens
+                if (isRefreshTokenExpired)
+                {
+                    // Generate JWT token
+                    var token = _jWTTokenHelper.GenerateToken(
+                        getUser.UserId,
+                        getUser.Name,
+                        getUser.Role.ToString()
+                    );
 
-                // Set ExpiredTime
-                DateTime expiredTime = DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["JWT:TokenValidityInMinutes"]));
+                    // Generate RefreshToken
+                    string refreshToken = _jWTTokenHelper.GenerateRefreshToken(getUser);
 
-                // Update user with refresh token and expired time
-                getUser.AccessToken = token;
-                getUser.RefreshToken = refreshToken;
-                getUser.ExpiredTime = expiredTime;
-                 _accountRepo.Update(getUser);
+                    // Set ExpiredTime for both access token and refresh token
+                    DateTime accessTokenExpiredTime = DateTime.Now.AddMinutes(int.Parse(_configuration["JWT:TokenValidityInMinutes"]));
+                    DateTime refreshTokenExpiredTime = DateTime.Now.AddDays(int.Parse(_configuration["JWT:RefreshTokenValidityInDays"]));
+
+                    // Update user with refresh token and expired time
+                    getUser.AccessToken = token;
+                    getUser.RefreshToken = refreshToken;
+                    getUser.ExpiredTime = refreshTokenExpiredTime;
+                }
+
+                // Save changes to the user entity
+                _accountRepo.Update(getUser);
                 _accountRepo.SaveChanges();
 
                 // Create and return LoginResModel
                 var loginResModel = new LoginResModel
                 {
-                    Token = token,
-                    RefreshToken = refreshToken,
-                    ExpiredTime = expiredTime
+                    Token = getUser.AccessToken,
+                    RefreshToken = getUser.RefreshToken,
+                    ExpiredTime = getUser.ExpiredTime
                 };
 
                 return loginResModel;
@@ -82,6 +96,8 @@ namespace SWD392_BE.Services.Services
                 throw; // Rethrow the exception to be handled at the controller level
             }
         }
+
+
 
 
     }
