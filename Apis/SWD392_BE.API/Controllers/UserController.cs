@@ -31,6 +31,25 @@ namespace SWD392_BE.API.Controllers
 
             return Ok();
         }
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterModel registerModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var isAddUserSuccessful = await _accountService.Register(registerModel.UserName, registerModel.Password, registerModel.Email, registerModel.Phone, registerModel.CampusId, registerModel.Name);
+
+            if (isAddUserSuccessful)
+            {
+                return Ok(new { message = "Add user successfully." });
+            }
+            else
+            {
+                return Conflict(new { message = "Username or email already exists." });
+            }
+        }
     }
 
 }
