@@ -11,7 +11,7 @@ namespace SWD392_BE.Services.Interfaces
     public interface IAccountService
     {
         public Task<ResultModel> Login(LoginReqModel User);
-        public Task<RegisterResModel> AddNewUser(RegisterReqModel model);
-        public Task<RegisterResModel> MobileRegister(RegisterReqModel model);
+        public Task<ResultModel> AddNewUser(RegisterReqModel model);
+        public Task<ResultModel> MobileRegister(RegisterReqModel model);
     }
 }

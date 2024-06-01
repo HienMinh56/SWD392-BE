@@ -53,16 +53,28 @@ namespace SWD392_BE.API.Controllers
         }
 
         [HttpPost("AddNewUser")]
-        public async Task<IActionResult> WebRegister(RegisterReqModel model)
+        public async Task<ActionResult<ResultModel>> AddNewUser(RegisterReqModel model)
         {
             try
             {
-                var response = await _accountService.AddNewUser(model);
-                return Ok("Register Succcessfully"); // Return 200 OK with the registration response
+                var registerResult = await _accountService.AddNewUser(model);
+                var result = new ResultModel
+                {
+                    IsSuccess = true,
+                    Code = 200,
+                    Data = registerResult
+                };
+                return Ok(result); // Return 200 OK with the registration response
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message }); // Return 400 Bad Request with the error message
+                var result = new ResultModel
+                {
+                    IsSuccess = false,
+                    Code = 500,
+                    Message = ex.Message
+                }; // Return 400 Bad Request with the error message
+                return StatusCode(500,result);
             }
         }
 
@@ -73,15 +85,24 @@ namespace SWD392_BE.API.Controllers
             {
                 
 
-                var response = await _accountService.MobileRegister(model);
-
-
-                // Return the response from the common Register method
-                return Ok("Register Successfully");
+                var mobileRegisterResult = await _accountService.MobileRegister(model);
+                var result = new ResultModel
+                {
+                    IsSuccess = true,
+                    Code = 200,
+                    Data = mobileRegisterResult
+                };
+                return Ok("Register Successfully");// Return the response from the common Register method
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message }); // Return 400 Bad Request with the error message
+                var result = new ResultModel
+                {
+                    IsSuccess = false,
+                    Code = 500,
+                    Message = ex.Message
+                }; // Return 400 Bad Request with the error message
+                return StatusCode(500, result);
             }
         }
     }

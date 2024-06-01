@@ -79,15 +79,28 @@ namespace SWD392_BE.Services.Services
 
         }
 
-        public async Task<RegisterResModel> AddNewUser(RegisterReqModel model)
+        public async Task<ResultModel> AddNewUser(RegisterReqModel model)
         {
+            ResultModel result = new ResultModel();
             try
             {
+                // Check if passwords match
+                if (model.Password != model.ConfirmPassword)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Passwords do not match";
+                    return result;
+                }
+
                 // Check if user already exists
-                var existingUser = _accountRepo.Get(u => u.UserName == model.UserName || u.Email == model.Email);
+                var existingUser = _accountRepo.Get(u => u.UserName == model.UserName || u.Email == model.Email || u.Phone == model.Phone);
                 if (existingUser != null)
                 {
-                    throw new Exception("User already exists.");
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "User already exists";
+                    return result;
                 }
 
                 // Map the request model to the user entity
@@ -106,33 +119,44 @@ namespace SWD392_BE.Services.Services
                 // Add the user to the repository and save changes
                 _accountRepo.Add(user);
                 await _accountRepo.SaveChangesAsync();
-
-                // Map the user entity to the response model
-                var response = _mapper.Map<RegisterResModel>(user);
-                return response;
+                result.IsSuccess = true;
+                result.Code = 200;
+                return result;
             }
             catch (Exception e)
             {
-                var errorResponse = new RegisterResModel
-                {
-                    ErrorMessage = e.Message // Set the error message to the exception message
-                };
-
-                return errorResponse;
+                result.IsSuccess = false;
+                result.Code = 400;
+                result.Message = e.Message;
+                return result;
             }
         }
 
-        public async Task<RegisterResModel> MobileRegister(RegisterReqModel model)
+
+        public async Task<ResultModel> MobileRegister(RegisterReqModel model)
         {
+            ResultModel result = new ResultModel();
             try
             {
-                // Check if user already exists
-                var existingUser = _accountRepo.Get(u => u.UserName == model.UserName || u.Email == model.Email);
-                if (existingUser != null)
+                // Check if passwords match
+                if (model.Password != model.ConfirmPassword)
                 {
-                    throw new Exception("User already exists.");
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Passwords do not match";
+                    return result;
                 }
 
+                // Check if user already exists
+                var existingUser = _accountRepo.Get(u => u.UserName == model.UserName || u.Email == model.Email || u.Phone == model.Phone);
+                if (existingUser != null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "User already exists";
+                    return result;
+                }
+                
                 // Map the request model to the user entity
                 var user = _mapper.Map<User>(model);
 
@@ -150,19 +174,17 @@ namespace SWD392_BE.Services.Services
                 // Add the user to the repository and save changes
                 _accountRepo.Add(user);
                 await _accountRepo.SaveChangesAsync();
-
-                // Map the user entity to the response model
-                var response = _mapper.Map<RegisterResModel>(user);
-                return response;
+                await _accountRepo.SaveChangesAsync();
+                result.IsSuccess = true;
+                result.Code = 200;
+                return result;
             }
             catch (Exception e)
             {
-                var errorResponse = new RegisterResModel
-                {
-                    ErrorMessage = e.Message // Set the error message to the exception message
-                };
-
-                return errorResponse;
+                result.IsSuccess = false;
+                result.Code = 400;
+                result.Message = e.Message;
+                return result;
             }
         }
     }
