@@ -131,15 +131,20 @@ namespace SWD392_BE.API.Controllers
                 var epochTime = long.Parse(tokenVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
                 DateTimeOffset dateTimeUtc = DateTimeOffset.FromUnixTimeSeconds(epochTime);
                 DateTime dateTimeUtcConverted = dateTimeUtc.UtcDateTime;
-                if (dateTimeUtcConverted > DateTime.UtcNow)
+
+                // Chuyển đổi từ UTC sang giờ địa phương
+                DateTime localDateTime = dateTimeUtcConverted.ToLocalTime();
+
+                if (localDateTime > DateTime.UtcNow.ToLocalTime())
                 {
                     return Ok(new ResultModel
                     {
                         IsSuccess = false,
                         Message = "AccessToken had not expired",
-                        Data = "Expire time: " + dateTimeUtcConverted.ToString()
+                        Data = "Expire time: " + localDateTime.ToString() +", Now: " + DateTime.Now
                     });
                 }
+
                 //check RefreshToken exist in DB
                 var storedToken = _refreshHandler.GetRefreshToken(token.RefreshToken);
                 if (storedToken == null)
