@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWD392_BE.Repositories.Helper;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
@@ -51,6 +52,38 @@ namespace SWD392_BE.API.Controllers
             }
         }
 
+        [HttpPost("AddNewUser")]
+        public async Task<IActionResult> WebRegister(RegisterReqModel model)
+        {
+            try
+            {
+                var response = await _accountService.AddNewUser(model);
+                return Ok("Register Succcessfully"); // Return 200 OK with the registration response
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message }); // Return 400 Bad Request with the error message
+            }
+        }
+
+        [HttpPost("mobileRegister")]
+        public async Task<IActionResult> MobileRegister(RegisterReqModel model)
+        {
+            try
+            {
+                
+
+                var response = await _accountService.MobileRegister(model);
+
+
+                // Return the response from the common Register method
+                return Ok("Register Successfully");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message }); // Return 400 Bad Request with the error message
+            }
+        }
     }
 
 }

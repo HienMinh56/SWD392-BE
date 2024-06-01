@@ -1,4 +1,7 @@
-﻿using SWD392_BE.Repositories.Helper;
+﻿using AutoMapper;
+using Microsoft.Extensions.Configuration;
+using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.Helper;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
@@ -17,11 +20,15 @@ namespace SWD392_BE.Services.Services
     {
         private readonly IAccountRepository _accountRepo;
         private readonly JWTTokenHelper _jWTTokenHelper;
+        private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
-        public AccountService(IAccountRepository accountRepo, JWTTokenHelper jWTTokenHelper)
+        public AccountService(IAccountRepository accountRepo, JWTTokenHelper jWTTokenHelper, IConfiguration configuration, IMapper mapper)
         {
             _accountRepo = accountRepo;
             _jWTTokenHelper = jWTTokenHelper;
+            _configuration = configuration;
+            _mapper = mapper;
         }
         public async Task<ResultModel> Login(LoginReqModel user)
         {
@@ -72,5 +79,91 @@ namespace SWD392_BE.Services.Services
 
         }
 
+        public async Task<RegisterResModel> AddNewUser(RegisterReqModel model)
+        {
+            try
+            {
+                // Check if user already exists
+                var existingUser = _accountRepo.Get(u => u.UserName == model.UserName || u.Email == model.Email);
+                if (existingUser != null)
+                {
+                    throw new Exception("User already exists.");
+                }
+
+                // Map the request model to the user entity
+                var user = _mapper.Map<User>(model);
+
+                // Generate the next user ID
+                user.UserId = await _accountRepo.GetNextUserId();
+
+                // Hash the password using PasswordHasher
+                user.Password = PasswordHasher.HashPassword(model.Password);
+
+                // Set other properties (e.g., CreatedDate, Status, etc.)
+                user.CreatedDate = DateTime.UtcNow;
+                user.Status = 1; // Assuming 1 is the default status for an active user
+
+                // Add the user to the repository and save changes
+                _accountRepo.Add(user);
+                await _accountRepo.SaveChangesAsync();
+
+                // Map the user entity to the response model
+                var response = _mapper.Map<RegisterResModel>(user);
+                return response;
+            }
+            catch (Exception e)
+            {
+                var errorResponse = new RegisterResModel
+                {
+                    ErrorMessage = e.Message // Set the error message to the exception message
+                };
+
+                return errorResponse;
+            }
+        }
+
+        public async Task<RegisterResModel> MobileRegister(RegisterReqModel model)
+        {
+            try
+            {
+                // Check if user already exists
+                var existingUser = _accountRepo.Get(u => u.UserName == model.UserName || u.Email == model.Email);
+                if (existingUser != null)
+                {
+                    throw new Exception("User already exists.");
+                }
+
+                // Map the request model to the user entity
+                var user = _mapper.Map<User>(model);
+
+                // Generate the next user ID
+                user.UserId = await _accountRepo.GetNextUserId();
+
+                // Hash the password using PasswordHasher
+                user.Password = PasswordHasher.HashPassword(model.Password);
+
+                // Set other properties (e.g., CreatedDate, Status, etc.)
+                user.CreatedDate = DateTime.UtcNow;
+                user.Role = 2; // Set role to 2 by default
+                user.Status = 1; // Assuming 1 is the default status for an active user
+
+                // Add the user to the repository and save changes
+                _accountRepo.Add(user);
+                await _accountRepo.SaveChangesAsync();
+
+                // Map the user entity to the response model
+                var response = _mapper.Map<RegisterResModel>(user);
+                return response;
+            }
+            catch (Exception e)
+            {
+                var errorResponse = new RegisterResModel
+                {
+                    ErrorMessage = e.Message // Set the error message to the exception message
+                };
+
+                return errorResponse;
+            }
+        }
     }
 }

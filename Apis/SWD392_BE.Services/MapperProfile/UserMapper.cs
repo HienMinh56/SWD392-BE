@@ -24,6 +24,8 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
             .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
+            CreateMap<User, RegisterReqModel>().ReverseMap();
+            CreateMap<User, RegisterResModel>();
         }
     }
 }
