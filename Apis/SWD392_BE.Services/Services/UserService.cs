@@ -4,6 +4,7 @@ using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
 using SWD392_BE.Services.Interfaces;
+using SWD392_BE.Services.Sercurity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,5 +71,77 @@ namespace SWD392_BE.Services.Services
             return user;
         }
 
+        private int checkNameAndEmail(string name, string email, string userId)
+        {
+            var users = _userRepository.GetAll();
+            if (users.FirstOrDefault(c => c.Name == name && c.UserId != userId) != null)
+            {
+                return 0;
+            }
+            else if (users.FirstOrDefault(d => d.Email == email && d.UserId != userId) != null)
+            {
+                return -1;
+            }
+            return 1;
+        }
+        public async Task<ResultModel> UpdateUser(UpdateUserViewModel user)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var existedUser = _userRepository.Get(x => x.UserId.Equals(user.UserId));
+                var check = checkNameAndEmail(user.Name, user.Email, user.UserId);
+                if (existedUser == null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Can not find user";
+                    return result;
+                }
+                else if (check == 0)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "User Name already existed";
+                    return result;
+                }
+                else if (check == -1)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Email already existed";
+                    return result;
+                }
+                else if (check == 1)
+                {
+                    existedUser.Name = user.Name;
+                    existedUser.UserName = user.UserName;
+                    if (user.Password != "")
+                    {
+                        existedUser.Password = PasswordHasher.HashPassword(user.Password);
+                    }
+                    existedUser.Email = user.Email;
+                    existedUser.CampusId = user.CampusId;
+                    existedUser.Phone = user.Phone;
+                    existedUser.Role = user.Role;
+                    existedUser.Balance = user.Balance;
+                    existedUser.Status = user.Status;
+                    existedUser.CreatedDate = DateTime.UtcNow;
+                    _userRepository.Update(existedUser);
+                    _userRepository.SaveChanges();
+                    result.IsSuccess = true;
+                    result.Code = 200;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Code = 400;
+                result.Message = ex.Message;
+                return result;
+            }
+            return result;
+        }
     }
 }

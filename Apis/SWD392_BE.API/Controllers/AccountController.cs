@@ -79,7 +79,7 @@ namespace SWD392_BE.API.Controllers
         }
 
         [HttpPost("mobileRegister")]
-        public async Task<IActionResult> MobileRegister(RegisterReqModel model)
+        public async Task<ActionResult<ResultModel>> MobileRegister(RegisterReqModel model)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace SWD392_BE.API.Controllers
                     Code = 200,
                     Data = mobileRegisterResult
                 };
-                return Ok("Register Successfully");// Return the response from the common Register method
+                return Ok(result);// Return the response from the common Register method
             }
             catch (Exception ex)
             {
