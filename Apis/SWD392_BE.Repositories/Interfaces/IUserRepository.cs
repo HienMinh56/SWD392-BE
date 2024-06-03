@@ -10,5 +10,9 @@ namespace SWD392_BE.Repositories.Interfaces
     public interface IUserRepository
     {
         Task<List<User>> GetAllUsers();
+
+        Task<User> GetUserByUserName(string userName);
+
+        Task<User> DisableUser(User user);
     }
 }

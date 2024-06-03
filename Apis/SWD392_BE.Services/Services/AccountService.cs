@@ -75,8 +75,6 @@ namespace SWD392_BE.Services.Services
                 result.Message = ex.Message;
                 return result;
             }
-            return result;
-
         }
 
     }

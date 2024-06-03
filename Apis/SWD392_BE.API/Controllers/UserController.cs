@@ -24,5 +24,12 @@ namespace SWD392_BE.API.Controllers
             var result = await _userService.ViewAllUsers();
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+
+        [HttpPatch("delete-user")]
+        public async Task<IActionResult> DeleteUser([FromBody] string userName)
+        {
+            var result = await _userService.DeleteUser(userName);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
     }
 }
