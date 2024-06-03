@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
-using SWD392_BE.Repositories.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,13 +25,33 @@ namespace SWD392_BE.Repositories.Repositories
                 .FirstOrDefaultAsync(x => x.UserName.Equals(userName));
         }
 
-        public async Task<User> CheckLogin(string email, string password)
+        public async Task<User> CheckLogin(string userName, string password)
         {
             return await _dbContext.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Email.Equals(email) && x.Password.Equals(password));
+                .FirstOrDefaultAsync(x => x.UserName.Equals(userName) && x.Password.Equals(password));
         }
 
+        public async Task<string> GetNextUserId()
+        {
+            var lastUser = await _dbContext.Users.OrderByDescending(u => u.Id).FirstOrDefaultAsync();
 
+            if (lastUser == null || string.IsNullOrEmpty(lastUser.UserId) || !lastUser.UserId.StartsWith("USER"))
+            {
+                return "USER001";
+            }
+
+            int newId;
+            bool success = int.TryParse(lastUser.UserId.Substring(4), out newId);
+
+            if (!success)
+            {
+                throw new InvalidOperationException("Failed to parse UserId.");
+            }
+
+            newId += 1;
+
+            return $"USER{newId:D3}";
+        }
     }
 }

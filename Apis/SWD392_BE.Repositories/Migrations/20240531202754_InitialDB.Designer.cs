@@ -5,28 +5,27 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using SWD392_BE.Repositories.Models;
+using SWD392_BE.Repositories;
 
 #nullable disable
 
 namespace SWD392_BE.Repositories.Migrations
 {
     [DbContext(typeof(CampusFoodSystemContext))]
-    [Migration("20240530041929_Migrations")]
-    partial class Migrations
+    [Migration("20240531202754_InitialDB")]
+    partial class InitialDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseCollation("Vietnamese_CI_AS")
                 .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Area", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Area", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,15 +68,15 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__Area__3214EC079CAF76E2");
+                        .HasName("PK__Area__3214EC071DFF569C");
 
-                    b.HasIndex(new[] { "AreaId" }, "UQ__Area__70B820491680D86A")
+                    b.HasIndex(new[] { "AreaId" }, "UQ__Area__70B8204973549EFB")
                         .IsUnique();
 
                     b.ToTable("Area", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Campus", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Campus", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -126,17 +125,17 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__Campus__3214EC077B2628DA");
+                        .HasName("PK__Campus__3214EC07A851F89E");
 
                     b.HasIndex("AreaId");
 
-                    b.HasIndex(new[] { "CampusId" }, "UQ__Campus__FD598DD7B20764EA")
+                    b.HasIndex(new[] { "CampusId" }, "UQ__Campus__FD598DD7FE1B7E12")
                         .IsUnique();
 
                     b.ToTable("Campus", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Food", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Food", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -205,17 +204,17 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Food__3214EC07C7E84DA7");
+                        .HasName("PK__Food__3214EC079B402A5A");
 
                     b.HasIndex("StoreId");
 
-                    b.HasIndex(new[] { "FoodId" }, "UQ__Food__856DB3EAC803D9F9")
+                    b.HasIndex(new[] { "FoodId" }, "UQ__Food__856DB3EA742E09D5")
                         .IsUnique();
 
                     b.ToTable("Food", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Order", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -280,7 +279,7 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Order__3214EC07CCDC7598");
+                        .HasName("PK__Order__3214EC070031D191");
 
                     b.HasIndex("SessionId");
 
@@ -290,13 +289,13 @@ namespace SWD392_BE.Repositories.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex(new[] { "OrderId" }, "UQ__Order__C3905BCE483BB568")
+                    b.HasIndex(new[] { "OrderId" }, "UQ__Order__C3905BCE737DC6C9")
                         .IsUnique();
 
                     b.ToTable("Order", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.OrderDetail", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.OrderDetail", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -335,19 +334,19 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id")
-                        .HasName("PK__OrderDet__3214EC0711CB4869");
+                        .HasName("PK__OrderDet__3214EC071900BD60");
 
                     b.HasIndex("FoodId");
 
                     b.HasIndex("OrderId");
 
-                    b.HasIndex(new[] { "OrderDetailId" }, "UQ__OrderDet__D3B9D36D5AF1F417")
+                    b.HasIndex(new[] { "OrderDetailId" }, "UQ__OrderDet__D3B9D36D0465B6B3")
                         .IsUnique();
 
                     b.ToTable("OrderDetail", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Session", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Session", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -389,15 +388,15 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("time");
 
                     b.HasKey("Id")
-                        .HasName("PK__Session__3214EC079ABC5FB3");
+                        .HasName("PK__Session__3214EC07F1EEACD1");
 
-                    b.HasIndex(new[] { "SessionId" }, "UQ__Session__C9F49291EA42D802")
+                    b.HasIndex(new[] { "SessionId" }, "UQ__Session__C9F4929131FE58DD")
                         .IsUnique();
 
                     b.ToTable("Session", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Store", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Store", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -459,17 +458,17 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Store__3214EC0776229960");
+                        .HasName("PK__Store__3214EC077E4B1607");
 
                     b.HasIndex("AreaId");
 
-                    b.HasIndex(new[] { "StoreId" }, "UQ__Store__3B82F1006731C5ED")
+                    b.HasIndex(new[] { "StoreId" }, "UQ__Store__3B82F10073ADD8AD")
                         .IsUnique();
 
                     b.ToTable("Store", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.StoreSession", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.StoreSession", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -496,19 +495,46 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__StoreSes__3214EC07C073EE8D");
+                        .HasName("PK__StoreSes__3214EC07293B41CD");
 
                     b.HasIndex("SessionId");
 
                     b.HasIndex("StoreId");
 
-                    b.HasIndex(new[] { "StoreSessionId" }, "UQ__StoreSes__6E52FC495720368B")
+                    b.HasIndex(new[] { "StoreSessionId" }, "UQ__StoreSes__6E52FC49E18488C5")
                         .IsUnique();
 
                     b.ToTable("StoreSession", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Transaction", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Token", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasMaxLength(50)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("AccessToken")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<DateTime?>("ExpiredTime")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("RefreshToken")
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId")
+                        .HasName("PK__Token__1788CC4C3E606ADF");
+
+                    b.ToTable("Token", (string)null);
+                });
+
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Transaction", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -548,27 +574,23 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__Transact__3214EC07466B0EBC");
+                        .HasName("PK__Transact__3214EC07B30908F0");
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex(new[] { "TransationId" }, "UQ__Transact__B1E731541DD0AF25")
+                    b.HasIndex(new[] { "TransationId" }, "UQ__Transact__B1E73154FF9DBDDC")
                         .IsUnique();
 
                     b.ToTable("Transaction", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.User", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AccessToken")
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
 
                     b.Property<int>("Balance")
                         .HasColumnType("int");
@@ -618,10 +640,6 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Property<int>("Phone")
                         .HasColumnType("int");
 
-                    b.Property<string>("RefreshToken")
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(max)");
-
                     b.Property<int>("Role")
                         .HasColumnType("int");
 
@@ -641,19 +659,19 @@ namespace SWD392_BE.Repositories.Migrations
                         .HasColumnType("varchar(50)");
 
                     b.HasKey("Id")
-                        .HasName("PK__User__3214EC078230A9E0");
+                        .HasName("PK__User__3214EC07FCD3F876");
 
                     b.HasIndex("CampusId");
 
-                    b.HasIndex(new[] { "UserId" }, "UQ__User__1788CC4D67B058A3")
+                    b.HasIndex(new[] { "UserId" }, "UQ__User__1788CC4D9F3A1450")
                         .IsUnique();
 
                     b.ToTable("User", (string)null);
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Campus", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Campus", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Models.Area", "Area")
+                    b.HasOne("SWD392_BE.Repositories.Entities.Area", "Area")
                         .WithMany("Campuses")
                         .HasForeignKey("AreaId")
                         .HasPrincipalKey("AreaId")
@@ -663,9 +681,9 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("Area");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Food", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Food", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Models.Store", "Store")
+                    b.HasOne("SWD392_BE.Repositories.Entities.Store", "Store")
                         .WithMany("Foods")
                         .HasForeignKey("StoreId")
                         .HasPrincipalKey("StoreId")
@@ -675,30 +693,30 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("Store");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Order", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Order", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Models.Session", "Session")
+                    b.HasOne("SWD392_BE.Repositories.Entities.Session", "Session")
                         .WithMany("Orders")
                         .HasForeignKey("SessionId")
                         .HasPrincipalKey("SessionId")
                         .IsRequired()
                         .HasConstraintName("FK_Order_Session");
 
-                    b.HasOne("SWD392_BE.Repositories.Models.Store", "Store")
+                    b.HasOne("SWD392_BE.Repositories.Entities.Store", "Store")
                         .WithMany("Orders")
                         .HasForeignKey("StoreId")
                         .HasPrincipalKey("StoreId")
                         .IsRequired()
                         .HasConstraintName("FK_Order_Store");
 
-                    b.HasOne("SWD392_BE.Repositories.Models.Transaction", "Transation")
+                    b.HasOne("SWD392_BE.Repositories.Entities.Transaction", "Transation")
                         .WithMany("Orders")
                         .HasForeignKey("TransationId")
                         .HasPrincipalKey("TransationId")
                         .IsRequired()
                         .HasConstraintName("FK_Order_Transaction");
 
-                    b.HasOne("SWD392_BE.Repositories.Models.User", "User")
+                    b.HasOne("SWD392_BE.Repositories.Entities.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
                         .HasPrincipalKey("UserId")
@@ -714,16 +732,16 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.OrderDetail", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.OrderDetail", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Models.Food", "Food")
+                    b.HasOne("SWD392_BE.Repositories.Entities.Food", "Food")
                         .WithMany("OrderDetails")
                         .HasForeignKey("FoodId")
                         .HasPrincipalKey("FoodId")
                         .IsRequired()
                         .HasConstraintName("FK_OrderDetail_Food");
 
-                    b.HasOne("SWD392_BE.Repositories.Models.Order", "Order")
+                    b.HasOne("SWD392_BE.Repositories.Entities.Order", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
                         .HasPrincipalKey("OrderId")
@@ -735,9 +753,9 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Store", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Store", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Models.Area", "Area")
+                    b.HasOne("SWD392_BE.Repositories.Entities.Area", "Area")
                         .WithMany("Stores")
                         .HasForeignKey("AreaId")
                         .HasPrincipalKey("AreaId")
@@ -747,16 +765,16 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("Area");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.StoreSession", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.StoreSession", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Models.Session", "Session")
+                    b.HasOne("SWD392_BE.Repositories.Entities.Session", "Session")
                         .WithMany("StoreSessions")
                         .HasForeignKey("SessionId")
                         .HasPrincipalKey("SessionId")
                         .IsRequired()
                         .HasConstraintName("FK_StoreSession_Session");
 
-                    b.HasOne("SWD392_BE.Repositories.Models.Store", "Store")
+                    b.HasOne("SWD392_BE.Repositories.Entities.Store", "Store")
                         .WithMany("StoreSessions")
                         .HasForeignKey("StoreId")
                         .HasPrincipalKey("StoreId")
@@ -768,9 +786,9 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("Store");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Transaction", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Transaction", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Models.User", "User")
+                    b.HasOne("SWD392_BE.Repositories.Entities.User", "User")
                         .WithMany("Transactions")
                         .HasForeignKey("UserId")
                         .HasPrincipalKey("UserId")
@@ -780,9 +798,9 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.User", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.User", b =>
                 {
-                    b.HasOne("SWD392_BE.Repositories.Models.Campus", "Campus")
+                    b.HasOne("SWD392_BE.Repositories.Entities.Campus", "Campus")
                         .WithMany("Users")
                         .HasForeignKey("CampusId")
                         .HasPrincipalKey("CampusId")
@@ -792,36 +810,36 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("Campus");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Area", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Area", b =>
                 {
                     b.Navigation("Campuses");
 
                     b.Navigation("Stores");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Campus", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Campus", b =>
                 {
                     b.Navigation("Users");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Food", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Food", b =>
                 {
                     b.Navigation("OrderDetails");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Order", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Order", b =>
                 {
                     b.Navigation("OrderDetails");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Session", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Session", b =>
                 {
                     b.Navigation("Orders");
 
                     b.Navigation("StoreSessions");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Store", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Store", b =>
                 {
                     b.Navigation("Foods");
 
@@ -830,12 +848,12 @@ namespace SWD392_BE.Repositories.Migrations
                     b.Navigation("StoreSessions");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.Transaction", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.Transaction", b =>
                 {
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("SWD392_BE.Repositories.Models.User", b =>
+            modelBuilder.Entity("SWD392_BE.Repositories.Entities.User", b =>
                 {
                     b.Navigation("Orders");
 

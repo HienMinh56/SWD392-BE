@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SWD392_BE.Repositories.Models;
+namespace SWD392_BE.Repositories.Entities;
 
 public partial class User
 {
@@ -38,10 +38,6 @@ public partial class User
     public DateTime? DeletedDate { get; set; }
 
     public string? DeletedBy { get; set; }
-
-    public string? AccessToken { get; set; }
-
-    public string? RefreshToken { get; set; }
 
     public virtual Campus Campus { get; set; } = null!;
 

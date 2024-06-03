@@ -20,6 +20,9 @@ namespace SWD392_BE.Repositories.ViewModels.UserModel
         public int status { get; set; }
         public DateTime? createdDate { get; set; }
         public string? createdBy { get; set; }
+        public string Token { get; set; }
+        public string RefreshToken { get; set; }
+        public DateTime? ExpiredTime { get; set; }
 
     }
 }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository : GenericRepository<User>, IUserRepository
     {
         private readonly CampusFoodSystemContext _dbContext;
         public UserRepository(CampusFoodSystemContext dbContext)
@@ -74,6 +74,11 @@ namespace SWD392_BE.Repositories.Repositories
             return user;
 
         }
+
+        public UserRepository(CampusFoodSystemContext context) : base(context)
+        {
+        }
+
 
     }
 }

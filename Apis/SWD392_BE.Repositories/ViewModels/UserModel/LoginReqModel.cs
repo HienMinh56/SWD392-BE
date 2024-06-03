@@ -9,6 +9,7 @@ namespace SWD392_BE.Repositories.ViewModels.UserModel
 {
     public class LoginReqModel
     {
+        
         [Required(ErrorMessage = "UserName is required")]
         public string UserName { get; set; }
 

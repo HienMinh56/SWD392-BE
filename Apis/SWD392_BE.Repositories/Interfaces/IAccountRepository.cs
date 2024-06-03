@@ -1,11 +1,12 @@
-﻿using SWD392_BE.Repositories.Models;
+﻿using SWD392_BE.Repositories.Entities;
 
 namespace SWD392_BE.Repositories.Interfaces
 {
-    public interface IAccountRepository
+    public interface IAccountRepository : IGenericRepository<User>
     {
         public Task<User> GetUserByUserName(string userName);
 
-        public Task<User> CheckLogin(string email, string password);
+        public Task<User> CheckLogin(string userName, string password);
+        public Task<string> GetNextUserId();
     }
 }

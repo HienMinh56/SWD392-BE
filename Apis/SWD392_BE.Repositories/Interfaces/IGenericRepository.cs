@@ -15,7 +15,8 @@ namespace SWD392_BE.Repositories.Interfaces
         T Add(T entity);
         void AddRange(ICollection<T> entities);
         void Update(T entity);
-        void Delete(Guid id);
+        void Delete(string id);
+        void Remove(T enity);
         void ClearTrackers();
         int SaveChanges();
         Task SaveChangesAsync();
