@@ -3,6 +3,7 @@ using SWD392_BE.Repositories.ViewModels.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace SWD392_BE.Services.Interfaces
     public interface IAccountService
     {
         public Task<ResultModel> Login(LoginReqModel User);
-        public Task<ResultModel> AddNewUser(RegisterReqModel model);
+        public Task<ResultModel> AddNewUser(RegisterReqModel model, ClaimsPrincipal user);
         public Task<ResultModel> MobileRegister(RegisterReqModel model);
     }
 }

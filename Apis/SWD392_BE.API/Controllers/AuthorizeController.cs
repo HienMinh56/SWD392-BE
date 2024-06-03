@@ -20,13 +20,15 @@ namespace SWD392_BE.API.Controllers
     {
         private readonly IUserService _userServices;
         private readonly IRefreshTokenService _refreshHandler;
+        private readonly IConfiguration _configuration;
 
         //private readonly IRefreshHandler refresh;
 
-        public AuthorizeController(IUserService userServices, IRefreshTokenService refreshHandler)
+        public AuthorizeController(IUserService userServices, IRefreshTokenService refreshHandler, IConfiguration configuration)
         {
             _userServices = userServices;
             _refreshHandler = refreshHandler;
+            _configuration = configuration;
         }
         #region GenerateToken
         /// <summary>
@@ -39,10 +41,10 @@ namespace SWD392_BE.API.Controllers
         {
             List<Claim> claims = new List<Claim>()
             {
-                new Claim("UserId", user.UserId.ToString()),
-                new Claim("UserName", user.Name),
-                new Claim("Email", user.Email),
-                new Claim("Role", user.Role.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+        new Claim("UserName", user.Name),
+        new Claim("Email", user.Email),
+        new Claim("Role", user.Role.ToString())
             };
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("c2VydmVwZXJmZWN0bHljaGVlc2VxdWlja2NvYWNoY29sbGVjdHNsb3Bld2lzZWNhbWU="));
@@ -253,5 +255,54 @@ namespace SWD392_BE.API.Controllers
             }
         }
         #endregion
+
+        [HttpGet("whoami")]
+        public IActionResult WhoAmI()
+        {
+            // Kiểm tra xem người dùng đã được xác thực chưa
+            if (User.Identity.IsAuthenticated)
+            {
+                // Lấy thông tin về người dùng từ claims
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                var userNameClaim = User.FindFirst(ClaimTypes.Name);
+                var userEmailClaim = User.FindFirst(ClaimTypes.Email);
+                var userRoleClaim = User.FindFirst(ClaimTypes.Role);
+
+                // Kiểm tra xem các claim có tồn tại không
+                if (userIdClaim != null && userNameClaim != null && userEmailClaim != null && userRoleClaim != null)
+                {
+                    var userId = userIdClaim.Value;
+                    var userName = userNameClaim.Value;
+                    var userEmail = userEmailClaim.Value;
+                    var userRole = userRoleClaim.Value;
+
+                    // Trả về thông tin của người dùng cùng với token
+                    var user = new User
+                    {
+                        UserId = userId,
+                        Name = userName,
+                        Email = userEmail,
+                        Role = int.Parse(userRole)
+                    };
+
+                    // Tạo token JWT cho người dùng
+                    var token = GenerateToken(user,null);
+
+                    // Trả về thông tin của người dùng cùng với token
+                    return Ok(new { UserId = userId, UserName = userName, Email = userEmail, Role = userRole, Token = token });
+                }
+                else
+                {
+                    // Nếu thiếu thông tin trong claims, trả về lỗi 401 Unauthorized
+                    return Unauthorized(new { Message = "Missing user information in claims" });
+                }
+            }
+            else
+            {
+                // Trả về lỗi 401 Unauthorized nếu người dùng chưa được xác thực
+                return Unauthorized();
+            }
+        }
+
     }
 }

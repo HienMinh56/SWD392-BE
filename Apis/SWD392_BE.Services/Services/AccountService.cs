@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -79,7 +80,7 @@ namespace SWD392_BE.Services.Services
 
         }
 
-        public async Task<ResultModel> AddNewUser(RegisterReqModel model)
+        public async Task<ResultModel> AddNewUser(RegisterReqModel model, ClaimsPrincipal userCreate)
         {
             ResultModel result = new ResultModel();
             try
@@ -113,6 +114,7 @@ namespace SWD392_BE.Services.Services
                 user.Password = PasswordHasher.HashPassword(model.Password);
 
                 // Set other properties (e.g., CreatedDate, Status, etc.)
+                user.CreatedBy = userCreate.FindFirst("UserName")?.Value;
                 user.CreatedDate = DateTime.UtcNow;
                 user.Status = 1; // Assuming 1 is the default status for an active user
 
@@ -167,13 +169,13 @@ namespace SWD392_BE.Services.Services
                 user.Password = PasswordHasher.HashPassword(model.Password);
 
                 // Set other properties (e.g., CreatedDate, Status, etc.)
+               
                 user.CreatedDate = DateTime.UtcNow;
                 user.Role = 2; // Set role to 2 by default
                 user.Status = 1; // Assuming 1 is the default status for an active user
 
                 // Add the user to the repository and save changes
                 _accountRepo.Add(user);
-                await _accountRepo.SaveChangesAsync();
                 await _accountRepo.SaveChangesAsync();
                 result.IsSuccess = true;
                 result.Code = 200;

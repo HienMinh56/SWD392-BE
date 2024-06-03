@@ -52,12 +52,14 @@ namespace SWD392_BE.API.Controllers
             }
         }
 
+        
         [HttpPost("AddNewUser")]
         public async Task<ActionResult<ResultModel>> AddNewUser(RegisterReqModel model)
         {
             try
             {
-                var registerResult = await _accountService.AddNewUser(model);
+                var currentUser = HttpContext.User;
+                var registerResult = await _accountService.AddNewUser(model, currentUser);
                 var result = new ResultModel
                 {
                     IsSuccess = true,
@@ -83,7 +85,7 @@ namespace SWD392_BE.API.Controllers
         {
             try
             {
-                
+              
 
                 var mobileRegisterResult = await _accountService.MobileRegister(model);
                 var result = new ResultModel
