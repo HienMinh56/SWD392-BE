@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWD392_BE.Repositories.Helper;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
@@ -51,6 +52,61 @@ namespace SWD392_BE.API.Controllers
             }
         }
 
+        
+        [HttpPost("AddNewUser")]
+        public async Task<ActionResult<ResultModel>> AddNewUser(RegisterReqModel model)
+        {
+            try
+            {
+                var currentUser = HttpContext.User;
+                var registerResult = await _accountService.AddNewUser(model, currentUser);
+                var result = new ResultModel
+                {
+                    IsSuccess = true,
+                    Code = 200,
+                    Data = registerResult
+                };
+                return Ok(result); // Return 200 OK with the registration response
+            }
+            catch (Exception ex)
+            {
+                var result = new ResultModel
+                {
+                    IsSuccess = false,
+                    Code = 500,
+                    Message = ex.Message
+                }; // Return 400 Bad Request with the error message
+                return StatusCode(500,result);
+            }
+        }
+
+        [HttpPost("mobileRegister")]
+        public async Task<ActionResult<ResultModel>> MobileRegister(RegisterReqModel model)
+        {
+            try
+            {
+              
+
+                var mobileRegisterResult = await _accountService.MobileRegister(model);
+                var result = new ResultModel
+                {
+                    IsSuccess = true,
+                    Code = 200,
+                    Data = mobileRegisterResult
+                };
+                return Ok(result);// Return the response from the common Register method
+            }
+            catch (Exception ex)
+            {
+                var result = new ResultModel
+                {
+                    IsSuccess = false,
+                    Code = 500,
+                    Message = ex.Message
+                }; // Return 400 Bad Request with the error message
+                return StatusCode(500, result);
+            }
+        }
     }
 
 }

@@ -32,6 +32,26 @@ namespace SWD392_BE.Repositories.Repositories
                 .FirstOrDefaultAsync(x => x.UserName.Equals(userName) && x.Password.Equals(password));
         }
 
+        public async Task<string> GetNextUserId()
+        {
+            var lastUser = await _dbContext.Users.OrderByDescending(u => u.Id).FirstOrDefaultAsync();
 
+            if (lastUser == null || string.IsNullOrEmpty(lastUser.UserId) || !lastUser.UserId.StartsWith("USER"))
+            {
+                return "USER001";
+            }
+
+            int newId;
+            bool success = int.TryParse(lastUser.UserId.Substring(4), out newId);
+
+            if (!success)
+            {
+                throw new InvalidOperationException("Failed to parse UserId.");
+            }
+
+            newId += 1;
+
+            return $"USER{newId:D3}";
+        }
     }
 }

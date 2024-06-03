@@ -10,7 +10,7 @@ namespace SWD392_BE.Repositories.ViewModels.UserModel
     {
         public string Token { get; set; }
         public string RefreshToken { get; set; }
-        public DateTime ExpiredTime { get; set; }
+        public DateTime? ExpiredTime { get; set; }
 
     }
 }
