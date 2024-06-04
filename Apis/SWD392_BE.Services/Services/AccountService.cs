@@ -1,8 +1,8 @@
-﻿using SWD392_BE.Repositories.Interfaces;
 ﻿using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Helper;
+using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
@@ -73,8 +73,7 @@ namespace SWD392_BE.Services.Services
                     balance = getUser.Balance,
                     status = getUser.Status,
                     createdDate = getUser.CreatedDate,
-                    createdBy = getUser.CreatedBy
-
+                    createdBy = getUser.CreatedBy,
                     Token = token
                 };
                 result.IsSuccess = true;
@@ -169,7 +168,7 @@ namespace SWD392_BE.Services.Services
                     result.Message = "User already exists";
                     return result;
                 }
-                
+
                 // Map the request model to the user entity
                 var user = _mapper.Map<User>(model);
 
@@ -180,7 +179,7 @@ namespace SWD392_BE.Services.Services
                 user.Password = PasswordHasher.HashPassword(model.Password);
 
                 // Set other properties (e.g., CreatedDate, Status, etc.)
-               
+
                 user.CreatedDate = DateTime.UtcNow;
                 user.Role = 2; // Set role to 2 by default
                 user.Status = 1; // Assuming 1 is the default status for an active user

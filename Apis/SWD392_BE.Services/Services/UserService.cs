@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using SWD392_BE.Repositories.Entities;
 using Microsoft.EntityFrameworkCore;
+using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
@@ -29,10 +29,10 @@ namespace SWD392_BE.Services.Services
             var result = new ResultModel();
             try
             {
-               
-                var users = _userRepository.GetAll().Where(u => u.Status==1).ToList();
+
+                var users = _userRepository.GetAll().Where(u => u.Status == 1).ToList();
                 var viewModels = _mapper.Map<List<ListUserViewModel>>(users);
-                
+
                 result.Data = viewModels;
                 result.Message = "Success";
                 result.IsSuccess = true;
@@ -136,7 +136,8 @@ namespace SWD392_BE.Services.Services
                     result.Code = 200;
                     return result;
                 }
-            }            catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 result.IsSuccess = false;
                 result.Code = 400;
@@ -145,24 +146,29 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
-        public async Task<ResultModel> DeleteUser(string userName)
+        public async Task<ResultModel> DeleteUser(DeleteUserReqModel request)
         {
             var result = new ResultModel();
             try
             {
-                var user = await _userRepository.GetUserByUserName(userName);
+                var user = GetUserById(request.UserId);
                 if (user == null)
                 {
                     result.Message = "UserName not found";
+                    result.Code = 404;
                     result.IsSuccess = false;
                     result.Data = null;
                     return result;
                 }
-                var disabledUser = await _userRepository.DisableUser(user);
-                result.Message = "Disable user successfully";
+
+                user.Status = user.Status = 2;
+                _userRepository.Update(user);
+                _userRepository.SaveChanges();
+
+                result.Message = "Delete user successfully";
+                result.Code = 200;
                 result.IsSuccess = true;
-                result.Data = disabledUser;
-                return result;
+                result.Data = user;
             }
             catch (DbUpdateException ex)
             {

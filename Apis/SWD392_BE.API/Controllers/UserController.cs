@@ -29,10 +29,12 @@ namespace SWD392_BE.API.Controllers
         }
 
         [HttpPatch("delete-user")]
-        public async Task<IActionResult> DeleteUser([FromBody] string userName)
+        public async Task<IActionResult> DeleteUser([FromBody] DeleteUserReqModel request)
         {
-            var result = await _userService.DeleteUser(userName);
+            var result = await _userService.DeleteUser(request);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
         [HttpPut("updateUser")]
         public async Task<ActionResult<ResultModel>> UpdateUser(UpdateUserViewModel user)
         {

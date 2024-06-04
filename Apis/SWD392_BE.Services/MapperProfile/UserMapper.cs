@@ -36,6 +36,10 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.Campus, opt => opt.Ignore()) // Ignore Campus since it will be handled differently
             .ForMember(dest => dest.Orders, opt => opt.Ignore()) // Ignore Orders
             .ForMember(dest => dest.Transactions, opt => opt.Ignore());
+
+            CreateMap<User, DeleteUserReqModel>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
+
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
+using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
-using SWD392_BE.Repositories.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace SWD392_BE.Repositories.Repositories
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
         private readonly CampusFoodSystemContext _dbContext;
-        public UserRepository(CampusFoodSystemContext dbContext)
+        public UserRepository(CampusFoodSystemContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
         }
@@ -64,20 +64,9 @@ namespace SWD392_BE.Repositories.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<User> DisableUser(User user)
-        {
-            user.Status = 0;
-            _dbContext.Users.Attach(user);
-            _dbContext.Entry(user).Property(u => u.Status).IsModified = true;
-            _dbContext.Users.Update(user);
-            await _dbContext.SaveChangesAsync();
-            return user;
 
-        }
 
-        public UserRepository(CampusFoodSystemContext context) : base(context)
-        {
-        }
+
 
 
     }
