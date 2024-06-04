@@ -15,44 +15,19 @@ namespace SWD392_BE.API.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
-        private readonly JWTTokenHelper _jWTToken;
 
 
-        public AccountController(IAccountService accountService, JWTTokenHelper jWTToken)
+
+        public AccountController(IAccountService accountService)
         {
             _accountService = accountService;
-            _jWTToken = jWTToken;
+
         }
 
-        public JWTTokenHelper JWTToken { get; }
 
-        [HttpPost("login")]
-        public async Task<ActionResult<ResultModel>> Login(LoginReqModel user)
-        {
-            try
-            {
-                var loginResult = await _accountService.Login(user);
-                var result = new ResultModel
-                {
-                    IsSuccess = true,
-                    Code = 200,
-                    Data = loginResult
-                };
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                var result = new ResultModel
-                {
-                    IsSuccess = false,
-                    Code = 500,
-                    Message = ex.Message
-                };
-                return StatusCode(500, result);
-            }
-        }
 
-        
+
+
         [HttpPost("AddNewUser")]
         public async Task<ActionResult<ResultModel>> AddNewUser(RegisterReqModel model)
         {
@@ -76,7 +51,7 @@ namespace SWD392_BE.API.Controllers
                     Code = 500,
                     Message = ex.Message
                 }; // Return 400 Bad Request with the error message
-                return StatusCode(500,result);
+                return StatusCode(500, result);
             }
         }
 
@@ -85,7 +60,7 @@ namespace SWD392_BE.API.Controllers
         {
             try
             {
-              
+
 
                 var mobileRegisterResult = await _accountService.MobileRegister(model);
                 var result = new ResultModel
