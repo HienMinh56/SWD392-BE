@@ -41,10 +41,10 @@ namespace SWD392_BE.API.Controllers
         {
             List<Claim> claims = new List<Claim>()
             {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-        new Claim("UserName", user.Name),
-        new Claim("Email", user.Email),
-        new Claim("Role", user.Role.ToString())
+                new Claim("UserId", user.UserId.ToString()),
+                new Claim("UserName", user.Name),
+                new Claim("Email", user.Email),
+                new Claim("Role", user.Role.ToString())
             };
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("c2VydmVwZXJmZWN0bHljaGVlc2VxdWlja2NvYWNoY29sbGVjdHNsb3Bld2lzZWNhbWU="));
@@ -173,9 +173,10 @@ namespace SWD392_BE.API.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(new ResultModel
+                return BadRequest(new ResultModel
                 {
                     IsSuccess = false,
+                    Code = 500,
                     Message = "Something go wrong"
                 });
             }
@@ -263,10 +264,10 @@ namespace SWD392_BE.API.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 // Lấy thông tin về người dùng từ claims
-                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-                var userNameClaim = User.FindFirst(ClaimTypes.Name);
-                var userEmailClaim = User.FindFirst(ClaimTypes.Email);
-                var userRoleClaim = User.FindFirst(ClaimTypes.Role);
+                var userIdClaim = User.FindFirst("UserId");
+                var userNameClaim = User.FindFirst("UserName");
+                var userEmailClaim = User.FindFirst("Email");
+                var userRoleClaim = User.FindFirst("Role");
 
                 // Kiểm tra xem các claim có tồn tại không
                 if (userIdClaim != null && userNameClaim != null && userEmailClaim != null && userRoleClaim != null)
@@ -286,10 +287,10 @@ namespace SWD392_BE.API.Controllers
                     };
 
                     // Tạo token JWT cho người dùng
-                    var token = GenerateToken(user,null);
+
 
                     // Trả về thông tin của người dùng cùng với token
-                    return Ok(new { UserId = userId, UserName = userName, Email = userEmail, Role = userRole, Token = token });
+                    return Ok(new { UserId = userId, UserName = userName, Email = userEmail, Role = userRole });
                 }
                 else
                 {

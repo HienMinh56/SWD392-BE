@@ -21,74 +21,16 @@ namespace SWD392_BE.Services.Services
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _accountRepo;
-        private readonly JWTTokenHelper _jWTTokenHelper;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public AccountService(IAccountRepository accountRepo, JWTTokenHelper jWTTokenHelper, IConfiguration configuration, IMapper mapper)
+        public AccountService(IAccountRepository accountRepo, IConfiguration configuration, IMapper mapper)
         {
             _accountRepo = accountRepo;
-            _jWTTokenHelper = jWTTokenHelper;
             _configuration = configuration;
             _mapper = mapper;
         }
-        public async Task<ResultModel> Login(LoginReqModel user)
-        {
-            ResultModel result = new ResultModel();
-            try
-            {
-                var getUser = await _accountRepo.GetUserByUserName(user.UserName);
-                if (getUser == null)
-                {
-                    result.IsSuccess = false;
-                    result.Code = 400;
-                    result.Message = "UserName is not exist";
-                    return result;
-                }
-                if (getUser.Status != 1 && getUser.Status != 2 && getUser.Status != 3)
-                {
-                    result.IsSuccess = false;
-                    result.Code = (int)HttpStatusCode.Forbidden;
-                    result.Message = "Account is blocked from the system";
-                    return result;
-                }
-                bool isMatch = PasswordHasher.VerifyPassword(user.Password, getUser.Password);
-                if (!isMatch)
-                {
-                    result.IsSuccess = false;
-                    result.Code = 400;
-                    result.Message = "incorrect Password";
-                    return result;
-                }
-                var token = _jWTTokenHelper.GenerateToken(getUser.UserId, getUser.UserName, getUser.Role.ToString());
-                LoginResModel userModel = new LoginResModel()
-                {
-                    userId = getUser.UserId,
-                    name = getUser.Name,
-                    userName = getUser.UserName,
-                    email = getUser.Email,
-                    campusId = getUser.CampusId,
-                    phone = getUser.Phone,
-                    role = getUser.Role,
-                    balance = getUser.Balance,
-                    status = getUser.Status,
-                    createdDate = getUser.CreatedDate,
-                    createdBy = getUser.CreatedBy,
-                    Token = token
-                };
-                result.IsSuccess = true;
-                result.Code = 200;
-                result.Data = userModel;
-                return result;
-            }
-            catch (Exception ex)
-            {
-                result.IsSuccess = false;
-                result.Code = 400;
-                result.Message = ex.Message;
-                return result;
-            }
-        }
+
 
         public async Task<ResultModel> AddNewUser(RegisterReqModel model, ClaimsPrincipal userCreate)
         {

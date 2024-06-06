@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.ViewModels.StoreModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,8 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
             .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
+
+            //Regis
             CreateMap<RegisterReqModel, User>()
             .ForMember(dest => dest.UserId, opt => opt.Ignore()) // Ignore UserId since it will be generated
             .ForMember(dest => dest.CreatedDate, opt => opt.Ignore()) // Ignore CreatedDate since it will be set separately
@@ -37,8 +40,27 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.Orders, opt => opt.Ignore()) // Ignore Orders
             .ForMember(dest => dest.Transactions, opt => opt.Ignore());
 
+
             CreateMap<User, DeleteUserReqModel>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
+
+
+            //Store
+            CreateMap<StoreViewModel, Store>()
+            .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
+            .ForMember(dest => dest.OpenTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.OpenTime)))
+            .ForMember(dest => dest.CloseTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.CloseTime)))
+            .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+            .ForMember(dest => dest.ModifiedDate, opt => opt.Ignore())
+            .ForMember(dest => dest.ModifiedBy, opt => opt.Ignore())
+            .ForMember(dest => dest.DeletedDate, opt => opt.Ignore())
+            .ForMember(dest => dest.DeletedBy, opt => opt.Ignore());// Bỏ qua các navigation properties
+
+            CreateMap<UpdateStoreViewModel, Store>()
+            .ForMember(dest => dest.OpenTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.OpenTime)))
+            .ForMember(dest => dest.CloseTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.CloseTime)));
+
 
         }
     }
