@@ -65,7 +65,7 @@ namespace SWD392_BE.Services.Services
                     return result;
                 }
                 var existingPhone = _storeRepository.Get(u => u.Phone.Equals(model.Phone));
-                if (existingPhone == null)
+                if (existingPhone != null)
                 {
                     result.IsSuccess = false;
                     result.Code = 400;
@@ -147,6 +147,22 @@ namespace SWD392_BE.Services.Services
                     result.Code = 404;
                     result.Message = "Store not found.";
                     return result;
+                }
+                var phoneStore = _storeRepository.Get(s => s.Phone == model.Phone);
+                if(phoneStore != null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Phone was used";
+                    return result;
+                }
+                var addressStore = _storeRepository.Get(s => s.Address == model.Address && s.AreaId == model.AreaId);
+                if(addressStore != null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Address had store";
+                    return result ;
                 }
 
                 // Map the ViewModel to the existing store entity
