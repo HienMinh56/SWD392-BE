@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
@@ -146,37 +145,5 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
-        public async Task<ResultModel> DeleteUser(DeleteUserReqModel request)
-        {
-            var result = new ResultModel();
-            try
-            {
-                var user = GetUserById(request.UserId);
-                if (user == null)
-                {
-                    result.Message = "UserName not found";
-                    result.Code = 404;
-                    result.IsSuccess = false;
-                    result.Data = null;
-                    return result;
-                }
-
-                user.Status = user.Status = 2;
-                _userRepository.Update(user);
-                _userRepository.SaveChanges();
-
-                result.Message = "Delete user successfully";
-                result.Code = 200;
-                result.IsSuccess = true;
-                result.Data = user;
-            }
-            catch (DbUpdateException ex)
-            {
-                result.Message = ex.Message;
-                result.IsSuccess = false;
-            }
-            return result;
-        }
-
     }
 }
