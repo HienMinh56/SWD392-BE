@@ -18,5 +18,7 @@ namespace SWD392_BE.Services.Interfaces
         public User GetUserById(string id);
         public User GetUserByUserName(string userName);
         public Task<ResultModel> UpdateUser(UpdateUserViewModel user);
+        public Task<ResultModel> SearchUserByKeyword(string keyword);
+
     }
 }

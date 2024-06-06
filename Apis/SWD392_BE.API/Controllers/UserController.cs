@@ -60,6 +60,14 @@ namespace SWD392_BE.API.Controllers
                 return StatusCode(500, result);
             }
         }
+
+        [HttpGet("SearchUserByKeyword")]
+        public async Task<ActionResult<ResultModel>> SearchUserByKeyword(string keyword)
+        {
+            var result = await _userService.SearchUserByKeyword(keyword);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+
+        }
     }
 }
 

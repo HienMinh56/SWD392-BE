@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Google.Apis.Logging;
 using Microsoft.EntityFrameworkCore;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
@@ -73,6 +74,18 @@ namespace SWD392_BE.Services.Services
             }
             return user;
         }
+
+        public User SearchUser(string keyword)
+        {
+            var user = _userRepository.Get(u => u.UserName == keyword || u.Email == keyword || u.Phone == keyword);
+            if (user != null)
+            {
+                return user;
+            }
+            return null;
+        }
+
+
 
         private int checkNameAndEmail(string name, string email, string userId)
         {
@@ -178,5 +191,24 @@ namespace SWD392_BE.Services.Services
             return result;
         }
 
+        public async Task<ResultModel> SearchUserByKeyword(string keyword)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var user = SearchUser(keyword);
+                result.IsSuccess = true;
+                result.Code = 200;
+                result.Data = user;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Message = ex.Message;
+                result.Code = 404;
+                return result;
+            }
+        }
     }
 }
