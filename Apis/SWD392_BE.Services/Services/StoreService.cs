@@ -64,7 +64,7 @@ namespace SWD392_BE.Services.Services
                     result.Message = "At Address had store";
                     return result;
                 }
-                var existingPhone = _storeRepository.Get(u => u.Phone.Equals(model.Phone));
+                var existingPhone = _storeRepository.Get(s => s.Phone == model.Phone);
                 if (existingPhone != null)
                 {
                     result.IsSuccess = false;
@@ -148,7 +148,7 @@ namespace SWD392_BE.Services.Services
                     result.Message = "Store not found.";
                     return result;
                 }
-                var phoneStore = _storeRepository.Get(s => s.Phone == model.Phone);
+                var phoneStore = _storeRepository.Get(s => s.Phone == model.Phone && s.StoreId != storeId);
                 if(phoneStore != null)
                 {
                     result.IsSuccess = false;
