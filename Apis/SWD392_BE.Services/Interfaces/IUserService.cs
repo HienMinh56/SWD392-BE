@@ -1,6 +1,5 @@
 ﻿using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
-using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
 using System;
 using System.Collections.Generic;
@@ -13,8 +12,6 @@ namespace SWD392_BE.Services.Interfaces
     public interface IUserService
     {
         public Task<ResultModel> ViewAllUsers();
-
-        public Task<ResultModel> DeleteUser(DeleteUserReqModel request);
         public User GetUserById(string id);
         public User GetUserByUserName(string userName);
         public Task<ResultModel> UpdateUser(UpdateUserViewModel user);
