@@ -64,12 +64,14 @@ namespace SWD392_BE.Services.Services
                     result.Message = "At Address had store";
                     return result;
                 }
-                var existingPhone = _storeRepository.Get(u => u.Phone.Equals(model.Phone));
-                if (existingPhone == null)
+                var existingPhone = _storeRepository.Get(u => u.Phone == model.Phone && u.StoreId != newStoreId);
+
+                if (existingPhone != null)
                 {
                     result.IsSuccess = false;
                     result.Code = 400;
-                    result.Message = "Phone had been used";
+                    result.Message = "Phone has been used";
+                    return result;
                 }
                 var newStore = _mapper.Map<Store>(model);
                 newStore.StoreId = newStoreId;
