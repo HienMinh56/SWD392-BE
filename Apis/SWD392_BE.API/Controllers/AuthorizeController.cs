@@ -42,9 +42,9 @@ namespace SWD392_BE.API.Controllers
             List<Claim> claims = new List<Claim>()
             {
                 new Claim("UserId", user.UserId.ToString()),
-        new Claim("UserName", user.Name),
-        new Claim("Email", user.Email),
-        new Claim("Role", user.Role.ToString())
+                new Claim("UserName", user.Name),
+                new Claim("Email", user.Email),
+                new Claim("Role", user.Role.ToString())
             };
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("c2VydmVwZXJmZWN0bHljaGVlc2VxdWlja2NvYWNoY29sbGVjdHNsb3Bld2lzZWNhbWU="));
@@ -287,10 +287,10 @@ namespace SWD392_BE.API.Controllers
                     };
 
                     // Tạo token JWT cho người dùng
-                   
+
 
                     // Trả về thông tin của người dùng cùng với token
-                    return Ok(new { UserId = userId, UserName = userName, Email = userEmail, Role = userRole});
+                    return Ok(new { UserId = userId, UserName = userName, Email = userEmail, Role = userRole });
                 }
                 else
                 {

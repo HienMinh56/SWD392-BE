@@ -28,10 +28,10 @@ namespace SWD392_BE.Services.Services
             var result = new ResultModel();
             try
             {
-               
-                var users = _userRepository.GetAll().Where(u => u.Status==1).ToList();
+
+                var users = _userRepository.GetAll().Where(u => u.Status == 1).ToList();
                 var viewModels = _mapper.Map<List<ListUserViewModel>>(users);
-                
+
                 result.Data = viewModels;
                 result.Message = "Success";
                 result.IsSuccess = true;
@@ -135,7 +135,8 @@ namespace SWD392_BE.Services.Services
                     result.Code = 200;
                     return result;
                 }
-            }            catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 result.IsSuccess = false;
                 result.Code = 400;

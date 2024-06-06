@@ -19,7 +19,7 @@ public partial class User
 
     public string CampusId { get; set; } = null!;
 
-    public int Phone { get; set; }
+    public string? Phone { get; set; }
 
     public int Role { get; set; }
 

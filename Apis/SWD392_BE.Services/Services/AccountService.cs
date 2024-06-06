@@ -23,13 +23,13 @@ namespace SWD392_BE.Services.Services
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public AccountService(IAccountRepository accountRepo,  IConfiguration configuration, IMapper mapper)
+        public AccountService(IAccountRepository accountRepo, IConfiguration configuration, IMapper mapper)
         {
             _accountRepo = accountRepo;
             _configuration = configuration;
             _mapper = mapper;
         }
-        
+
 
         public async Task<ResultModel> AddNewUser(RegisterReqModel model, ClaimsPrincipal userCreate)
         {
@@ -109,7 +109,7 @@ namespace SWD392_BE.Services.Services
                     result.Message = "User already exists";
                     return result;
                 }
-                
+
                 // Map the request model to the user entity
                 var user = _mapper.Map<User>(model);
 
@@ -120,7 +120,7 @@ namespace SWD392_BE.Services.Services
                 user.Password = PasswordHasher.HashPassword(model.Password);
 
                 // Set other properties (e.g., CreatedDate, Status, etc.)
-               
+
                 user.CreatedDate = DateTime.UtcNow;
                 user.Role = 2; // Set role to 2 by default
                 user.Status = 1; // Assuming 1 is the default status for an active user
