@@ -41,10 +41,6 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.Transactions, opt => opt.Ignore());
 
 
-            CreateMap<User, DeleteUserReqModel>()
-                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
-
-
             //Store
             CreateMap<StoreViewModel, Store>()
             .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
@@ -60,7 +56,6 @@ namespace SWD392_BE.Services.MapperProfile
             CreateMap<UpdateStoreViewModel, Store>()
             .ForMember(dest => dest.OpenTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.OpenTime)))
             .ForMember(dest => dest.CloseTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.CloseTime)));
-
 
         }
     }
