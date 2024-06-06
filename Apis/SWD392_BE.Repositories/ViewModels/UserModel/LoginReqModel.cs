@@ -15,5 +15,7 @@ namespace SWD392_BE.Repositories.ViewModels.UserModel
 
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
+
+
     }
 }
