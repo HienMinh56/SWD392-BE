@@ -13,6 +13,6 @@ namespace SWD392_BE.Services.Interfaces
     {
         public Task<ResultModel> getListStore();
         public Task<ResultModel> addStore(StoreViewModel storeReqModel, ClaimsPrincipal userCreate);
-        public Task<ResultModel> updateStore(string storeId, StoreViewModel storeReqModel, ClaimsPrincipal userUpdate);
+        public Task<ResultModel> UpdateStoreAsync(string storeId, UpdateStoreViewModel model, ClaimsPrincipal userUpdate);
     }
 }

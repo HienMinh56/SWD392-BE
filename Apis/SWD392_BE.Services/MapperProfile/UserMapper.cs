@@ -53,6 +53,10 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.DeletedDate, opt => opt.Ignore())
             .ForMember(dest => dest.DeletedBy, opt => opt.Ignore());// Bỏ qua các navigation properties
 
+            CreateMap<UpdateStoreViewModel, Store>()
+            .ForMember(dest => dest.OpenTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.OpenTime)))
+            .ForMember(dest => dest.CloseTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.CloseTime)));
+
         }
     }
 }
