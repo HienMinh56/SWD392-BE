@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
@@ -126,7 +127,7 @@ namespace SWD392_BE.Services.Services
         }
 
 
-        public async Task<ResultModel> updateStore(string storeId, StoreViewModel model, ClaimsPrincipal userUpdate)
+        public async Task<ResultModel> UpdateStoreAsync(string storeId, UpdateStoreViewModel model, ClaimsPrincipal userUpdate)
         {
             ResultModel result = new ResultModel();
             try
@@ -138,23 +139,28 @@ namespace SWD392_BE.Services.Services
                     result.Message = "Store request model is null.";
                     return result;
                 }
-                var existingStore = _storeRepository.Get(u => u.StoreId.Equals(storeId));
+
+                var existingStore = _storeRepository.Get(s => s.StoreId==storeId);
                 if (existingStore == null)
                 {
                     result.IsSuccess = false;
-                    result.Code = 400;
-                    result.Message = "Store Not Found";
+                    result.Code = 404;
+                    result.Message = "Store not found.";
+                    return result;
                 }
 
-                var storeupdate = _mapper.Map<Store>(model);
-                storeupdate.StoreId = storeId;
-                storeupdate.ModifiedBy = userUpdate.FindFirst("UserName")?.Value;
-                storeupdate.ModifiedDate = DateTime.Now;
-                storeupdate.OpenTime = TimeSpan.Parse(model.OpenTime);
-                storeupdate.CloseTime = TimeSpan.Parse(model.CloseTime);
+                // Map the ViewModel to the existing store entity
+                _mapper.Map(model, existingStore);
 
-                _storeRepository.Update(storeupdate);
-                _storeRepository.SaveChanges();
+                // Update the additional fields
+                existingStore.ModifiedBy = userUpdate.FindFirst("UserName")?.Value;
+                existingStore.ModifiedDate = DateTime.UtcNow;
+                existingStore.OpenTime = TimeSpan.Parse(model.OpenTime);
+                existingStore.CloseTime = TimeSpan.Parse(model.CloseTime);
+
+                _storeRepository.Update(existingStore);
+                await _storeRepository.SaveChangesAsync();
+
                 result.IsSuccess = true;
                 result.Code = 200;
                 result.Message = "Update Store Success";
@@ -163,10 +169,11 @@ namespace SWD392_BE.Services.Services
             catch (Exception ex)
             {
                 result.IsSuccess = false;
-                result.Code = 400;
+                result.Code = 500;
                 result.Message = ex.Message;
                 return result;
             }
         }
+
     }
 }
