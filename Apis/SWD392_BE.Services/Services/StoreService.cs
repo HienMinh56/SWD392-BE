@@ -147,6 +147,7 @@ namespace SWD392_BE.Services.Services
                 }
 
                 var storeupdate = _mapper.Map<Store>(model);
+                storeupdate.StoreId = storeId;
                 storeupdate.ModifiedBy = userUpdate.FindFirst("UserName")?.Value;
                 storeupdate.ModifiedDate = DateTime.Now;
                 storeupdate.OpenTime = TimeSpan.Parse(model.OpenTime);

@@ -17,7 +17,7 @@ public partial class Store
 
     public int Status { get; set; }
 
-    public int Phone { get; set; }
+    public string? Phone { get; set; }
 
     public TimeSpan OpenTime { get; set; }
 

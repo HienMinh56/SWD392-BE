@@ -13,7 +13,7 @@ namespace SWD392_BE.Repositories.ViewModels.StoreModel
         public string Name { get; set; }
 
         public string Address { get; set; }
-        public int Phone { get; set; }
+        public string Phone { get; set; }
 
         public string OpenTime { get; set; }
 
