@@ -26,5 +26,11 @@ namespace SWD392_BE.Repositories.Repositories
 
             return lastStore?.StoreId;
         }
+        public Store GetStoreWithFoods(string storeId)
+        {
+            return _context.Stores
+                           .Include(s => s.Foods)
+                           .FirstOrDefault(s => s.StoreId == storeId);
+        }
     }
 }

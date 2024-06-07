@@ -9,6 +9,7 @@ using SWD392_BE.Services.Sercurity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -87,14 +88,14 @@ namespace SWD392_BE.Services.Services
             }
             return 1;
         }
-        public async Task<ResultModel> UpdateUser(UpdateUserViewModel user)
+        public async Task<ResultModel> UpdateUser(string userId,UpdateUserViewModel model, ClaimsPrincipal userUpdate)
         {
             var result = new ResultModel();
             try
             {
-                var existedUser = _userRepository.Get(x => x.UserId.Equals(user.UserId));
+                var user = _userRepository.Get(x => x.UserId == userId);
                 var check = checkNameAndEmail(user.Name, user.Email, user.UserId);
-                if (existedUser == null)
+                if (user == null)
                 {
                     result.IsSuccess = false;
                     result.Code = 404;
@@ -117,20 +118,19 @@ namespace SWD392_BE.Services.Services
                 }
                 else if (check == 1)
                 {
-                    existedUser.Name = user.Name;
-                    existedUser.UserName = user.UserName;
+                    user.Name = user.Name;
                     if (user.Password != "")
                     {
-                        existedUser.Password = PasswordHasher.HashPassword(user.Password);
+                        user.Password = PasswordHasher.HashPassword(user.Password);
                     }
-                    existedUser.Email = user.Email;
-                    existedUser.CampusId = user.CampusId;
-                    existedUser.Phone = user.Phone;
-                    existedUser.Role = user.Role;
-                    existedUser.Balance = user.Balance;
-                    existedUser.Status = user.Status;
-                    existedUser.CreatedDate = DateTime.UtcNow;
-                    _userRepository.Update(existedUser);
+                    user.Email = user.Email;
+                    user.CampusId = user.CampusId;
+                    user.Phone = user.Phone;
+                    user.Role = user.Role;
+                    user.Balance = user.Balance;
+                    user.ModifiedBy = userUpdate.FindFirst("UserName")?.Value;
+                    user.ModifiedDate = DateTime.Now;
+                    _userRepository.Update(user);
                     _userRepository.SaveChanges();
                     result.IsSuccess = true;
                     result.Code = 200;
