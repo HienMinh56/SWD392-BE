@@ -47,12 +47,30 @@ namespace SWD392_BE.Services.Services
                 }
 
                 // Check if user already exists
-                var existingUser = _accountRepo.Get(u => u.UserName == model.UserName || u.Email == model.Email || u.Phone == model.Phone);
+                var existingUser = _accountRepo.Get(u => u.UserName == model.UserName);
                 if (existingUser != null)
                 {
                     result.IsSuccess = false;
                     result.Code = 400;
                     result.Message = "User already exists";
+                    return result;
+                }
+                // Check if email already exists
+                var existingEmail = _accountRepo.Get(u => u.Email == model.Email);
+                if (existingEmail != null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Email already exists";
+                    return result;
+                }
+                // Check if phone already exists
+                var existingPhone = _accountRepo.Get(u => u.Phone == model.Phone);
+                if (existingPhone != null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Phone already exists";
                     return result;
                 }
 
@@ -102,7 +120,7 @@ namespace SWD392_BE.Services.Services
                 }
 
                 // Check if user already exists
-                var existingUser = _accountRepo.Get(u => u.UserName == model.UserName || u.Email == model.Email || u.Phone == model.Phone);
+                var existingUser = _accountRepo.Get(u => u.UserName == model.UserName);
                 if (existingUser != null)
                 {
                     result.IsSuccess = false;
@@ -110,7 +128,24 @@ namespace SWD392_BE.Services.Services
                     result.Message = "User already exists";
                     return result;
                 }
-
+                // Check if email already exists
+                var existingEmail = _accountRepo.Get(u =>  u.Email == model.Email);
+                if (existingEmail != null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Email already exists";
+                    return result;
+                }
+                // Check if phone already exists
+                var existingPhone = _accountRepo.Get(u => u.Phone == model.Phone);
+                if (existingPhone != null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Phone already exists";
+                    return result;
+                }
                 // Map the request model to the user entity
                 var user = _mapper.Map<User>(model);
 
