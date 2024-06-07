@@ -18,24 +18,24 @@ namespace SWD392_BE.API.Controllers
         }
 
         [HttpGet("GetFoods")]
-        public async Task<IActionResult> GetListFood()
+        public async Task<IActionResult> GetListFood(string storeId)
         {
-            var result = await _foodService.getListFood();
+            var result = await _foodService.getListFood(storeId);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpPost("AddFood")]
-        public async Task<IActionResult> AddFood(string storeId, List<FoodViewModel> foods)
+        public async Task<IActionResult> AddFood(string storeId, List<List<FoodViewModel>> foodLists)
         {
             var currentUser = HttpContext.User;
-            var result = await _foodService.addFood(storeId, foods, currentUser);
+            var result = await _foodService.addFood(storeId, foodLists, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-        [HttpPut("{FoodId}")]
-        public async Task<IActionResult> UpdateFood(string foodId, [FromBody] FoodViewModel model)
+        [HttpPut("UpdateFood")]
+        public async Task<IActionResult> UpdateFood(string id, UpdateFoodViewModel model)
         {
             var currentUser = HttpContext.User;
-            var result = await _foodService.updateFood(foodId, model, currentUser);
+            var result = await _foodService.UpdateFoodAsync(id, model, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }
