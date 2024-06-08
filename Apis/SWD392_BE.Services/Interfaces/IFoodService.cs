@@ -1,4 +1,5 @@
-﻿using SWD392_BE.Repositories.ViewModels.FoodModel;
+﻿using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.ViewModels.FoodModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using System;
 using System.Collections.Generic;
@@ -11,8 +12,8 @@ namespace SWD392_BE.Services.Interfaces
 {
     public interface IFoodService
     {
-        public Task<ResultModel> getListFood();
-        public Task<ResultModel> addFood(string storeId, List<FoodViewModel> foods, ClaimsPrincipal userCreate);
-        public Task<ResultModel> updateFood(string foodId, FoodViewModel model, ClaimsPrincipal userUpdate);
+        public Task<ResultModel> getListFood(string storeId);
+        public Task<ResultModel> addFood(string storeId, List<List<FoodViewModel>> foodLists, ClaimsPrincipal userCreate);
+        public Task<ResultModel> UpdateFoodAsync(string id, UpdateFoodViewModel model, ClaimsPrincipal userUpdate);
     }
 }

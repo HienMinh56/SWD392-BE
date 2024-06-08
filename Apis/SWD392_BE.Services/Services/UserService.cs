@@ -74,68 +74,63 @@ namespace SWD392_BE.Services.Services
             }
             return user;
         }
-
-        private int checkNameAndEmail(string name, string email, string userId)
-        {
-            var users = _userRepository.GetAll();
-            if (users.FirstOrDefault(c => c.Name == name && c.UserId != userId) != null)
-            {
-                return 0;
-            }
-            else if (users.FirstOrDefault(d => d.Email == email && d.UserId != userId) != null)
-            {
-                return -1;
-            }
-            return 1;
-        }
-        public async Task<ResultModel> UpdateUser(string userId,UpdateUserViewModel model, ClaimsPrincipal userUpdate)
+        public async Task<ResultModel> UpdateUser(string userId, UpdateUserViewModel model, ClaimsPrincipal userUpdate)
         {
             var result = new ResultModel();
             try
             {
-                var user = _userRepository.Get(x => x.UserId == userId);
-                var check = checkNameAndEmail(user.Name, user.Email, user.UserId);
-                if (user == null)
+                var existingUser = _userRepository.Get(x => x.UserId == userId);
+                if (existingUser == null)
                 {
                     result.IsSuccess = false;
                     result.Code = 404;
                     result.Message = "Can not find user";
                     return result;
                 }
-                else if (check == 0)
+
+                // Check if user already exists
+                var existingName = _userRepository.Get(x => x.Name == model.Name);
+                if (existingName != null)
                 {
                     result.IsSuccess = false;
                     result.Code = 400;
-                    result.Message = "User Name already existed";
+                    result.Message = "Name already exists";
                     return result;
                 }
-                else if (check == -1)
+
+                // Check if email already exists
+                var existingEmail = _userRepository.Get(x => x.Email == model.Email);
+                if (existingEmail != null)
                 {
                     result.IsSuccess = false;
                     result.Code = 400;
-                    result.Message = "Email already existed";
+                    result.Message = "Email already exists";
                     return result;
                 }
-                else if (check == 1)
+
+                // Map the ViewModel to the existing userid entity
+                _mapper.Map(model, existingUser);
+
+                // Update the additional fields
+                existingUser.Name = model.Name;
+                if (existingUser.Password != "")
                 {
-                    user.Name = user.Name;
-                    if (user.Password != "")
-                    {
-                        user.Password = PasswordHasher.HashPassword(user.Password);
-                    }
-                    user.Email = user.Email;
-                    user.CampusId = user.CampusId;
-                    user.Phone = user.Phone;
-                    user.Role = user.Role;
-                    user.Balance = user.Balance;
-                    user.ModifiedBy = userUpdate.FindFirst("UserName")?.Value;
-                    user.ModifiedDate = DateTime.Now;
-                    _userRepository.Update(user);
-                    _userRepository.SaveChanges();
-                    result.IsSuccess = true;
-                    result.Code = 200;
-                    return result;
+                    existingUser.Password = PasswordHasher.HashPassword(existingUser.Password);
                 }
+                existingUser.Email = model.Email;
+                existingUser.CampusId = model.CampusId;
+                existingUser.Phone = model.Phone;
+                existingUser.Role = model.Role;
+                existingUser.Balance = model.Balance;
+                existingUser.ModifiedBy = userUpdate.FindFirst("UserName")?.Value;
+                existingUser.ModifiedDate = DateTime.Now;
+                _userRepository.Update(existingUser);
+                _userRepository.SaveChanges();
+                result.IsSuccess = true;
+                result.Code = 200;
+                result.Message = "Update User Success";
+                return result;
+
             }
             catch (Exception ex)
             {
