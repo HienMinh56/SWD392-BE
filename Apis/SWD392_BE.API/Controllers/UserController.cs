@@ -21,14 +21,14 @@ namespace SWD392_BE.API.Controllers
             _userService = userService;
         }
 
-        [HttpGet("view-all-users")]
-        public async Task<IActionResult> ViewAllUsers()
+        [HttpGet("getUsersList")]
+        public async Task<IActionResult> GetUserList(int? status, string? campusName)
         {
-            var result = await _userService.ViewAllUsers();
+            var result = await _userService.GetUserList(status, campusName);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPatch("delete-user")]
+        [HttpPatch("deleteUser")]
         public async Task<IActionResult> DeleteUser([FromBody] DeleteUserReqModel request)
         {
             var result = await _userService.DeleteUser(request);

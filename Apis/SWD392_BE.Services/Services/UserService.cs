@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Google.Apis.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
@@ -25,18 +26,37 @@ namespace SWD392_BE.Services.Services
             _userRepository = userRepository;
             _mapper = mapper;
         }
-        public async Task<ResultModel> ViewAllUsers()
+
+        public async Task<ResultModel> GetUserList(int? status, string? campusName)
         {
             var result = new ResultModel();
             try
             {
+                var users = await _userRepository.GetUsers();
 
-                var users = _userRepository.GetAll().Where(u => u.Status == 1).ToList();
-                var viewModels = _mapper.Map<List<ListUserViewModel>>(users);
+                if (status.HasValue)
+                {
+                    users = users.Where(u => u.Status == status.Value).ToList();
+                }
 
-                result.Data = viewModels;
-                result.Message = "Success";
-                result.IsSuccess = true;
+                if (!string.IsNullOrEmpty(campusName))
+                {
+                    users = users.Where(u => u.Campus.Name == campusName).ToList();
+                }
+
+                if (!users.Any())
+                {
+                    result.Message = "Data not found";
+                    result.IsSuccess = false;
+                    result.Code = 404;
+                }
+                else
+                {
+                    result.Data = users;
+                    result.Message = "Success";
+                    result.IsSuccess = true;
+                    result.Code = 200;
+                }
             }
             catch (Exception ex)
             {
@@ -77,7 +97,9 @@ namespace SWD392_BE.Services.Services
 
         public User SearchUser(string keyword)
         {
-            var user = _userRepository.Get(u => u.UserName == keyword || u.Email == keyword || u.Phone == keyword);
+            var user = _userRepository.Get(u => u.UserName.Contains(keyword.Trim())
+                                                || u.Email.Contains(keyword.Trim())
+                                                || u.Phone.Contains(keyword.Trim()));
             if (user != null)
             {
                 return user;

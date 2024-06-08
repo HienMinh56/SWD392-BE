@@ -19,9 +19,11 @@ namespace SWD392_BE.Repositories.Repositories
         }
 
 
-        public async Task<List<User>> GetAllUsers()
+        public async Task<List<User>> GetUsers()
         {
             return await _dbContext.Users
+                .Include(x => x.Campus)
+                .Include(x => x.Orders)
                 .Select(x => new User
                 {
                     UserId = x.UserId,
@@ -29,10 +31,12 @@ namespace SWD392_BE.Repositories.Repositories
                     UserName = x.UserName,
                     Password = x.Password,
                     Email = x.Email,
-                    CampusId = x.CampusId,
+                    Campus = new Campus
+                    {
+                        Name = x.Campus.Name
+                    },
                     Phone = x.Phone,
                     Role = x.Role,
-                    Balance = x.Balance,
                     Status = x.Status,
                     CreatedDate = x.CreatedDate,
                     CreatedBy = x.CreatedBy,
