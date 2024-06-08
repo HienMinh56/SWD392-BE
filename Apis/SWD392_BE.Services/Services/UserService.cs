@@ -88,26 +88,6 @@ namespace SWD392_BE.Services.Services
                     return result;
                 }
 
-                // Check if user already exists
-                var existingName = _userRepository.Get(x => x.Name == model.Name);
-                if (existingName != null)
-                {
-                    result.IsSuccess = false;
-                    result.Code = 400;
-                    result.Message = "Name already exists";
-                    return result;
-                }
-
-                // Check if email already exists
-                var existingEmail = _userRepository.Get(x => x.Email == model.Email);
-                if (existingEmail != null)
-                {
-                    result.IsSuccess = false;
-                    result.Code = 400;
-                    result.Message = "Email already exists";
-                    return result;
-                }
-
                 // Map the ViewModel to the existing userid entity
                 _mapper.Map(model, existingUser);
 
