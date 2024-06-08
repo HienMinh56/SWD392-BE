@@ -189,7 +189,7 @@ namespace SWD392_BE.Services.Services
                 var user = GetUserById(request.UserId);
                 if (user == null)
                 {
-                    result.Message = "UserName not found";
+                    result.Message = "UserName not found or deleted";
                     result.Code = 404;
                     result.IsSuccess = false;
                     result.Data = null;
