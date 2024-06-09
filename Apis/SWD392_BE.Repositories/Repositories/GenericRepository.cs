@@ -65,7 +65,10 @@ namespace SWD392_BE.Repositories.Repositories
             _dbSet.Remove(entity);
         }
 
-
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.AnyAsync(predicate);
+        }
 
         public void ClearTrackers()
         {

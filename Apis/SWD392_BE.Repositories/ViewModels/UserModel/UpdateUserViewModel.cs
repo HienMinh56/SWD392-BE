@@ -8,13 +8,7 @@ namespace SWD392_BE.Repositories.ViewModels.UserModel
 {
     public class UpdateUserViewModel
     {
-        public string UserId { get; set; } = null!;
-
         public string Name { get; set; } = null!;
-
-        public string UserName { get; set; } = null!;
-
-        public string Password { get; set; } = null!;
 
         public string Email { get; set; } = null!;
 
@@ -25,7 +19,5 @@ namespace SWD392_BE.Repositories.ViewModels.UserModel
         public int Role { get; set; }
 
         public int Balance { get; set; }
-
-        public int Status { get; set; }
     }
 }

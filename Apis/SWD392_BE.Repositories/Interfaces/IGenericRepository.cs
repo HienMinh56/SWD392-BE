@@ -17,6 +17,7 @@ namespace SWD392_BE.Repositories.Interfaces
         void Update(T entity);
         void Delete(string id);
         void Remove(T enity);
+        Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
         void ClearTrackers();
         int SaveChanges();
         Task SaveChangesAsync();

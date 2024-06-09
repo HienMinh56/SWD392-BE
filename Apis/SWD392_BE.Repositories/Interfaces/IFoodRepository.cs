@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Interfaces
 {
-    public interface IStoreRepository : IGenericRepository<Store>
+    public interface IFoodRepository : IGenericRepository<Food>
     {
-        Task<string> GetLastStoreIdAsync();
-        public Store GetStoreWithFoods(string storeId);
+        Task<string> GetLastFoodIdAsync();
     }
 }

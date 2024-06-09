@@ -31,16 +31,18 @@ namespace SWD392_BE.API.Controllers
         [HttpPatch("deleteUser")]
         public async Task<IActionResult> DeleteUser([FromBody] DeleteUserReqModel request)
         {
-            var result = await _userService.DeleteUser(request);
+            var currentUser = HttpContext.User;
+            var result = await _userService.DeleteUser(request, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpPut("updateUser")]
-        public async Task<ActionResult<ResultModel>> UpdateUser(UpdateUserViewModel user)
+        public async Task<ActionResult<ResultModel>> UpdateUser(string userId, UpdateUserViewModel model)
         {
             try
             {
-                var updateResult = await _userService.UpdateUser(user);
+                var currentUser = HttpContext.User;
+                var updateResult = await _userService.UpdateUser(userId, model, currentUser);
                 var result = new ResultModel
                 {
                     IsSuccess = true,
