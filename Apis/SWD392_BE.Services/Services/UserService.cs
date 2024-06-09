@@ -11,6 +11,7 @@ using SWD392_BE.Services.Sercurity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -95,6 +96,7 @@ namespace SWD392_BE.Services.Services
             return user;
         }
 
+
         public User SearchUser(string keyword)
         {
             var user = _userRepository.Get(u => u.UserName.Contains(keyword.Trim())
@@ -122,55 +124,62 @@ namespace SWD392_BE.Services.Services
             }
             return 1;
         }
-        public async Task<ResultModel> UpdateUser(UpdateUserViewModel user)
+
+        public async Task<ResultModel> UpdateUser(string userId, UpdateUserViewModel model, ClaimsPrincipal userUpdate)
+
         {
             var result = new ResultModel();
             try
             {
-                var existedUser = _userRepository.Get(x => x.UserId.Equals(user.UserId));
-                var check = checkNameAndEmail(user.Name, user.Email, user.UserId);
-                if (existedUser == null)
+                var existingUser = _userRepository.Get(x => x.UserId == userId);
+                if (existingUser == null)
                 {
                     result.IsSuccess = false;
                     result.Code = 404;
                     result.Message = "Can not find user";
                     return result;
                 }
-                else if (check == 0)
+                // Check if email already exists
+                var existingEmail = _userRepository.Get(x => x.Email == model.Email && x.UserId != userId);
+                if (existingEmail != null)
                 {
                     result.IsSuccess = false;
                     result.Code = 400;
-                    result.Message = "User Name already existed";
+                    result.Message = "Email already exists";
                     return result;
                 }
-                else if (check == -1)
+                // Check if Phone already exists
+                var existingPhone = _userRepository.Get(x => x.Phone == model.Phone);
+                if (existingPhone != null)
                 {
                     result.IsSuccess = false;
                     result.Code = 400;
-                    result.Message = "Email already existed";
+                    result.Message = "Phone already exists";
                     return result;
                 }
-                else if (check == 1)
+                // Map the ViewModel to the existing userid entity
+                _mapper.Map(model, existingUser);
+
+                // Update the additional fields
+                existingUser.Name = model.Name;
+                if (existingUser.Password != "")
                 {
-                    existedUser.Name = user.Name;
-                    existedUser.UserName = user.UserName;
-                    if (user.Password != "")
-                    {
-                        existedUser.Password = PasswordHasher.HashPassword(user.Password);
-                    }
-                    existedUser.Email = user.Email;
-                    existedUser.CampusId = user.CampusId;
-                    existedUser.Phone = user.Phone;
-                    existedUser.Role = user.Role;
-                    existedUser.Balance = user.Balance;
-                    existedUser.Status = user.Status;
-                    existedUser.CreatedDate = DateTime.UtcNow;
-                    _userRepository.Update(existedUser);
-                    _userRepository.SaveChanges();
-                    result.IsSuccess = true;
-                    result.Code = 200;
-                    return result;
+                    existingUser.Password = PasswordHasher.HashPassword(existingUser.Password);
                 }
+                existingUser.Email = model.Email;
+                existingUser.CampusId = model.CampusId;
+                existingUser.Phone = model.Phone;
+                existingUser.Role = model.Role;
+                existingUser.Balance = model.Balance;
+                existingUser.ModifiedBy = userUpdate.FindFirst("UserName")?.Value;
+                existingUser.ModifiedDate = DateTime.Now;
+                _userRepository.Update(existingUser);
+                _userRepository.SaveChanges();
+                result.IsSuccess = true;
+                result.Code = 200;
+                result.Message = "Update User Success";
+                return result;
+
             }
             catch (Exception ex)
             {
@@ -181,7 +190,7 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
-        public async Task<ResultModel> DeleteUser(DeleteUserReqModel request)
+        public async Task<ResultModel> DeleteUser(DeleteUserReqModel request, ClaimsPrincipal userDelete)
         {
             var result = new ResultModel();
             try
@@ -195,7 +204,8 @@ namespace SWD392_BE.Services.Services
                     result.Data = null;
                     return result;
                 }
-
+                user.DeletedBy = userDelete.FindFirst("UserName")?.Value;
+                user.DeletedDate = DateTime.UtcNow;
                 user.Status = user.Status = 2;
                 _userRepository.Update(user);
                 _userRepository.SaveChanges();
