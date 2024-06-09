@@ -32,7 +32,7 @@ namespace SWD392_BE.API.Controllers
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPut("{storeId}")]
+        [HttpPut("UpdateStore")]
         public async Task<IActionResult> UpdateStore(string storeId,  UpdateStoreViewModel storeReq)
         {
             var currentUser = HttpContext.User;
