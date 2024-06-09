@@ -52,7 +52,21 @@ namespace SWD392_BE.Services.Services
                 }
                 else
                 {
-                    result.Data = users;
+                    var userViewModels = users.Select(u => new ListUserViewModel
+                    {
+                        UserId = u.UserId,
+                        Name = u.Name,
+                        UserName = u.UserName,
+                        Password = u.Password,
+                        Email = u.Email,
+                        Campus = u.Campus.Name,
+                        Phone = u.Phone,
+                        Role = u.Role,
+                        Balance = u.Balance,
+                        Status = u.Status
+                    }).ToList();
+
+                    result.Data = userViewModels;
                     result.Message = "Success";
                     result.IsSuccess = true;
                     result.Code = 200;
