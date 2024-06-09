@@ -9,6 +9,7 @@ using SWD392_BE.Services.Sercurity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -146,7 +147,7 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
-        public async Task<ResultModel> DeleteUser(DeleteUserReqModel request)
+        public async Task<ResultModel> DeleteUser(DeleteUserReqModel request, ClaimsPrincipal userDelete)
         {
             var result = new ResultModel();
             try
@@ -160,7 +161,8 @@ namespace SWD392_BE.Services.Services
                     result.Data = null;
                     return result;
                 }
-
+                user.DeletedBy = userDelete.FindFirst("UserName")?.Value;
+                user.DeletedDate = DateTime.UtcNow;
                 user.Status = user.Status = 2;
                 _userRepository.Update(user);
                 _userRepository.SaveChanges();

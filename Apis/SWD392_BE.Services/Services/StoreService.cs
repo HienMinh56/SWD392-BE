@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
+using SWD392_BE.Repositories.Repositories;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.StoreModel;
 using SWD392_BE.Services.Interfaces;
@@ -17,11 +18,13 @@ namespace SWD392_BE.Services.Services
     public class StoreService : IStoreService
     {
         private readonly IStoreRepository _storeRepository;
+        private readonly IAreaRepository _area;
         private readonly IMapper _mapper;
 
-        public StoreService(IStoreRepository storeRepository, IMapper mapper)
+        public StoreService(IStoreRepository storeRepository, IAreaRepository area, IMapper mapper)
         {
             _storeRepository = storeRepository;
+            _area = area;
             _mapper = mapper;
         }
 
@@ -167,7 +170,7 @@ namespace SWD392_BE.Services.Services
                     result.Message = "Address had store";
                     return result ;
                 }
-
+               
                 // Map the ViewModel to the existing store entity
                 _mapper.Map(model, existingStore);
 

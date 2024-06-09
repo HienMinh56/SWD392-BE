@@ -165,7 +165,11 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IStoreRepository, StoreRepository>();
+//builder.Services.AddScoped<IStoreService, StoreService>();
+
+builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 builder.Services.AddScoped<IStoreService, StoreService>();
+
 
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
