@@ -15,7 +15,7 @@ namespace SWD392_BE.Services.Interfaces
     {
         public Task<ResultModel> ViewAllUsers();
 
-        public Task<ResultModel> DeleteUser(DeleteUserReqModel request);
+        public Task<ResultModel> DeleteUser(DeleteUserReqModel request, ClaimsPrincipal userDelete);
         public User GetUserById(string id);
         public User GetUserByUserName(string userName);
         public Task<ResultModel> UpdateUser(string userId ,UpdateUserViewModel model, ClaimsPrincipal userUpdate);
