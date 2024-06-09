@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Google.Apis.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
@@ -25,18 +27,37 @@ namespace SWD392_BE.Services.Services
             _userRepository = userRepository;
             _mapper = mapper;
         }
-        public async Task<ResultModel> ViewAllUsers()
+
+        public async Task<ResultModel> GetUserList(int? status, string? campusName)
         {
             var result = new ResultModel();
             try
             {
+                var users = await _userRepository.GetUsers();
 
-                var users = _userRepository.GetAll().Where(u => u.Status == 1).ToList();
-                var viewModels = _mapper.Map<List<ListUserViewModel>>(users);
+                if (status.HasValue)
+                {
+                    users = users.Where(u => u.Status == status.Value).ToList();
+                }
 
-                result.Data = viewModels;
-                result.Message = "Success";
-                result.IsSuccess = true;
+                if (!string.IsNullOrEmpty(campusName))
+                {
+                    users = users.Where(u => u.Campus.Name == campusName).ToList();
+                }
+
+                if (!users.Any())
+                {
+                    result.Message = "Data not found";
+                    result.IsSuccess = false;
+                    result.Code = 404;
+                }
+                else
+                {
+                    result.Data = users;
+                    result.Message = "Success";
+                    result.IsSuccess = true;
+                    result.Code = 200;
+                }
             }
             catch (Exception ex)
             {
@@ -74,7 +95,38 @@ namespace SWD392_BE.Services.Services
             }
             return user;
         }
+
+
+        public User SearchUser(string keyword)
+        {
+            var user = _userRepository.Get(u => u.UserName.Contains(keyword.Trim())
+                                                || u.Email.Contains(keyword.Trim())
+                                                || u.Phone.Contains(keyword.Trim()));
+            if (user != null)
+            {
+                return user;
+            }
+            return null;
+        }
+
+
+
+        private int checkNameAndEmail(string name, string email, string userId)
+        {
+            var users = _userRepository.GetAll();
+            if (users.FirstOrDefault(c => c.Name == name && c.UserId != userId) != null)
+            {
+                return 0;
+            }
+            else if (users.FirstOrDefault(d => d.Email == email && d.UserId != userId) != null)
+            {
+                return -1;
+            }
+            return 1;
+        }
+
         public async Task<ResultModel> UpdateUser(string userId, UpdateUserViewModel model, ClaimsPrincipal userUpdate)
+
         {
             var result = new ResultModel();
             try
@@ -146,7 +198,7 @@ namespace SWD392_BE.Services.Services
                 var user = GetUserById(request.UserId);
                 if (user == null)
                 {
-                    result.Message = "UserName not found";
+                    result.Message = "UserName not found or deleted";
                     result.Code = 404;
                     result.IsSuccess = false;
                     result.Data = null;
@@ -171,5 +223,24 @@ namespace SWD392_BE.Services.Services
             return result;
         }
 
+        public async Task<ResultModel> SearchUserByKeyword(string keyword)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var user = SearchUser(keyword);
+                result.IsSuccess = true;
+                result.Code = 200;
+                result.Data = user;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Message = ex.Message;
+                result.Code = 404;
+                return result;
+            }
+        }
     }
 }
