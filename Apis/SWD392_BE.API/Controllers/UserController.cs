@@ -31,7 +31,8 @@ namespace SWD392_BE.API.Controllers
         [HttpPatch("delete-user")]
         public async Task<IActionResult> DeleteUser([FromBody] DeleteUserReqModel request)
         {
-            var result = await _userService.DeleteUser(request);
+            var currentUser = HttpContext.User;
+            var result = await _userService.DeleteUser(request, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
