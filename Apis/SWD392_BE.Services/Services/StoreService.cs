@@ -156,7 +156,7 @@ namespace SWD392_BE.Services.Services
                     result.Message = "Phone was used";
                     return result;
                 }
-                var addressStore = _storeRepository.Get(s => s.Address == model.Address && s.AreaId == model.AreaId);
+                var addressStore = _storeRepository.Get(s => s.Address == model.Address && s.AreaId == model.AreaId && s.StoreId != storeId);
                 if(addressStore != null)
                 {
                     result.IsSuccess = false;
