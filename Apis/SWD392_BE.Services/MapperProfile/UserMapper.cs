@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.ViewModels.FoodModel;
 using SWD392_BE.Repositories.ViewModels.StoreModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
 using System;
@@ -44,6 +45,14 @@ namespace SWD392_BE.Services.MapperProfile
             CreateMap<User, DeleteUserReqModel>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
 
+            
+            CreateMap<UpdateUserViewModel, User>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.CampusId, opt => opt.MapFrom(src => src.CampusId))
+            .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
+            .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
+            .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance));
 
             //Store
             CreateMap<StoreViewModel, Store>()
@@ -61,6 +70,27 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.OpenTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.OpenTime)))
             .ForMember(dest => dest.CloseTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.CloseTime)));
 
+            //Food
+            CreateMap<FoodViewModel, Food>()
+            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+            .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+            .ForMember(dest => dest.Cate, opt => opt.MapFrom(src => src.Cate))
+            .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image))
+            .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+            .ForMember(dest => dest.ModifiedDate, opt => opt.Ignore())
+            .ForMember(dest => dest.ModifiedBy, opt => opt.Ignore())
+            .ForMember(dest => dest.DeletedDate, opt => opt.Ignore())
+            .ForMember(dest => dest.DeletedBy, opt => opt.Ignore());// Bỏ qua các navigation properties
+
+            CreateMap<UpdateFoodViewModel, Food>()
+            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+            .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+            .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+            .ForMember(dest => dest.Cate, opt => opt.MapFrom(src => src.Cate))
+            .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
 
         }
     }
