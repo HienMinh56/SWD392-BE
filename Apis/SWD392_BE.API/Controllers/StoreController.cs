@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using SWD392_BE.Repositories.ViewModels.StoreModel;
 using SWD392_BE.Services.Interfaces;
@@ -21,6 +22,13 @@ namespace SWD392_BE.API.Controllers
         public async Task<IActionResult> GetListStore()
         {
             var result = await _storeService.getListStore();
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpGet("filterStore")]
+        public async Task<IActionResult> FilterStores([FromQuery] string? areaId, [FromQuery] int? status)
+        {
+            var result = await _storeService.FilterStoresAsync(areaId, status);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 

@@ -18,6 +18,7 @@ namespace SWD392_BE.Repositories.Interfaces
         void Delete(string id);
         void Remove(T enity);
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties);
         void ClearTrackers();
         int SaveChanges();
         Task SaveChangesAsync();
