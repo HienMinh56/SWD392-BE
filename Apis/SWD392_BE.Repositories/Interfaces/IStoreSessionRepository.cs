@@ -7,13 +7,8 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Interfaces
 {
-    public interface IUserRepository : IGenericRepository<User>
+    public interface IStoreSessionRepository : IGenericRepository<StoreSession>
     {
-        Task<List<User>> GetUsers();
-
-        Task<User> GetUserByUserName(string userName);
-
-
-
+        Task<StoreSession> GetLatestStoreSession();
     }
 }

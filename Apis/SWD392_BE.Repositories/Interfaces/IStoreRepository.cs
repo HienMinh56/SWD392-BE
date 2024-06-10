@@ -11,5 +11,7 @@ namespace SWD392_BE.Repositories.Interfaces
     {
         Task<string> GetLastStoreIdAsync();
         public Store GetStoreWithFoods(string storeId);
+        Task<List<Store>> GetStores();
+        Task<IEnumerable<Store>> FilterStoresAsync(string? areaId, int? status);
     }
 }

@@ -167,11 +167,22 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStoreRepository, StoreRepository>();
 builder.Services.AddScoped<IStoreService, StoreService>();
 
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+
+builder.Services.AddScoped<IStoreSessionRepository, StoreSessionRepository>();
+//builder.Services.AddScoped<IFoodService, FoodService>();
+
+builder.Services.AddScoped<IAreaRepository, AreaRepository>();
+//builder.Services.AddScoped<IStoreService, StoreService>();
+
+
 builder.Services.AddScoped<IFoodRepository, FoodRepository>();
 builder.Services.AddScoped<IFoodService, FoodService>();
 
+
 builder.Services.AddScoped<ICampusRepository, CampusRepository>();
 builder.Services.AddScoped<ICampusService, CampusService>();
+
 
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
