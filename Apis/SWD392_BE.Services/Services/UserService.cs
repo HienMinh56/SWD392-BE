@@ -56,7 +56,21 @@ namespace SWD392_BE.Services.Services
                 }
                 else
                 {
-                    result.Data = users;
+                    var userViewModels = users.Select(u => new ListUserViewModel
+                    {
+                        UserId = u.UserId,
+                        Name = u.Name,
+                        UserName = u.UserName,
+                        Password = u.Password,
+                        Email = u.Email,
+                        Campus = u.Campus.Name,
+                        Phone = u.Phone,
+                        Role = u.Role,
+                        Balance = u.Balance,
+                        Status = u.Status
+                    }).ToList();
+
+                    result.Data = userViewModels;
                     result.Message = "Success";
                     result.IsSuccess = true;
                     result.Code = 200;
@@ -69,7 +83,6 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
-
         public User GetUserById(string id)
         {
             try
@@ -98,8 +111,6 @@ namespace SWD392_BE.Services.Services
             }
             return user;
         }
-
-
         public User SearchUser(string keyword)
         {
             var user = _userRepository.Get(u => u.UserName.Contains(keyword.Trim())
@@ -111,9 +122,6 @@ namespace SWD392_BE.Services.Services
             }
             return null;
         }
-
-
-
         private int checkNameAndEmail(string name, string email, string userId)
         {
             var users = _userRepository.GetAll();
@@ -127,7 +135,6 @@ namespace SWD392_BE.Services.Services
             }
             return 1;
         }
-
         public async Task<ResultModel> UpdateUser(string userId, UpdateUserViewModel model, ClaimsPrincipal userUpdate)
 
         {
@@ -225,7 +232,6 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
-
         public async Task<ResultModel> SearchUserByKeyword(string keyword)
         {
             var result = new ResultModel();

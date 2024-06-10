@@ -21,7 +21,7 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
             .ForMember(dest => dest.Password, opt => opt.MapFrom(src => src.Password))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-            .ForMember(dest => dest.CampusId, opt => opt.MapFrom(src => src.CampusId))
+            .ForMember(dest => dest.Campus, opt => opt.MapFrom(src => src.Campus.Name))
             .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
             .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance))
