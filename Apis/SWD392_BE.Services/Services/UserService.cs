@@ -45,7 +45,8 @@ namespace SWD392_BE.Services.Services
 
                 if (!string.IsNullOrEmpty(campusName))
                 {
-                    users = users.Where(u => u.Campus.Name == campusName).ToList();
+                    string campusNameLower = campusName.ToLower();
+                    users = users.Where(u => u.Campus.Name.ToLower() == campusNameLower).ToList();
                 }
 
                 if (!users.Any())
