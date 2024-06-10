@@ -18,11 +18,11 @@ namespace SWD392_BE.API.Controllers
             _storeService = storeService;
         }
 
-        [HttpGet("GetStores")]
-        public async Task<IActionResult> GetListStore()
+        [HttpGet]
+        public async Task<IActionResult> GetStoresByStatusAreaAndSession([FromQuery] int? status, [FromQuery] string? areaName, [FromQuery] string? sessionId)
         {
-            var result = await _storeService.getListStore();
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            var stores = await _storeService.GetStoresAsync(status, areaName, sessionId);
+            return Ok(stores);
         }
 
         [HttpGet("filterStore")]
