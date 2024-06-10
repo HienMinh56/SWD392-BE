@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
+using SWD392_BE.Repositories.Repositories;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
 using SWD392_BE.Services.Interfaces;
@@ -18,11 +19,13 @@ namespace SWD392_BE.Services.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly ICampusRepository _campusRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository, IMapper mapper)
+        public UserService(IUserRepository userRepository, ICampusRepository campusRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _campusRepository = campusRepository;
             _mapper = mapper;
         }
         public async Task<ResultModel> ViewAllUsers()
@@ -97,7 +100,7 @@ namespace SWD392_BE.Services.Services
                     return result;
                 }
                 // Check if Phone already exists
-                var existingPhone = _userRepository.Get(x => x.Phone == model.Phone);
+                var existingPhone = _userRepository.Get(x => x.Phone == model.Phone && x.UserId != userId);
                 if (existingPhone != null)
                 {
                     result.IsSuccess = false;
