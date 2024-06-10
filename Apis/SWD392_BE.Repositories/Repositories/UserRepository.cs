@@ -38,13 +38,13 @@ namespace SWD392_BE.Repositories.Repositories
                     Phone = x.Phone,
                     Role = x.Role,
                     Status = x.Status,
+                    Balance = x.Balance,
                     CreatedDate = x.CreatedDate,
                     CreatedBy = x.CreatedBy,
                 })
                 .AsNoTracking()
                 .ToListAsync();
         }
-
         public async Task<User> GetUserByUserName(string userName)
         {
             return await _dbContext.Users
