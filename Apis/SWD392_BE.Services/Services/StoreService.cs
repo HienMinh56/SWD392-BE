@@ -192,36 +192,12 @@ namespace SWD392_BE.Services.Services
             }
         }
 
-        public async Task<ResultModel> getListStore()
+        
+        public async Task<IEnumerable<GetStoreViewModel>> GetStoresAsync(int? status, string? areaName, string? sessionId)
         {
-            ResultModel result = new ResultModel();
-            try
-            {
-                var stores = _storeRepository.GetAll();
-                if (stores == null || !stores.Any())
-                {
-                    result.IsSuccess = true;
-                    result.Code = 201;
-                    result.Message = "No store here";
-                }
-                else
-                {
-                    result.IsSuccess = true;
-                    result.Code = 200;
-                    result.Message = "Stores retrieved successfully";
-                    result.Data = stores;
-                }
-            }
-            catch (Exception ex)
-            {
-                result.IsSuccess = false;
-                result.Code = 500;
-                result.Message = $"An error occurred: {ex.Message}";
-            }
-
-            return result;
+            return await _storeRepository.GetStoresByStatusAreaAndSessionAsync(status, areaName, sessionId);
         }
-
+        
 
         public async Task<ResultModel> UpdateStoreAsync(string storeId, UpdateStoreViewModel model, ClaimsPrincipal userUpdate)
         {

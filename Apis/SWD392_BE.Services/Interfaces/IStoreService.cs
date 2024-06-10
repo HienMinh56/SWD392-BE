@@ -12,7 +12,7 @@ namespace SWD392_BE.Services.Interfaces
 {
     public interface IStoreService
     {
-        public Task<ResultModel> getListStore();
+        Task<IEnumerable<GetStoreViewModel>> GetStoresAsync(int? status, string? areaName, string? sessionId);
         Task<ResultModel> FilterStoresAsync(string? areaId, int? status);
         public Task<ResultModel> addStore(StoreViewModel storeReqModel, ClaimsPrincipal userCreate);
         public Task<ResultModel> UpdateStoreAsync(string storeId, UpdateStoreViewModel model, ClaimsPrincipal userUpdate);

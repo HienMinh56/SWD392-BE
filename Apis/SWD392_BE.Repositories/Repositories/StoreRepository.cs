@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
+using SWD392_BE.Repositories.ViewModels.StoreModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,40 +28,51 @@ namespace SWD392_BE.Repositories.Repositories
             return lastStore?.StoreId;
         }
 
-        public async Task<List<Store>> GetStores()
+        public async Task<IEnumerable<GetStoreViewModel>> GetStoresByStatusAreaAndSessionAsync(int? status, string? areaName, string? sessionId)
         {
-            var stores = await _context.Stores
-                .Include(x => x.Area)
-                .Include(x => x.StoreSessions)
-                .AsNoTracking()
-                .ToListAsync();
+            var query = _context.Stores.Include(s => s.Area)
+                              .Include(s => s.StoreSessions)
+                              .AsQueryable();
 
-            var result = stores.Select(x => new Store
-            {
-                StoreId = x.StoreId,
-                Name = x.Name,
-                Address = x.Address,
-                Area = new Area { Name = x.Area.Name }
-            }).ToList();
+            if (status != null)
+                query = query.Where(s => s.Status == status);
 
-            // Populate StoreSessions for each store
-            foreach (var store in result)
-            {
-                var storeEntity = stores.First(s => s.StoreId == store.StoreId);
-                foreach (var session in storeEntity.StoreSessions)
+            if (!string.IsNullOrEmpty(areaName))
+                query = query.Where(s => s.Area.Name == areaName);
+
+            if (!string.IsNullOrEmpty(sessionId))
+                query = query.Where(s => s.StoreSessions.Any(ss => ss.SessionId == sessionId));
+
+            // Bỏ qua các điều kiện lọc nếu các giá trị đầu vào là rỗng hoặc null
+            if (status == null && string.IsNullOrEmpty(areaName) && string.IsNullOrEmpty(sessionId))
+                return await query.Select(s => new GetStoreViewModel
                 {
-                    store.StoreSessions.Add(new StoreSession
-                    {
-                        SessionId = session.SessionId,
-                        StoreSessionId = session.StoreSessionId,
-                        StoreId = session.StoreId
-                    });
-                }
-            }
-
-            return result;
+                    StoreId = s.StoreId,
+                    AreaId = s.AreaId,
+                    Name = s.Name,
+                    Address = s.Address,
+                    Status = s.Status,
+                    Phone = s.Phone,
+                    OpenTime = s.OpenTime,
+                    CloseTime = s.CloseTime,
+                    AreaName = s.Area.Name,
+                    Session = s.StoreSessions.Select(ss => ss.SessionId.ToString()).ToList()
+                }).ToListAsync();
+            else
+                return await query.Select(s => new GetStoreViewModel
+                {
+                    StoreId = s.StoreId,
+                    AreaId = s.AreaId,
+                    Name = s.Name,
+                    Address = s.Address,
+                    Status = s.Status,
+                    Phone = s.Phone,
+                    OpenTime = s.OpenTime,
+                    CloseTime = s.CloseTime,
+                    AreaName = s.Area.Name,
+                    Session = s.StoreSessions.Select(ss => ss.SessionId.ToString()).ToList()
+                }).ToListAsync();
         }
-
 
         public async Task<IEnumerable<Store>> FilterStoresAsync(string? areaId, int? status)
         {
