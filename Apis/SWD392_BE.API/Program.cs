@@ -173,7 +173,7 @@ builder.Services.AddScoped<IStoreSessionRepository, StoreSessionRepository>();
 //builder.Services.AddScoped<IFoodService, FoodService>();
 
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
-//builder.Services.AddScoped<IStoreService, StoreService>();
+builder.Services.AddScoped<IAreaService, AreaService>();
 
 
 builder.Services.AddScoped<IFoodRepository, FoodRepository>();
