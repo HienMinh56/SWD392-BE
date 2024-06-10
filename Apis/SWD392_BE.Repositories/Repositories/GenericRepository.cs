@@ -70,6 +70,20 @@ namespace SWD392_BE.Repositories.Repositories
             return await _dbSet.AnyAsync(predicate);
         }
 
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties)
+        {
+            IQueryable<T> query = _dbSet;
+            if (includeProperties != null)
+            {
+                foreach (var includeProperty in includeProperties)
+                {
+                    query = query.Include(includeProperty);
+                }
+            }
+            return await query.Where(predicate).ToListAsync();
+        }
+
+
         public void ClearTrackers()
         {
             _context.ChangeTracker.Clear();

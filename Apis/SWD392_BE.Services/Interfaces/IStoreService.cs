@@ -1,4 +1,5 @@
-﻿using SWD392_BE.Repositories.ViewModels.ResultModel;
+﻿using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.StoreModel;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace SWD392_BE.Services.Interfaces
     public interface IStoreService
     {
         public Task<ResultModel> getListStore();
+        Task<ResultModel> FilterStoresAsync(string? areaId, int? status);
         public Task<ResultModel> addStore(StoreViewModel storeReqModel, ClaimsPrincipal userCreate);
         public Task<ResultModel> UpdateStoreAsync(string storeId, UpdateStoreViewModel model, ClaimsPrincipal userUpdate);
     }
