@@ -18,19 +18,14 @@ namespace SWD392_BE.API.Controllers
             _storeService = storeService;
         }
 
-        [HttpGet]
+        [HttpGet("filterStore")]
         public async Task<IActionResult> GetStoresByStatusAreaAndSession([FromQuery] int? status, [FromQuery] string? areaName, [FromQuery] string? sessionId)
         {
             var stores = await _storeService.GetStoresAsync(status, areaName, sessionId);
             return Ok(stores);
         }
 
-        [HttpGet("filterStore")]
-        public async Task<IActionResult> FilterStores([FromQuery] string? areaId, [FromQuery] int? status)
-        {
-            var result = await _storeService.FilterStoresAsync(areaId, status);
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
-        }
+        
 
         [HttpPost("AddStore")]
         public async Task<IActionResult> AddStore(StoreViewModel storeReq)
