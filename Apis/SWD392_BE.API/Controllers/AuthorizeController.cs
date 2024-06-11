@@ -257,7 +257,7 @@ namespace SWD392_BE.API.Controllers
         }
         #endregion
 
-        [HttpGet("whoami")]
+        [HttpGet("Me")]
         public IActionResult WhoAmI()
         {
             // Kiểm tra xem người dùng đã được xác thực chưa
