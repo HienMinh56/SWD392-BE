@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SWD392_BE.Repositories.ViewModels.FoodModel;
 using SWD392_BE.Repositories.ViewModels.StoreModel;
+using SWD392_BE.Repositories.ViewModels.UserModel;
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.Services;
 
@@ -36,6 +37,13 @@ namespace SWD392_BE.API.Controllers
         {
             var currentUser = HttpContext.User;
             var result = await _foodService.UpdateFoodAsync(id, model, currentUser);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+        [HttpPatch("deleteFood")]
+        public async Task<IActionResult> DeleteFood([FromBody] DeleteFoodReqModel request)
+        {
+            var currentUser = HttpContext.User;
+            var result = await _foodService.DeleteFood(request, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }
