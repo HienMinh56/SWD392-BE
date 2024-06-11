@@ -56,7 +56,7 @@ namespace SWD392_BE.API.Controllers
         }
 
         [HttpPost("mobileRegister")]
-        public async Task<ActionResult<ResultModel>> MobileRegister(RegisterReqModel model)
+        public async Task<ActionResult<ResultModel>> MobileRegister(CreateMobileViewModel model)
         {
             try
             {

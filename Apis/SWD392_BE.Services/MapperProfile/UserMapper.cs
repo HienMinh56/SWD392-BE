@@ -41,6 +41,18 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.Orders, opt => opt.Ignore()) // Ignore Orders
             .ForMember(dest => dest.Transactions, opt => opt.Ignore());
 
+            CreateMap<CreateMobileViewModel, User>()
+            .ForMember(dest => dest.UserId, opt => opt.Ignore()) // Ignore UserId since it will be generated
+            .ForMember(dest => dest.CreatedDate, opt => opt.Ignore()) // Ignore CreatedDate since it will be set separately
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()) // Ignore CreatedBy since it will be set separately
+            .ForMember(dest => dest.ModifiedDate, opt => opt.Ignore()) // Ignore ModifiedDate
+            .ForMember(dest => dest.ModifiedBy, opt => opt.Ignore()) // Ignore ModifiedBy
+            .ForMember(dest => dest.DeletedDate, opt => opt.Ignore()) // Ignore DeletedDate
+            .ForMember(dest => dest.DeletedBy, opt => opt.Ignore()) // Ignore DeletedBy
+            .ForMember(dest => dest.Balance, opt => opt.Ignore()) // Ignore Balance
+            .ForMember(dest => dest.Campus, opt => opt.Ignore()) // Ignore Campus since it will be handled differently
+            .ForMember(dest => dest.Orders, opt => opt.Ignore()) // Ignore Orders
+            .ForMember(dest => dest.Transactions, opt => opt.Ignore());
 
             CreateMap<User, DeleteUserReqModel>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
