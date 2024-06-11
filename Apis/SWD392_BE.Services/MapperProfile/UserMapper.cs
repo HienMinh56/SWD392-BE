@@ -104,6 +104,8 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
 
+            CreateMap<Food, DeleteFoodReqModel>()
+            .ForMember(dest => dest.FoodId, opt => opt.MapFrom(src => src.FoodId));
         }
     }
 }
