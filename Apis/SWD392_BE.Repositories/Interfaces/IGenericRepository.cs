@@ -9,7 +9,7 @@ namespace SWD392_BE.Repositories.Interfaces
 {
     public interface IGenericRepository<T> where T : class
     {
-        ICollection<T> GetAll();
+        ICollection<T> Get();
         ICollection<T> GetList(Expression<Func<T, bool>> expression);
         T Get(Expression<Func<T, bool>> expression);
         T Add(T entity);

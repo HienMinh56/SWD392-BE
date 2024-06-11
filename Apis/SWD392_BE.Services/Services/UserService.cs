@@ -125,7 +125,7 @@ namespace SWD392_BE.Services.Services
         }
         private int checkNameAndEmail(string name, string email, string userId)
         {
-            var users = _userRepository.GetAll();
+            var users = _userRepository.Get();
             if (users.FirstOrDefault(c => c.Name == name && c.UserId != userId) != null)
             {
                 return 0;

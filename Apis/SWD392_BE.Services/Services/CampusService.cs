@@ -26,7 +26,7 @@ namespace SWD392_BE.Services.Services
             ResultModel result = new ResultModel();
             try
             {
-                var campus = _campusRepository.GetAll();
+                var campus = _campusRepository.Get();
                 if (campus == null || !campus.Any())
                 {
                     result.IsSuccess = true;

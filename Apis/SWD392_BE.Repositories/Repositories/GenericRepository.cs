@@ -20,7 +20,7 @@ namespace SWD392_BE.Repositories.Repositories
             _dbSet = context.Set<T>();
         }
 
-        public virtual ICollection<T> GetAll()
+        public virtual ICollection<T> Get()
         {
             return _dbSet.ToList();
         }

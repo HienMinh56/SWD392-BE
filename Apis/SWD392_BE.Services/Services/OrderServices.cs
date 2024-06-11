@@ -23,7 +23,7 @@ namespace SWD392_BE.Services.Services
             var result = new ResultModel();
             try
             {
-                var order = _order.GetAll();
+                var order = _order.Get();
                 if (order == null)
                 {
                     result.IsSuccess = true;

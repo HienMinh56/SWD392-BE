@@ -23,7 +23,7 @@ namespace SWD392_BE.Services.Services
             var result = new ResultModel();
             try
             {
-                var areas = _area.GetAll();
+                var areas = _area.Get();
                 if (areas == null)
                 {
                     result.IsSuccess = true;
