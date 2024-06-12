@@ -10,5 +10,6 @@ namespace SWD392_BE.Repositories.Interfaces
     public interface IFoodRepository : IGenericRepository<Food>
     {
         Task<string> GetLastFoodIdAsync();
+        public Task<IEnumerable<Food>> FilterFoodsAsync(int? cate);
     }
 }

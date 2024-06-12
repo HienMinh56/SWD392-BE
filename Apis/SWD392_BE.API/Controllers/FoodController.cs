@@ -24,7 +24,12 @@ namespace SWD392_BE.API.Controllers
             var result = await _foodService.getListFood(storeId);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-
+        [HttpGet("filterFood")]
+        public async Task<IActionResult> FilterFood([FromQuery] int? cate)
+        {
+            var foods = await _foodService.FilterFoodsAsync(cate);
+            return Ok(foods);
+        }
         [HttpPost("AddFood")]
         public async Task<IActionResult> AddFood(string storeId, List<List<FoodViewModel>> foodLists)
         {

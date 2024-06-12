@@ -46,6 +46,39 @@ namespace SWD392_BE.Services.Services
                 throw new Exception(ex.Message);
             }
         }
+        public async Task<ResultModel> FilterFoodsAsync(int? cate)
+        {
+            var model = new ResultModel();
+
+            try
+            {
+                // Find stores based on provided filters
+                var foods = await _foodRepository.FilterFoodsAsync(cate);
+
+                if (foods == null || !foods.Any())
+                {
+                    model.IsSuccess = false;
+                    model.Code = 404;
+                    model.Message = "No foods found.";
+                    model.Data = null;
+                    return model;
+                }
+
+                model.IsSuccess = true;
+                model.Code = 200;
+                model.Message = "List of foods retrieved successfully.";
+                model.Data = foods;
+                return model;
+            }
+            catch (Exception ex)
+            {
+                model.IsSuccess = false;
+                model.Code = 500;
+                model.Message = $"An error occurred: {ex.Message}";
+                model.Data = null;
+                return model;
+            }
+        }
         public async Task<ResultModel> addFood(string storeId, List<List<FoodViewModel>> foodLists, ClaimsPrincipal userCreate)
         {
             ResultModel result = new ResultModel();
