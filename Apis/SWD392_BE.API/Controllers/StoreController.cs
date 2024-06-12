@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using SWD392_BE.Repositories.ViewModels.FoodModel;
 using SWD392_BE.Repositories.ViewModels.StoreModel;
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.Services;
@@ -40,6 +41,13 @@ namespace SWD392_BE.API.Controllers
         {
             var currentUser = HttpContext.User;
             var result = await _storeService.UpdateStoreAsync(storeId, storeReq, currentUser);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+        [HttpPatch("deleteStore")]
+        public async Task<IActionResult> DeleteStore([FromBody] DeleteStoreReqModel request)
+        {
+            var currentUser = HttpContext.User;
+            var result = await _storeService.DeleteStore(request, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }

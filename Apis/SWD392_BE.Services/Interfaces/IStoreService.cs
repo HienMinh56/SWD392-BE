@@ -16,5 +16,6 @@ namespace SWD392_BE.Services.Interfaces
         Task<ResultModel> FilterStoresAsync(string? areaId, int? status);
         public Task<ResultModel> addStore(StoreViewModel storeReqModel, ClaimsPrincipal userCreate);
         public Task<ResultModel> UpdateStoreAsync(string storeId, UpdateStoreViewModel model, ClaimsPrincipal userUpdate);
+        public Task<ResultModel> DeleteStore(DeleteStoreReqModel request, ClaimsPrincipal userDelete);
     }
 }
