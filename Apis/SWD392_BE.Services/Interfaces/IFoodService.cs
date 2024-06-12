@@ -13,6 +13,7 @@ namespace SWD392_BE.Services.Interfaces
     public interface IFoodService
     {
         public Task<ResultModel> getListFood(string storeId);
+        public Task<ResultModel> FilterFoodsAsync(int? cate);
         public Task<ResultModel> addFood(string storeId, List<List<FoodViewModel>> foodLists, ClaimsPrincipal userCreate);
         public Task<ResultModel> UpdateFoodAsync(string id, UpdateFoodViewModel model, ClaimsPrincipal userUpdate);
         public Task<ResultModel> DeleteFood(DeleteFoodReqModel request, ClaimsPrincipal userDelete);
