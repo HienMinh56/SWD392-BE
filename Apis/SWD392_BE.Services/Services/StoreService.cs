@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Repositories;
+using SWD392_BE.Repositories.ViewModels.FoodModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.StoreModel;
 using SWD392_BE.Services.Interfaces;
@@ -105,7 +106,25 @@ namespace SWD392_BE.Services.Services
             }
         }
 
+        public Store GetStoreById(string id)
+        {
+            try
+            {
+                var data = _storeRepository.Get(x => x.StoreId == id);
 
+                if (data == null)
+                {
+                    // Handle the case where the user is not found, e.g., return null or throw an exception
+                    return null;
+                }
+
+                return data;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
         public async Task<ResultModel> addStore(StoreViewModel model, ClaimsPrincipal userCreate)
         {
@@ -263,5 +282,37 @@ namespace SWD392_BE.Services.Services
             }
         }
 
+        public async Task<ResultModel> DeleteStore(DeleteStoreReqModel request, ClaimsPrincipal userDelete)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var store = GetStoreById(request.StoreId);
+                if (store == null)
+                {
+                    result.Message = "Store not found or deleted";
+                    result.Code = 404;
+                    result.IsSuccess = false;
+                    result.Data = null;
+                    return result;
+                }
+                store.DeletedBy = userDelete.FindFirst("UserName")?.Value;
+                store.DeletedDate = DateTime.UtcNow;
+                store.Status = store.Status = 2;
+                _storeRepository.Update(store);
+                _storeRepository.SaveChanges();
+
+                result.Message = "Delete Store successfully";
+                result.Code = 200;
+                result.IsSuccess = true;
+                result.Data = store;
+            }
+            catch (DbUpdateException ex)
+            {
+                result.Message = ex.Message;
+                result.IsSuccess = false;
+            }
+            return result;
+        }
     }
 }

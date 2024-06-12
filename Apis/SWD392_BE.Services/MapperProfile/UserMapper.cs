@@ -82,6 +82,9 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.OpenTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.OpenTime)))
             .ForMember(dest => dest.CloseTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.CloseTime)));
 
+            CreateMap<Store, DeleteStoreReqModel>()
+            .ForMember(dest => dest.StoreId, opt => opt.MapFrom(src => src.StoreId));
+
             //Food
             CreateMap<FoodViewModel, Food>()
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
