@@ -226,7 +226,7 @@ using (var scope = app.Services.CreateScope())
     refreshHandler.RemoveAllRefreshToken();
 }
 
-
+app.UseCors("app-cors");
 app.UseSwagger();
 app.UseSwaggerUI();
 

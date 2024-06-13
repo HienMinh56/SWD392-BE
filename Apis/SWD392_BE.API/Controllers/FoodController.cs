@@ -18,18 +18,37 @@ namespace SWD392_BE.API.Controllers
             _foodService = foodService;
         }
 
+        #region Get list foods
+        /// <summary>
+        /// Get list of foods
+        /// </summary>
+        /// <returns>A list of foods</returns>
         [HttpGet]
         public async Task<IActionResult> GetListFood(string storeId)
         {
             var result = await _foodService.getListFood(storeId);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+        #endregion
+
+        #region Filter food
+        /// <summary>
+        /// Get list of foods by filter
+        /// </summary>
+        /// <returns>A list of foods</returns>
         [HttpGet("cate")]
         public async Task<IActionResult> FilterFood([FromQuery] int? cate)
         {
             var foods = await _foodService.FilterFoodsAsync(cate);
             return Ok(foods);
         }
+        #endregion
+
+        #region Add foods
+        /// <summary>
+        /// Add new foods into store
+        /// </summary>
+        /// <returns>Status of action</returns>
         [HttpPost]
         public async Task<IActionResult> AddFood(string storeId, List<List<FoodViewModel>> foodLists)
         {
@@ -37,6 +56,13 @@ namespace SWD392_BE.API.Controllers
             var result = await _foodService.addFood(storeId, foodLists, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+        #endregion
+
+        #region Update Food
+        /// <summary>
+        /// Update a food
+        /// </summary>
+        /// <returns>Status of action</returns>
         [HttpPut]
         public async Task<IActionResult> UpdateFood(string id, UpdateFoodViewModel model)
         {
@@ -44,6 +70,13 @@ namespace SWD392_BE.API.Controllers
             var result = await _foodService.UpdateFoodAsync(id, model, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+        #endregion
+
+        #region Delete food
+        /// <summary>
+        /// Delete a food
+        /// </summary>
+        /// <returns>Status of action</returns>
         [HttpDelete]
         public async Task<IActionResult> DeleteFood([FromBody] DeleteFoodReqModel request)
         {
@@ -51,5 +84,6 @@ namespace SWD392_BE.API.Controllers
             var result = await _foodService.DeleteFood(request, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+        #endregion
     }
 }

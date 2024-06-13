@@ -16,11 +16,17 @@ namespace SWD392_BE.API.Controllers
             _area = area;
         }
 
+        #region Get Areas
+        /// <summary>
+        /// Get list of areas
+        /// </summary>
+        /// <returns>A list of areas</returns>
         [HttpGet]
         public async Task<IActionResult> getAreas()
         {
             var result = await _area.getAreas();
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+        #endregion
     }
 }

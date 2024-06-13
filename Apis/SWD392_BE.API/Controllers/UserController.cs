@@ -21,13 +21,24 @@ namespace SWD392_BE.API.Controllers
             _userService = userService;
         }
 
+        #region Get list user filter
+        /// <summary>
+        /// Get list of users by filter
+        /// </summary>
+        /// <returns>A list of users</returns>
         [HttpGet]
         public async Task<IActionResult> GetUserList(int? status, string? campusName)
         {
             var result = await _userService.GetUserList(status, campusName);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+        #endregion
 
+        #region Delete user
+        /// <summary>
+        /// Delete a user
+        /// </summary>
+        /// <returns>Status of action</returns>
         [HttpDelete]
         public async Task<IActionResult> DeleteUser([FromBody] DeleteUserReqModel request)
         {
@@ -35,7 +46,13 @@ namespace SWD392_BE.API.Controllers
             var result = await _userService.DeleteUser(request, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+        #endregion
 
+        #region Update User
+        /// <summary>
+        /// Update a user
+        /// </summary>
+        /// <returns>Status of action</returns>
         [HttpPut("{userId}")]
         public async Task<ActionResult<ResultModel>> UpdateUser(string userId, UpdateUserViewModel model)
         {
@@ -62,7 +79,13 @@ namespace SWD392_BE.API.Controllers
                 return StatusCode(500, result);
             }
         }
+        #endregion
 
+        #region Search user
+        /// <summary>
+        /// Search user by keyword
+        /// </summary>
+        /// <returns>A list of users</returns>
         [HttpGet("{keyword}")]
         public async Task<ActionResult<ResultModel>> SearchUserByKeyword(string keyword)
         {
@@ -70,20 +93,33 @@ namespace SWD392_BE.API.Controllers
             return result.IsSuccess ? Ok(result) : BadRequest(result);
 
         }
+        #endregion
 
+        #region Sort user ascending created date
+        /// <summary>
+        /// Get list of users by acsending created date 
+        /// </summary>
+        /// <returns>A list of users</returns>
         [HttpGet("ascending")]
         public async Task<IActionResult> GetUsersSortedByCreatedDateAscending()
         {
             var result = await _userService.GetUsersSortedByCreatedDateAscending();
             return result.IsSuccess ? Ok(result) : StatusCode(result.Code, result);
         }
+        #endregion
 
+        #region Sort user descending created date
+        /// <summary>
+        /// Get list of users by descending created date 
+        /// </summary>
+        /// <returns>A list of users</returns>
         [HttpGet("descending")]
         public async Task<IActionResult> GetUsersSortedByCreatedDateDescending()
         {
             var result = await _userService.GetUsersSortedByCreatedDateDescending();
             return result.IsSuccess ? Ok(result) : StatusCode(result.Code, result);
         }
+        #endregion
     }
 }
 
