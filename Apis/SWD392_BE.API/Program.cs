@@ -9,6 +9,7 @@ using SWD392_BE.Repositories.Repositories;
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.MapperProfile;
 using SWD392_BE.Services.Services;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -131,6 +132,10 @@ builder.Services.AddSwaggerGen(options =>
                         Array.Empty<string>()
                     }
                 });
+    // Lấy tệp XML cho chú thích Swagger
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 });
 builder.Services.AddAuthentication(item =>
 {
