@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using SWD392_BE.Repositories.Entities;
@@ -16,6 +17,7 @@ namespace SWD392_BE.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("app-cors")]
     public class AuthorizeController : ControllerBase
     {
         private readonly IUserService _userServices;
