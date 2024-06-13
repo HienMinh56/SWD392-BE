@@ -7,7 +7,7 @@ using SWD392_BE.Services.Services;
 
 namespace SWD392_BE.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/food")]
     [ApiController]
     public class FoodController : ControllerBase
     {
@@ -18,33 +18,33 @@ namespace SWD392_BE.API.Controllers
             _foodService = foodService;
         }
 
-        [HttpGet("GetFoods")]
+        [HttpGet]
         public async Task<IActionResult> GetListFood(string storeId)
         {
             var result = await _foodService.getListFood(storeId);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-        [HttpGet("filterFood")]
+        [HttpGet("cate")]
         public async Task<IActionResult> FilterFood([FromQuery] int? cate)
         {
             var foods = await _foodService.FilterFoodsAsync(cate);
             return Ok(foods);
         }
-        [HttpPost("AddFood")]
+        [HttpPost]
         public async Task<IActionResult> AddFood(string storeId, List<List<FoodViewModel>> foodLists)
         {
             var currentUser = HttpContext.User;
             var result = await _foodService.addFood(storeId, foodLists, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-        [HttpPut("UpdateFood")]
+        [HttpPut]
         public async Task<IActionResult> UpdateFood(string id, UpdateFoodViewModel model)
         {
             var currentUser = HttpContext.User;
             var result = await _foodService.UpdateFoodAsync(id, model, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-        [HttpPatch("deleteFood")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteFood([FromBody] DeleteFoodReqModel request)
         {
             var currentUser = HttpContext.User;

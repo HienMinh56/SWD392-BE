@@ -11,7 +11,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SWD392_BE.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/user")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -21,14 +21,14 @@ namespace SWD392_BE.API.Controllers
             _userService = userService;
         }
 
-        [HttpGet("getUsersList")]
+        [HttpGet]
         public async Task<IActionResult> GetUserList(int? status, string? campusName)
         {
             var result = await _userService.GetUserList(status, campusName);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPatch("deleteUser")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteUser([FromBody] DeleteUserReqModel request)
         {
             var currentUser = HttpContext.User;
@@ -36,7 +36,7 @@ namespace SWD392_BE.API.Controllers
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPut("updateUser")]
+        [HttpPut("{userId}")]
         public async Task<ActionResult<ResultModel>> UpdateUser(string userId, UpdateUserViewModel model)
         {
             try
@@ -63,12 +63,26 @@ namespace SWD392_BE.API.Controllers
             }
         }
 
-        [HttpGet("SearchUserByKeyword")]
+        [HttpGet("{keyword}")]
         public async Task<ActionResult<ResultModel>> SearchUserByKeyword(string keyword)
         {
             var result = await _userService.SearchUserByKeyword(keyword);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
 
+        }
+
+        [HttpGet("ascending")]
+        public async Task<IActionResult> GetUsersSortedByCreatedDateAscending()
+        {
+            var result = await _userService.GetUsersSortedByCreatedDateAscending();
+            return result.IsSuccess ? Ok(result) : StatusCode(result.Code, result);
+        }
+
+        [HttpGet("descending")]
+        public async Task<IActionResult> GetUsersSortedByCreatedDateDescending()
+        {
+            var result = await _userService.GetUsersSortedByCreatedDateDescending();
+            return result.IsSuccess ? Ok(result) : StatusCode(result.Code, result);
         }
     }
 }

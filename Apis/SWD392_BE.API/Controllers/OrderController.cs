@@ -6,7 +6,7 @@ using SWD392_BE.Services.Interfaces;
 
 namespace SWD392_BE.API.Controllers
 {
-        [Route("api/[controller]")]
+        [Route("api/v1/order")]
         [ApiController]
         public class OrderController : ControllerBase
         {
@@ -17,7 +17,7 @@ namespace SWD392_BE.API.Controllers
                 _order = order;
             }
 
-        [HttpGet("GetOrder")]
+        [HttpGet]
         public async Task<IActionResult> getOrder()
         {
             var result = await _order.getOrder();
