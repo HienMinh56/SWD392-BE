@@ -4,7 +4,7 @@ using SWD392_BE.Services.Interfaces;
 
 namespace SWD392_BE.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/campus")]
     [ApiController]
     public class CampusController : ControllerBase
     {
@@ -15,7 +15,7 @@ namespace SWD392_BE.API.Controllers
             _campusService = campusService;
         }
 
-        [HttpGet("GetCampus")]
+        [HttpGet]
         public async Task<IActionResult> GetListCampus()
         {
             var result = await _campusService.getListCampus();

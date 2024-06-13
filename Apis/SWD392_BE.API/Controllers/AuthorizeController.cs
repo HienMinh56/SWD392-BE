@@ -14,7 +14,7 @@ using System.Text;
 
 namespace SWD392_BE.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/authorize")]
     [ApiController]
     public class AuthorizeController : ControllerBase
     {
@@ -102,7 +102,7 @@ namespace SWD392_BE.API.Controllers
         #endregion
 
         #region RefreshAccessToken
-        [HttpPost("RefreshAccessToken")]
+        [HttpPost("refresh-access-token")]
         public async Task<ActionResult> RefreshAccessToken(TokenViewModel token)
         {
             try
@@ -185,7 +185,7 @@ namespace SWD392_BE.API.Controllers
 
         #region Login
         [HttpPost]
-        [Route("Login")]
+        [Route("login")]
         public IActionResult Login(string userName, string password)
         {
             var user = _userServices.GetUserByUserName(userName);
@@ -213,7 +213,7 @@ namespace SWD392_BE.API.Controllers
 
         #region Logout
         [HttpPost]
-        [Route("Logout")]
+        [Route("logout")]
         public IActionResult Logout()
         {
             try
@@ -257,7 +257,7 @@ namespace SWD392_BE.API.Controllers
         }
         #endregion
 
-        [HttpGet("Me")]
+        [HttpGet("me")]
         public IActionResult WhoAmI()
         {
             // Kiểm tra xem người dùng đã được xác thực chưa

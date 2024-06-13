@@ -10,7 +10,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SWD392_BE.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/account")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -28,7 +28,7 @@ namespace SWD392_BE.API.Controllers
 
 
 
-        [HttpPost("AddNewUser")]
+        [HttpPost]
         public async Task<ActionResult<ResultModel>> AddNewUser(RegisterReqModel model)
         {
             try
@@ -55,7 +55,7 @@ namespace SWD392_BE.API.Controllers
             }
         }
 
-        [HttpPost("mobileRegister")]
+        [HttpPost("mobile")]
         public async Task<ActionResult<ResultModel>> MobileRegister(CreateMobileViewModel model)
         {
             try

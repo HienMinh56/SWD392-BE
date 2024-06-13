@@ -68,8 +68,18 @@ namespace SWD392_BE.Repositories.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<List<User>> GetUsersSortedByCreatedDateAscending()
+        {
+            return await _dbContext.Users
+                .OrderBy(u => u.CreatedDate)
+                .ToListAsync();
+        }
 
-
-
+        public async Task<List<User>> GetUsersSortedByCreatedDateDescending()
+        {
+            return await _dbContext.Users
+                .OrderByDescending(u => u.CreatedDate)
+                .ToListAsync();
+        }
     }
 }

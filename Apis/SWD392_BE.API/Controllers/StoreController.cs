@@ -8,7 +8,7 @@ using SWD392_BE.Services.Services;
 
 namespace SWD392_BE.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/store")]
     [ApiController]
     public class StoreController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace SWD392_BE.API.Controllers
             _storeService = storeService;
         }
 
-        [HttpGet("filterStore")]
+        [HttpGet]
         public async Task<IActionResult> GetStoresByStatusAreaAndSession([FromQuery] int? status, [FromQuery] string? areaName, [FromQuery] string? sessionId)
         {
             var stores = await _storeService.GetStoresAsync(status, areaName, sessionId);
@@ -28,7 +28,7 @@ namespace SWD392_BE.API.Controllers
 
         
 
-        [HttpPost("AddStore")]
+        [HttpPost]
         public async Task<IActionResult> AddStore(StoreViewModel storeReq)
         {
             var currentUser = HttpContext.User;
@@ -36,14 +36,14 @@ namespace SWD392_BE.API.Controllers
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPut("UpdateStore")]
+        [HttpPut]
         public async Task<IActionResult> UpdateStore(string storeId,  UpdateStoreViewModel storeReq)
         {
             var currentUser = HttpContext.User;
             var result = await _storeService.UpdateStoreAsync(storeId, storeReq, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-        [HttpPatch("deleteStore")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteStore([FromBody] DeleteStoreReqModel request)
         {
             var currentUser = HttpContext.User;
