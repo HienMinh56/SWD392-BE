@@ -17,11 +17,17 @@ namespace SWD392_BE.API.Controllers
                 _order = order;
             }
 
+        #region Get orders
+        /// <summary>
+        /// Get list of orders
+        /// </summary>
+        /// <returns>A list of orders</returns>
         [HttpGet]
         public async Task<IActionResult> getOrder()
         {
             var result = await _order.getOrder();
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+        #endregion
     }
 }

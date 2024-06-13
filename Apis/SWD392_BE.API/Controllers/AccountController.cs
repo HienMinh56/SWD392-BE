@@ -24,10 +24,11 @@ namespace SWD392_BE.API.Controllers
 
         }
 
-
-
-
-
+        #region Add a new user
+        /// <summary>
+        /// Add a new user by admin
+        /// </summary>
+        /// <returns>Status of action</returns>
         [HttpPost]
         public async Task<ActionResult<ResultModel>> AddNewUser(RegisterReqModel model)
         {
@@ -54,7 +55,13 @@ namespace SWD392_BE.API.Controllers
                 return StatusCode(500, result);
             }
         }
+        #endregion
 
+        #region Regis Account
+        /// <summary>
+        /// Register a new account
+        /// </summary>
+        /// <returns>Status of action</returns>
         [HttpPost("mobile")]
         public async Task<ActionResult<ResultModel>> MobileRegister(CreateMobileViewModel model)
         {
@@ -82,6 +89,7 @@ namespace SWD392_BE.API.Controllers
                 return StatusCode(500, result);
             }
         }
+        #endregion
     }
 
 }

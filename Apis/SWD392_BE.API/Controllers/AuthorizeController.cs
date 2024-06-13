@@ -104,6 +104,10 @@ namespace SWD392_BE.API.Controllers
         #endregion
 
         #region RefreshAccessToken
+        /// <summary>
+        /// Refresh Token
+        /// </summary>
+        /// <returns>New Token and Refresh Token</returns>
         [HttpPost("refresh-access-token")]
         public async Task<ActionResult> RefreshAccessToken(TokenViewModel token)
         {
@@ -186,6 +190,10 @@ namespace SWD392_BE.API.Controllers
         #endregion
 
         #region Login
+        /// <summary>
+        /// Login into system
+        /// </summary>
+        /// <returns>Acces Token and Refresh Token</returns>
         [HttpPost]
         [Route("login")]
         public IActionResult Login(string userName, string password)
@@ -259,6 +267,11 @@ namespace SWD392_BE.API.Controllers
         }
         #endregion
 
+        #region Who Am I
+        /// <summary>
+        /// Check infor of user
+        /// </summary>
+        /// <returns>Infor of user</returns>
         [HttpGet("me")]
         public IActionResult WhoAmI()
         {
@@ -306,6 +319,6 @@ namespace SWD392_BE.API.Controllers
                 return Unauthorized();
             }
         }
-
+        #endregion
     }
 }

@@ -15,11 +15,17 @@ namespace SWD392_BE.API.Controllers
             _campusService = campusService;
         }
 
+        #region Get List Campus
+        /// <summary>
+        /// Get list of campuses
+        /// </summary>
+        /// <returns>A list of campuses</returns>
         [HttpGet]
         public async Task<IActionResult> GetListCampus()
         {
             var result = await _campusService.getListCampus();
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+        #endregion
     }
 }
