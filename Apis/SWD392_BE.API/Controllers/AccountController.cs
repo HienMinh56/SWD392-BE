@@ -10,7 +10,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SWD392_BE.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/account")]
     [ApiController]
     public class AccountController : ControllerBase
     {
@@ -24,11 +24,12 @@ namespace SWD392_BE.API.Controllers
 
         }
 
-
-
-
-
-        [HttpPost("AddNewUser")]
+        #region Add a new user
+        /// <summary>
+        /// Add a new user by admin
+        /// </summary>
+        /// <returns>Status of action</returns>
+        [HttpPost]
         public async Task<ActionResult<ResultModel>> AddNewUser(RegisterReqModel model)
         {
             try
@@ -54,9 +55,15 @@ namespace SWD392_BE.API.Controllers
                 return StatusCode(500, result);
             }
         }
+        #endregion
 
-        [HttpPost("mobileRegister")]
-        public async Task<ActionResult<ResultModel>> MobileRegister(RegisterReqModel model)
+        #region Regis Account
+        /// <summary>
+        /// Register a new account
+        /// </summary>
+        /// <returns>Status of action</returns>
+        [HttpPost("mobile")]
+        public async Task<ActionResult<ResultModel>> MobileRegister(CreateMobileViewModel model)
         {
             try
             {
@@ -82,6 +89,7 @@ namespace SWD392_BE.API.Controllers
                 return StatusCode(500, result);
             }
         }
+        #endregion
     }
 
 }

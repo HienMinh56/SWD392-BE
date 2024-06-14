@@ -41,6 +41,18 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.Orders, opt => opt.Ignore()) // Ignore Orders
             .ForMember(dest => dest.Transactions, opt => opt.Ignore());
 
+            CreateMap<CreateMobileViewModel, User>()
+            .ForMember(dest => dest.UserId, opt => opt.Ignore()) // Ignore UserId since it will be generated
+            .ForMember(dest => dest.CreatedDate, opt => opt.Ignore()) // Ignore CreatedDate since it will be set separately
+            .ForMember(dest => dest.CreatedBy, opt => opt.Ignore()) // Ignore CreatedBy since it will be set separately
+            .ForMember(dest => dest.ModifiedDate, opt => opt.Ignore()) // Ignore ModifiedDate
+            .ForMember(dest => dest.ModifiedBy, opt => opt.Ignore()) // Ignore ModifiedBy
+            .ForMember(dest => dest.DeletedDate, opt => opt.Ignore()) // Ignore DeletedDate
+            .ForMember(dest => dest.DeletedBy, opt => opt.Ignore()) // Ignore DeletedBy
+            .ForMember(dest => dest.Balance, opt => opt.Ignore()) // Ignore Balance
+            .ForMember(dest => dest.Campus, opt => opt.Ignore()) // Ignore Campus since it will be handled differently
+            .ForMember(dest => dest.Orders, opt => opt.Ignore()) // Ignore Orders
+            .ForMember(dest => dest.Transactions, opt => opt.Ignore());
 
             CreateMap<User, DeleteUserReqModel>()
                 .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId));
@@ -70,6 +82,9 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.OpenTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.OpenTime)))
             .ForMember(dest => dest.CloseTime, opt => opt.MapFrom(src => TimeSpan.Parse(src.CloseTime)));
 
+            CreateMap<Store, DeleteStoreReqModel>()
+            .ForMember(dest => dest.StoreId, opt => opt.MapFrom(src => src.StoreId));
+
             //Food
             CreateMap<FoodViewModel, Food>()
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
@@ -92,6 +107,8 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
 
+            CreateMap<Food, DeleteFoodReqModel>()
+            .ForMember(dest => dest.FoodId, opt => opt.MapFrom(src => src.FoodId));
         }
     }
 }

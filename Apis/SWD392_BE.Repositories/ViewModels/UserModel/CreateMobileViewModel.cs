@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.ViewModels.UserModel
 {
-    public class RegisterReqModel
+    public class CreateMobileViewModel
     {
         public string UserName { get; set; } = null!;
         public string Password { get; set; } = null!;
         public string ConfirmPassword { get; set; } = null!; // Added ConfirmPassword field
         public string Email { get; set; } = null!;
-        [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "The Name field cannot contain special characters.")]
         public string Name { get; set; } = null!;
         public string CampusId { get; set; } = null!;
-        [RegularExpression(@"^\d{12}$", ErrorMessage = "Phone number must have 12 numbers.")]
-        public string? Phone { get; set; }
-        public int Role {  get; set; }
+        public string Phone { get; set; }
     }
 }

@@ -74,6 +74,16 @@ namespace SWD392_BE.Repositories.Repositories
                 }).ToListAsync();
         }
 
+        public async Task<List<Store>> FetchStoresAsync()
+        {
+            return await _context.Stores
+                .Include(s => s.Area)
+                .Include(s => s.StoreSessions)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+
         public async Task<IEnumerable<Store>> FilterStoresAsync(string? areaId, int? status)
         {
             IQueryable<Store> query = _context.Stores;

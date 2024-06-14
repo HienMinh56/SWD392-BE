@@ -5,7 +5,7 @@ using SWD392_BE.Services.Interfaces;
 
 namespace SWD392_BE.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/area")]
     [ApiController]
     public class AreaController : ControllerBase
     {
@@ -16,11 +16,17 @@ namespace SWD392_BE.API.Controllers
             _area = area;
         }
 
-        [HttpGet("GetArea")]
+        #region Get Areas
+        /// <summary>
+        /// Get list of areas
+        /// </summary>
+        /// <returns>A list of areas</returns>
+        [HttpGet]
         public async Task<IActionResult> getAreas()
         {
             var result = await _area.getAreas();
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+        #endregion
     }
 }

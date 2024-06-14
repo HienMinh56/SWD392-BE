@@ -93,6 +93,7 @@ namespace SWD392_BE.Services.Services
                 await _accountRepo.SaveChangesAsync();
                 result.IsSuccess = true;
                 result.Code = 200;
+                result.Message = "Add New User Success";
                 return result;
             }
             catch (Exception e)
@@ -105,7 +106,7 @@ namespace SWD392_BE.Services.Services
         }
 
 
-        public async Task<ResultModel> MobileRegister(RegisterReqModel model)
+        public async Task<ResultModel> MobileRegister(CreateMobileViewModel model)
         {
             ResultModel result = new ResultModel();
             try
@@ -166,6 +167,7 @@ namespace SWD392_BE.Services.Services
                 await _accountRepo.SaveChangesAsync();
                 result.IsSuccess = true;
                 result.Code = 200;
+                result.Message = "Add New Shiper Success";
                 return result;
             }
             catch (Exception e)
