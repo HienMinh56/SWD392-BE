@@ -102,9 +102,6 @@ namespace SWD392_BE.Services.Services
                 return result;
             }
         }
-
-
-
         public async Task<ResultModel> GetListFoodsAsync(string storeId, int pageIndex, int pageSize, int? cate)
         {
             ResultModel result = new ResultModel();

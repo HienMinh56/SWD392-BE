@@ -49,26 +49,46 @@ namespace SWD392_BE.API.Controllers
             }
         }
         #endregion
-        [HttpPost("AddFood")]
+        #region Add foods
+        /// <summary>
+        /// Add new foods into store
+        /// </summary>
+        /// <returns>Status of action</returns>
+        [HttpPost]
         public async Task<IActionResult> AddFood(string storeId, List<List<FoodViewModel>> foodLists)
         {
             var currentUser = HttpContext.User;
             var result = await _foodService.addFood(storeId, foodLists, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-        [HttpPut("UpdateFood")]
+        #endregion
+
+        #region Update Food
+        /// <summary>
+        /// Update a food
+        /// </summary>
+        /// <returns>Status of action</returns>
+        [HttpPut]
         public async Task<IActionResult> UpdateFood(string id, UpdateFoodViewModel model)
         {
             var currentUser = HttpContext.User;
             var result = await _foodService.UpdateFoodAsync(id, model, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-        [HttpPatch("deleteFood")]
+        #endregion
+
+        #region Delete food
+        /// <summary>
+        /// Delete a food
+        /// </summary>
+        /// <returns>Status of action</returns>
+        [HttpDelete]
         public async Task<IActionResult> DeleteFood([FromBody] DeleteFoodReqModel request)
         {
             var currentUser = HttpContext.User;
             var result = await _foodService.DeleteFood(request, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+        #endregion
     }
 }
