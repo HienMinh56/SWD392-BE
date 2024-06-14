@@ -4,6 +4,7 @@ using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Repositories;
 using SWD392_BE.Repositories.ViewModels.FoodModel;
+using SWD392_BE.Repositories.ViewModels.PageModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.StoreModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
@@ -137,13 +138,18 @@ namespace SWD392_BE.Services.Services
 
 
 
-        public async Task<ResultModel> getListFood(string storeId)
+        public async Task<ResultModel> GetListFood(string storeId, int pageIndex, int pageSize)
         {
             ResultModel result = new ResultModel();
             try
             {
-                var foods = _foodRepository.GetList(s => s.StoreId == storeId);
-                if (foods == null)
+                var allFoods = _foodRepository.GetList(s => s.StoreId == storeId);
+                var totalItems = allFoods.Count();
+                var foods = allFoods.Skip((pageIndex - 1) * pageSize)
+                                    .Take(pageSize)
+                                    .ToList();
+
+                if (foods == null || !foods.Any())
                 {
                     result.IsSuccess = true;
                     result.Code = 201;
@@ -151,10 +157,18 @@ namespace SWD392_BE.Services.Services
                 }
                 else
                 {
+                    var pagedResult = new PagedResultViewModel<Food>
+                    {
+                        TotalItems = totalItems,
+                        PageNumber = pageIndex,
+                        PageSize = pageSize,
+                        Items = foods
+                    };
+
                     result.IsSuccess = true;
                     result.Code = 200;
                     result.Message = "Foods retrieved successfully";
-                    result.Data = foods;
+                    result.Data = pagedResult;
                 }
             }
             catch (Exception ex)
