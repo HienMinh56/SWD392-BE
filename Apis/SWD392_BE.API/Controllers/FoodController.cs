@@ -9,7 +9,7 @@ using SWD392_BE.Services.Services;
 
 namespace SWD392_BE.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/food")]
     [ApiController]
     public class FoodController : ControllerBase
     {
@@ -20,6 +20,11 @@ namespace SWD392_BE.API.Controllers
             _foodService = foodService;
         }
 
+        #region Get list foods
+        /// <summary>
+        /// Get list of foods
+        /// </summary>
+        /// <returns>A list of foods</returns>
         [HttpGet("GetFoods")]
         public async Task<IActionResult> GetListFood(string storeId, int pageIndex = 1, int pageSize = 10)
         {
@@ -44,32 +49,61 @@ namespace SWD392_BE.API.Controllers
                 return BadRequest(result.Message);
             }
         }
-        [HttpGet("filterFood")]
+        #endregion
+
+        #region Filter food
+        /// <summary>
+        /// Get list of foods by filter
+        /// </summary>
+        /// <returns>A list of foods</returns>
+        [HttpGet("cate")]
         public async Task<IActionResult> FilterFood([FromQuery] int? cate)
         {
             var foods = await _foodService.FilterFoodsAsync(cate);
             return Ok(foods);
         }
-        [HttpPost("AddFood")]
+        #endregion
+
+        #region Add foods
+        /// <summary>
+        /// Add new foods into store
+        /// </summary>
+        /// <returns>Status of action</returns>
+        [HttpPost]
         public async Task<IActionResult> AddFood(string storeId, List<List<FoodViewModel>> foodLists)
         {
             var currentUser = HttpContext.User;
             var result = await _foodService.addFood(storeId, foodLists, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-        [HttpPut("UpdateFood")]
+        #endregion
+
+        #region Update Food
+        /// <summary>
+        /// Update a food
+        /// </summary>
+        /// <returns>Status of action</returns>
+        [HttpPut]
         public async Task<IActionResult> UpdateFood(string id, UpdateFoodViewModel model)
         {
             var currentUser = HttpContext.User;
             var result = await _foodService.UpdateFoodAsync(id, model, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-        [HttpPatch("deleteFood")]
+        #endregion
+
+        #region Delete food
+        /// <summary>
+        /// Delete a food
+        /// </summary>
+        /// <returns>Status of action</returns>
+        [HttpDelete]
         public async Task<IActionResult> DeleteFood([FromBody] DeleteFoodReqModel request)
         {
             var currentUser = HttpContext.User;
             var result = await _foodService.DeleteFood(request, currentUser);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
+        #endregion
     }
 }
