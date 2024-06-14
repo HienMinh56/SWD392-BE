@@ -9,7 +9,7 @@ using SWD392_BE.Services.Services;
 
 namespace SWD392_BE.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/food")]
     [ApiController]
     public class FoodController : ControllerBase
     {
