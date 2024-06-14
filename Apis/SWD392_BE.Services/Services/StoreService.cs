@@ -4,6 +4,7 @@ using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Repositories;
 using SWD392_BE.Repositories.ViewModels.FoodModel;
+using SWD392_BE.Repositories.ViewModels.PageModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.StoreModel;
 using SWD392_BE.Services.Interfaces;
@@ -72,39 +73,7 @@ namespace SWD392_BE.Services.Services
         }
 
 
-        public async Task<ResultModel> FilterStoresAsync(string? areaId, int? status)
-        {
-            var model = new ResultModel();
-
-            try
-            {
-                // Find stores based on provided filters
-                var stores = await _storeRepository.FilterStoresAsync(areaId, status);
-
-                if (stores == null || !stores.Any())
-                {
-                    model.IsSuccess = false;
-                    model.Code = 404;
-                    model.Message = "No stores found.";
-                    model.Data = null;
-                    return model;
-                }
-
-                model.IsSuccess = true;
-                model.Code = 200;
-                model.Message = "List of stores retrieved successfully.";
-                model.Data = stores;
-                return model;
-            }
-            catch (Exception ex)
-            {
-                model.IsSuccess = false;
-                model.Code = 500;
-                model.Message = $"An error occurred: {ex.Message}";
-                model.Data = null;
-                return model;
-            }
-        }
+        
 
         public Store GetStoreById(string id)
         {
@@ -211,12 +180,81 @@ namespace SWD392_BE.Services.Services
             }
         }
 
-        
-        public async Task<IEnumerable<GetStoreViewModel>> GetStoresAsync(int? status, string? areaName, string? sessionId)
+
+        public async Task<ResultModel> GetStoresByStatusAreaAndSessionAsync(int? status, string? areaName, string? sessionId, int pageIndex, int pageSize)
         {
-            return await _storeRepository.GetStoresByStatusAreaAndSessionAsync(status, areaName, sessionId);
+            ResultModel result = new ResultModel();
+            try
+            {
+                var stores = await _storeRepository.FetchStoresAsync();
+
+                if (status.HasValue)
+                {
+                    stores = stores.Where(s => s.Status == status.Value).ToList();
+                }
+
+                if (!string.IsNullOrEmpty(areaName))
+                {
+                    stores = stores.Where(s => s.Area.Name == areaName).ToList();
+                }
+
+                if (!string.IsNullOrEmpty(sessionId))
+                {
+                    stores = stores.Where(s => s.StoreSessions.Any(ss => ss.SessionId == sessionId)).ToList();
+                }
+
+                var totalItems = stores.Count;
+                var pagedStores = stores.Skip((pageIndex - 1) * pageSize)
+                                        .Take(pageSize)
+                                        .ToList();
+
+                if (!pagedStores.Any())
+                {
+                    result.IsSuccess = true;
+                    result.Code = 201;
+                    result.Message = "No stores found";
+                }
+                else
+                {
+                    var storeViewModels = pagedStores.Select(s => new GetStoreViewModel
+                    {
+                        StoreId = s.StoreId,
+                        AreaId = s.AreaId,
+                        Name = s.Name,
+                        Address = s.Address,
+                        Status = s.Status,
+                        Phone = s.Phone,
+                        OpenTime = s.OpenTime,
+                        CloseTime = s.CloseTime,
+                        AreaName = s.Area.Name,
+                        Session = s.StoreSessions.Select(ss => ss.SessionId.ToString()).ToList()
+                    }).ToList();
+
+                    var pagedResult = new PagedResultViewModel<GetStoreViewModel>
+                    {
+                        TotalItems = totalItems,
+                        PageNumber = pageIndex,
+                        PageSize = pageSize,
+                        Items = storeViewModels
+                    };
+
+                    result.IsSuccess = true;
+                    result.Code = 200;
+                    result.Message = "Stores retrieved successfully";
+                    result.Data = pagedResult;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Code = 500;
+                result.Message = $"An error occurred: {ex.Message}";
+            }
+
+            return result;
         }
-        
+
+
 
         public async Task<ResultModel> UpdateStoreAsync(string storeId, UpdateStoreViewModel model, ClaimsPrincipal userUpdate)
         {
