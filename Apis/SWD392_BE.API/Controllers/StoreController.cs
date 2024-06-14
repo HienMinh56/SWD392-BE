@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using SWD392_BE.Repositories.ViewModels.FoodModel;
+using SWD392_BE.Repositories.ViewModels.PageModel;
 using SWD392_BE.Repositories.ViewModels.StoreModel;
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.Services;
@@ -25,11 +26,28 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of stores</returns>
         [HttpGet]
-        public async Task<IActionResult> GetStoresByStatusAreaAndSession([FromQuery] int? status, [FromQuery] string? areaName, [FromQuery] string? sessionId)
+        public async Task<IActionResult> GetStoresByStatusAreaAndSession([FromQuery] int? status, [FromQuery] string? areaName, [FromQuery] string? sessionId, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
         {
-            var stores = await _storeService.GetStoresAsync(status, areaName, sessionId);
-            return Ok(stores);
+            var result = await _storeService.GetStoresByStatusAreaAndSessionAsync(status, areaName, sessionId, pageIndex, pageSize);
+
+            if (result.IsSuccess)
+            {
+                var pagedResult = (PagedResultViewModel<GetStoreViewModel>)result.Data;
+                return Ok(new
+                {
+                    TotalItems = pagedResult.TotalItems,
+                    PageNumber = pagedResult.PageNumber,
+                    PageSize = pagedResult.PageSize,
+                    TotalPages = (int)Math.Ceiling((double)pagedResult.TotalItems / pageSize),
+                    Items = pagedResult.Items
+                });
+            }
+            else
+            {
+                return BadRequest(result.Message);
+            }
         }
+
         #endregion
 
         #region Add store
