@@ -26,16 +26,5 @@ namespace SWD392_BE.Repositories.Repositories
 
             return lastFood?.FoodId;
         }
-        public async Task<IEnumerable<Food>> FilterFoodsAsync(int? cate)
-        {
-            IQueryable<Food> query = _context.Foods;
-
-            if (cate.HasValue)
-            {
-                query = query.Where(s => s.Cate == cate.Value);
-            }
-
-            return await query.ToListAsync();
-        }
     }
 }

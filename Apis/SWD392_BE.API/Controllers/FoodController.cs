@@ -19,16 +19,15 @@ namespace SWD392_BE.API.Controllers
         {
             _foodService = foodService;
         }
-
         #region Get list foods
         /// <summary>
         /// Get list of foods
         /// </summary>
         /// <returns>A list of foods</returns>
         [HttpGet]
-        public async Task<IActionResult> GetListFood(string storeId, int pageIndex = 1, int pageSize = 10)
+        public async Task<IActionResult> GetListFoodAsync([FromQuery] string storeId, [FromQuery] int pageIndex , [FromQuery] int pageSize , [FromQuery] int? cate)
         {
-            var result = await _foodService.GetListFood(storeId, pageIndex, pageSize);
+            var result = await _foodService.GetListFoodsAsync(storeId, pageIndex, pageSize, cate);
 
             if (result.IsSuccess)
             {
@@ -50,20 +49,6 @@ namespace SWD392_BE.API.Controllers
             }
         }
         #endregion
-
-        #region Filter food
-        /// <summary>
-        /// Get list of foods by filter
-        /// </summary>
-        /// <returns>A list of foods</returns>
-        [HttpGet("cate")]
-        public async Task<IActionResult> FilterFood([FromQuery] int? cate)
-        {
-            var foods = await _foodService.FilterFoodsAsync(cate);
-            return Ok(foods);
-        }
-        #endregion
-
         #region Add foods
         /// <summary>
         /// Add new foods into store
