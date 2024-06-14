@@ -25,7 +25,7 @@ namespace SWD392_BE.API.Controllers
         /// Get list of foods
         /// </summary>
         /// <returns>A list of foods</returns>
-        [HttpGet("GetFoods")]
+        [HttpGet]
         public async Task<IActionResult> GetListFood(string storeId, int pageIndex = 1, int pageSize = 10)
         {
             var result = await _foodService.GetListFood(storeId, pageIndex, pageSize);
