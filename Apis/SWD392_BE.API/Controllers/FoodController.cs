@@ -6,6 +6,7 @@ using SWD392_BE.Repositories.ViewModels.StoreModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.Services;
+using System.Security.Claims;
 
 namespace SWD392_BE.API.Controllers
 {
@@ -14,10 +15,12 @@ namespace SWD392_BE.API.Controllers
     public class FoodController : ControllerBase
     {
         private readonly IFoodService _foodService;
+        private readonly ICloudStorageService _cloudStorageService;
 
-        public FoodController(IFoodService foodService)
+        public FoodController(IFoodService foodService, ICloudStorageService cloudStorageService)
         {
             _foodService = foodService;
+            _cloudStorageService = cloudStorageService; 
         }
         #region Get list foods
         /// <summary>
@@ -55,11 +58,47 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>Status of action</returns>
         [HttpPost]
-        public async Task<IActionResult> AddFood(string storeId, List<List<FoodViewModel>> foodLists)
+        public async Task<IActionResult> AddFood(string storeId, [FromForm] FoodRequestModel foodRequestModel)
         {
-            var currentUser = HttpContext.User;
-            var result = await _foodService.addFood(storeId, foodLists, currentUser);
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            ClaimsPrincipal user = HttpContext.User;
+
+            try
+            {
+                // Convert FoodRequestModel to List<FoodViewModel> if needed
+                var foodViewModels = new List<FoodViewModel>()
+            {
+                new FoodViewModel
+                {
+                    Name = foodRequestModel.Name,
+                    Price = foodRequestModel.Price,
+                    Title = foodRequestModel.Title,
+                    Description = foodRequestModel.Description,
+                    Cate = foodRequestModel.Cate,
+                    Image = foodRequestModel.Image
+                }
+            };
+
+                // Call the addFood method from the service layer
+                var result = await _foodService.addFood(storeId, foodViewModels, user);
+
+                if (result.IsSuccess)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
         #endregion
 
@@ -69,11 +108,32 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>Status of action</returns>
         [HttpPut]
-        public async Task<IActionResult> UpdateFood(string id, UpdateFoodViewModel model)
+        public async Task<IActionResult> UpdateFood(string id, [FromForm] UpdateFoodViewModel model, IFormFile image)
         {
-            var currentUser = HttpContext.User;
-            var result = await _foodService.UpdateFoodAsync(id, model, currentUser);
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            ClaimsPrincipal user = HttpContext.User;
+
+            try
+            {
+                var result = await _foodService.UpdateFoodAsync(id, model, user, image);
+
+                if (result.IsSuccess)
+                {
+                    return Ok(result); // Return the entire ResultModel if needed
+                }
+                else
+                {
+                    return BadRequest(result); // Return the entire ResultModel if needed
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = ex.Message });
+            }
         }
         #endregion
 

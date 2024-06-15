@@ -6,6 +6,7 @@ using SWD392_BE.Repositories;
 using SWD392_BE.Repositories.Helper;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Repositories;
+using SWD392_BE.Repositories.Utils.ConfigOptions;
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.MapperProfile;
 using SWD392_BE.Services.Services;
@@ -22,6 +23,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+builder.Services.Configure<GCSConfigOptions>(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -195,6 +198,7 @@ builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderServices>();
 
+builder.Services.AddSingleton<ICloudStorageService, CloudStorageService>();
 
 // db local
 
