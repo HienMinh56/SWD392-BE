@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.ViewModels.FoodModel
 {
-    public class UpdateFoodViewModel
+    public class FoodRequestModel
     {
+        public string Name { get; set; } = null!;
 
         public int Price { get; set; }
 
@@ -17,5 +18,7 @@ namespace SWD392_BE.Repositories.ViewModels.FoodModel
         public string Description { get; set; } = null!;
 
         public int Cate { get; set; }
+
+        public IFormFile? Image { get; set; }
     }
 }

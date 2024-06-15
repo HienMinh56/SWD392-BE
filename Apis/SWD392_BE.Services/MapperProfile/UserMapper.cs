@@ -91,7 +91,6 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
             .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
             .ForMember(dest => dest.Cate, opt => opt.MapFrom(src => src.Cate))
-            .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image))
             .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
             .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
             .ForMember(dest => dest.ModifiedDate, opt => opt.Ignore())
@@ -103,9 +102,7 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
             .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
             .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
-            .ForMember(dest => dest.Cate, opt => opt.MapFrom(src => src.Cate))
-            .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.Image))
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
+            .ForMember(dest => dest.Cate, opt => opt.MapFrom(src => src.Cate));
 
             CreateMap<Food, DeleteFoodReqModel>()
             .ForMember(dest => dest.FoodId, opt => opt.MapFrom(src => src.FoodId));

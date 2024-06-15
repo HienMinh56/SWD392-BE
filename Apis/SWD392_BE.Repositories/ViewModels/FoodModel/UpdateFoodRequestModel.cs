@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.ViewModels.FoodModel
 {
-    public class UpdateFoodViewModel
+    public class UpdateFoodRequestModel
     {
 
         public int Price { get; set; }
