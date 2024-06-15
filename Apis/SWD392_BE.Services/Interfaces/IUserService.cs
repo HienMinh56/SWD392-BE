@@ -13,7 +13,7 @@ namespace SWD392_BE.Services.Interfaces
 {
     public interface IUserService
     {
-        public Task<ResultModel> GetUserList(int? status, string? campusName);
+        public Task<ResultModel> GetUserList(int? status, string? campusName, int pageIndex, int pageSize);
 
         public Task<ResultModel> DeleteUser(DeleteUserReqModel request, ClaimsPrincipal userDelete);
         public User GetUserById(string id);
