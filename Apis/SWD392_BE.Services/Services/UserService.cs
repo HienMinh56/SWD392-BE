@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Repositories;
+using SWD392_BE.Repositories.ViewModels.PageModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
 using SWD392_BE.Services.Interfaces;
@@ -30,8 +31,7 @@ namespace SWD392_BE.Services.Services
             _campusRepository = campusRepository;
             _mapper = mapper;
         }
-
-        public async Task<ResultModel> GetUserList(int? status, string? campusName)
+        public async Task<ResultModel> GetUserList(int? status, string? campusName, int pageIndex, int pageSize)
         {
             var result = new ResultModel();
             try
@@ -48,6 +48,11 @@ namespace SWD392_BE.Services.Services
                     string campusNameLower = campusName.ToLower();
                     users = users.Where(u => u.Campus.Name.ToLower() == campusNameLower).ToList();
                 }
+
+                var totalItems = users.Count();
+                users = users.Skip((pageIndex - 1) * pageSize)
+                             .Take(pageSize)
+                             .ToList();               
 
                 if (!users.Any())
                 {
@@ -68,10 +73,19 @@ namespace SWD392_BE.Services.Services
                         Phone = u.Phone,
                         Role = u.Role,
                         Balance = u.Balance,
-                        Status = u.Status
+                        Status = u.Status,
+                        CreatedDate = u.CreatedDate
                     }).ToList();
 
-                    result.Data = userViewModels;
+                    var pagedResult = new PagedResultViewModel<ListUserViewModel>
+                    {
+                        TotalItems = totalItems,
+                        PageNumber = pageIndex,
+                        PageSize = pageSize,
+                        Items = userViewModels
+                    };
+
+                    result.Data = pagedResult;
                     result.Message = "Success";
                     result.IsSuccess = true;
                     result.Code = 200;
@@ -79,11 +93,14 @@ namespace SWD392_BE.Services.Services
             }
             catch (Exception ex)
             {
-                result.Message = ex.Message;
+                result.Message = $"An error occurred: {ex.Message}";
                 result.IsSuccess = false;
+                result.Code = 500;
             }
+
             return result;
         }
+
         public User GetUserById(string id)
         {
             try
@@ -92,7 +109,6 @@ namespace SWD392_BE.Services.Services
 
                 if (user == null)
                 {
-                    // Handle the case where the user is not found, e.g., return null or throw an exception
                     return null;
                 }
 
