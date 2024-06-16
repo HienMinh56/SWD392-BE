@@ -26,21 +26,13 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of stores</returns>
         [HttpGet]
-        public async Task<IActionResult> GetStoresByStatusAreaAndSession([FromQuery] int? status, [FromQuery] string? areaName, [FromQuery] string? sessionId, [FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetStoresByStatusAreaAndSession([FromQuery] int? status, [FromQuery] string? areaName, [FromQuery] string? sessionId)
         {
-            var result = await _storeService.GetStoresByStatusAreaAndSessionAsync(status, areaName, sessionId, pageIndex, pageSize);
+            var result = await _storeService.GetStoresByStatusAreaAndSessionAsync(status, areaName, sessionId);
 
             if (result.IsSuccess)
             {
-                var pagedResult = (PagedResultViewModel<GetStoreViewModel>)result.Data;
-                return Ok(new
-                {
-                    TotalItems = pagedResult.TotalItems,
-                    PageNumber = pagedResult.PageNumber,
-                    PageSize = pagedResult.PageSize,
-                    TotalPages = (int)Math.Ceiling((double)pagedResult.TotalItems / pageSize),
-                    Items = pagedResult.Items
-                });
+                return Ok(result); ;
             }
             else
             {

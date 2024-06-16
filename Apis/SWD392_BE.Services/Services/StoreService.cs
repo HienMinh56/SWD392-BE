@@ -181,7 +181,7 @@ namespace SWD392_BE.Services.Services
         }
 
 
-        public async Task<ResultModel> GetStoresByStatusAreaAndSessionAsync(int? status, string? areaName, string? sessionId, int pageIndex, int pageSize)
+        public async Task<ResultModel> GetStoresByStatusAreaAndSessionAsync(int? status, string? areaName, string? sessionId)
         {
             ResultModel result = new ResultModel();
             try
@@ -202,47 +202,19 @@ namespace SWD392_BE.Services.Services
                 {
                     stores = stores.Where(s => s.StoreSessions.Any(ss => ss.SessionId == sessionId)).ToList();
                 }
-
-                var totalItems = stores.Count;
-                var pagedStores = stores.Skip((pageIndex - 1) * pageSize)
-                                        .Take(pageSize)
-                                        .ToList();
-
-                if (!pagedStores.Any())
+                if (stores == null)
                 {
                     result.IsSuccess = true;
                     result.Code = 201;
-                    result.Message = "No stores found";
+                    result.Message = "No stores here";
                 }
                 else
                 {
-                    var storeViewModels = pagedStores.Select(s => new GetStoreViewModel
-                    {
-                        StoreId = s.StoreId,
-                        AreaId = s.AreaId,
-                        Name = s.Name,
-                        Address = s.Address,
-                        Status = s.Status,
-                        Phone = s.Phone,
-                        OpenTime = s.OpenTime,
-                        CloseTime = s.CloseTime,
-                        AreaName = s.Area.Name,
-                        Session = s.StoreSessions.Select(ss => ss.SessionId.ToString()).ToList()
-                    }).ToList();
-
-                    var pagedResult = new PagedResultViewModel<GetStoreViewModel>
-                    {
-                        TotalItems = totalItems,
-                        PageNumber = pageIndex,
-                        PageSize = pageSize,
-                        Items = storeViewModels
-                    };
-
                     result.IsSuccess = true;
                     result.Code = 200;
-                    result.Message = "Stores retrieved successfully";
-                    result.Data = pagedResult;
-                }
+                    result.Message = "Foods retrieved successfully";
+                    result.Data = stores;
+                }               
             }
             catch (Exception ex)
             {

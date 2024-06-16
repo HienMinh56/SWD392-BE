@@ -31,7 +31,7 @@ namespace SWD392_BE.Services.Services
             _campusRepository = campusRepository;
             _mapper = mapper;
         }
-        public async Task<ResultModel> GetUserList(int? status, string? campusName, int pageIndex, int pageSize)
+        public async Task<ResultModel> GetUserList(int? status, string? campusName)
         {
             var result = new ResultModel();
             try
@@ -45,14 +45,8 @@ namespace SWD392_BE.Services.Services
 
                 if (!string.IsNullOrEmpty(campusName))
                 {
-                    string campusNameLower = campusName.ToLower();
-                    users = users.Where(u => u.Campus.Name.ToLower() == campusNameLower).ToList();
+                    users = users.Where(u => u.Campus.Name == campusName).ToList();
                 }
-
-                var totalItems = users.Count();
-                users = users.Skip((pageIndex - 1) * pageSize)
-                             .Take(pageSize)
-                             .ToList();               
 
                 if (!users.Any())
                 {
@@ -77,15 +71,7 @@ namespace SWD392_BE.Services.Services
                         CreatedDate = u.CreatedDate
                     }).ToList();
 
-                    var pagedResult = new PagedResultViewModel<ListUserViewModel>
-                    {
-                        TotalItems = totalItems,
-                        PageNumber = pageIndex,
-                        PageSize = pageSize,
-                        Items = userViewModels
-                    };
-
-                    result.Data = pagedResult;
+                    result.Data = userViewModels;
                     result.Message = "Success";
                     result.IsSuccess = true;
                     result.Code = 200;
@@ -93,11 +79,9 @@ namespace SWD392_BE.Services.Services
             }
             catch (Exception ex)
             {
-                result.Message = $"An error occurred: {ex.Message}";
+                result.Message = ex.Message;
                 result.IsSuccess = false;
-                result.Code = 500;
             }
-
             return result;
         }
 
