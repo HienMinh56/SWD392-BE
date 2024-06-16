@@ -23,9 +23,9 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of orders</returns>
         [HttpGet]
-        public async Task<IActionResult> getOrder()
+        public async Task<IActionResult> getOrder(string userId)
         {
-            var result = await _order.getOrder();
+            var result = await _order.getOrder(userId);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
         #endregion

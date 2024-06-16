@@ -201,6 +201,71 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
+        public async Task<ResultModel> EditUser(string userId, UpdateUserViewModel model, ClaimsPrincipal userUpdate)
+
+        {
+            var result = new ResultModel();
+            try
+            {
+                var existingUser = _userRepository.Get(x => x.UserId == userId);
+                if (existingUser == null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 404;
+                    result.Message = "Can not find user";
+                    return result;
+                }
+                // Check if email already exists
+                var existingEmail = _userRepository.Get(x => x.Email == model.Email && x.UserId != userId);
+                if (existingEmail != null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Email already exists";
+                    return result;
+                }
+                // Check if Phone already exists
+                var existingPhone = _userRepository.Get(x => x.Phone == model.Phone && x.UserId != userId);
+                if (existingPhone != null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Phone already exists";
+                    return result;
+                }
+                // Map the ViewModel to the existing userid entity
+                _mapper.Map(model, existingUser);
+
+                // Update the additional fields
+                existingUser.Name = model.Name;
+                if (existingUser.Password != "")
+                {
+                    existingUser.Password = PasswordHasher.HashPassword(existingUser.Password);
+                }
+                existingUser.Email = model.Email;
+                existingUser.CampusId = model.CampusId;
+                existingUser.Phone = model.Phone;
+                existingUser.Role = model.Role;
+                existingUser.Balance = model.Balance;
+                existingUser.ModifiedBy = userUpdate.FindFirst("UserName")?.Value;
+                existingUser.ModifiedDate = DateTime.Now;
+                _userRepository.Update(existingUser);
+                _userRepository.SaveChanges();
+                result.IsSuccess = true;
+                result.Code = 200;
+                result.Message = "Update User Success";
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Code = 400;
+                result.Message = ex.Message;
+                return result;
+            }
+            return result;
+        }
         public async Task<ResultModel> DeleteUser(DeleteUserReqModel request, ClaimsPrincipal userDelete)
         {
             var result = new ResultModel();

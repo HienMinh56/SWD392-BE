@@ -1,4 +1,5 @@
-﻿using SWD392_BE.Repositories.Interfaces;
+﻿using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Services.Interfaces;
 using System;
@@ -18,24 +19,24 @@ namespace SWD392_BE.Services.Services
             _order = order;
         }
 
-        public async Task<ResultModel> getOrder()
+        public async Task<ResultModel> getOrder(string userId)
         {
             var result = new ResultModel();
             try
             {
-                var order = _order.Get();
-                if (order == null)
+                var orders = _order.GetList(o => o.UserId == userId);
+                if (orders == null || !orders.Any())
                 {
                     result.IsSuccess = true;
                     result.Code = 201;
-                    result.Message = "No Order Here";
+                    result.Message = "No Orders Here";
                     return result;
                 }
 
                 result.IsSuccess = true;
                 result.Code = 200;
-                result.Data = order;
-                result.Message = "Get Order Success";
+                result.Data = orders;
+                result.Message = "Get Orders Success";
                 return result;
             }
             catch (Exception ex)

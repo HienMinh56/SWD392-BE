@@ -9,6 +9,6 @@ namespace SWD392_BE.Services.Interfaces
 {
     public interface IOrderService
     {
-        Task<ResultModel> getOrder();
+        Task<ResultModel> getOrder(string userId);
     }
 }
