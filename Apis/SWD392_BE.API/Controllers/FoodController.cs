@@ -28,27 +28,22 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of foods</returns>
         [HttpGet]
-        public async Task<IActionResult> GetListFoodAsync([FromQuery] string storeId, [FromQuery] int pageIndex , [FromQuery] int pageSize , [FromQuery] int? cate)
+        public async Task<IActionResult> GetListFoodAsync([FromQuery] string storeId, [FromQuery] int? cate)
         {
-            var result = await _foodService.GetListFoodsAsync(storeId, pageIndex, pageSize, cate);
+            if (string.IsNullOrEmpty(storeId))
+            {
+                return BadRequest(new { Message = "storeId is required" });
+            }
+
+            var result = await _foodService.GetListFoodsAsync(storeId, cate);
 
             if (result.IsSuccess)
             {
-                // If successful, return the paged result
-                var pagedResult = (PagedResultViewModel<Food>)result.Data;
-                return Ok(new
-                {
-                    TotalItems = pagedResult.TotalItems,
-                    PageNumber = pagedResult.PageNumber,
-                    PageSize = pagedResult.PageSize,
-                    TotalPages = pagedResult.TotalPages,
-                    Items = pagedResult.Items
-                });
+                return Ok(result);
             }
             else
             {
-                // If failed, return BadRequest with the error message
-                return BadRequest(result.Message);
+                return StatusCode(result.Code, result);
             }
         }
         #endregion
