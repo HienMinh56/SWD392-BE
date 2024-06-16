@@ -201,8 +201,7 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
-        public async Task<ResultModel> EditUser(string userId, UpdateUserViewModel model, ClaimsPrincipal userUpdate)
-
+        public async Task<ResultModel> EditUser(string userId, EditUserViewModel model, ClaimsPrincipal userUpdate)
         {
             var result = new ResultModel();
             try
@@ -212,9 +211,10 @@ namespace SWD392_BE.Services.Services
                 {
                     result.IsSuccess = false;
                     result.Code = 404;
-                    result.Message = "Can not find user";
+                    result.Message = "Cannot find user";
                     return result;
                 }
+
                 // Check if email already exists
                 var existingEmail = _userRepository.Get(x => x.Email == model.Email && x.UserId != userId);
                 if (existingEmail != null)
@@ -224,6 +224,7 @@ namespace SWD392_BE.Services.Services
                     result.Message = "Email already exists";
                     return result;
                 }
+
                 // Check if Phone already exists
                 var existingPhone = _userRepository.Get(x => x.Phone == model.Phone && x.UserId != userId);
                 if (existingPhone != null)
@@ -233,29 +234,44 @@ namespace SWD392_BE.Services.Services
                     result.Message = "Phone already exists";
                     return result;
                 }
-                // Map the ViewModel to the existing userid entity
+
+                // Check if the old password is correct
+                if (!PasswordHasher.VerifyPassword(model.OldPassword, existingUser.Password))
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Old password is incorrect";
+                    return result;
+                }
+
+                // Check if the new password and confirm password match
+                if (model.NewPassword != model.ConfirmPassword)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "New password and confirm password do not match";
+                    return result;
+                }
+
+                // Map the ViewModel to the existing user entity
                 _mapper.Map(model, existingUser);
 
                 // Update the additional fields
                 existingUser.Name = model.Name;
-                if (existingUser.Password != "")
-                {
-                    existingUser.Password = PasswordHasher.HashPassword(existingUser.Password);
-                }
+                existingUser.Password = PasswordHasher.HashPassword(model.NewPassword); // Update the password
                 existingUser.Email = model.Email;
                 existingUser.CampusId = model.CampusId;
                 existingUser.Phone = model.Phone;
-                existingUser.Role = model.Role;
-                existingUser.Balance = model.Balance;
                 existingUser.ModifiedBy = userUpdate.FindFirst("UserName")?.Value;
                 existingUser.ModifiedDate = DateTime.Now;
+
                 _userRepository.Update(existingUser);
                 _userRepository.SaveChanges();
+
                 result.IsSuccess = true;
                 result.Code = 200;
-                result.Message = "Update User Success";
+                result.Message = "Edit User Success";
                 return result;
-
             }
             catch (Exception ex)
             {
@@ -264,7 +280,6 @@ namespace SWD392_BE.Services.Services
                 result.Message = ex.Message;
                 return result;
             }
-            return result;
         }
         public async Task<ResultModel> DeleteUser(DeleteUserReqModel request, ClaimsPrincipal userDelete)
         {

@@ -120,6 +120,38 @@ namespace SWD392_BE.API.Controllers
             return result.IsSuccess ? Ok(result) : StatusCode(result.Code, result);
         }
         #endregion
+        #region Edit User
+        /// <summary>
+        /// Edit  user
+        /// </summary>
+        /// <returns>Status of action</returns>
+        [HttpPut]
+        public async Task<ActionResult<ResultModel>> EditUser(string userId, EditUserViewModel model)
+        {
+            try
+            {
+                var currentUser = HttpContext.User;
+                var editResult = await _userService.EditUser(userId, model, currentUser);
+                var result = new ResultModel
+                {
+                    IsSuccess = true,
+                    Code = 200,
+                    Data = editResult
+                };
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                var result = new ResultModel
+                {
+                    IsSuccess = false,
+                    Code = 500,
+                    Message = ex.Message
+                };
+                return StatusCode(500, result);
+            }
+        }
+        #endregion
     }
 }
 
