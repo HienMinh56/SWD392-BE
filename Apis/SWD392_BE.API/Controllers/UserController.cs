@@ -29,28 +29,10 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of users</returns>
         [HttpGet]
-        public async Task<IActionResult> GetUserList([FromQuery]int? status,[FromQuery] string? campusName, [FromQuery] int pageIndex, [FromQuery] int pageSize)
+        public async Task<IActionResult> GetUserList(int? status, string? campusName)
         {
-            var result = await _userService.GetUserList(status, campusName, pageIndex, pageSize);
-            // return result.IsSuccess ? Ok(result) : BadRequest(result);
-            if (result.IsSuccess)
-            {
-                // If successful, return the paged result
-                var pagedResult = (PagedResultViewModel<ListUserViewModel>)result.Data;
-                return Ok(new
-                {
-                    TotalItems = pagedResult.TotalItems,
-                    PageNumber = pagedResult.PageNumber,
-                    PageSize = pagedResult.PageSize,
-                    TotalPages = pagedResult.TotalPages,
-                    Items = pagedResult.Items
-                });
-            }
-            else
-            {
-                // If failed, return BadRequest with the error message
-                return BadRequest(result.Message);
-            }
+            var result = await _userService.GetUserList(status, campusName);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
         #endregion
 

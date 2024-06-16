@@ -31,26 +31,18 @@ namespace SWD392_BE.Services.Services
             _session = session;
             _mapper = mapper;
         }
-        
 
-        public async Task<string> GenerateStoreSessionIdAsync()
+
+        private async Task<string> GenerateUniqueStoreSessionIdAsync()
         {
-            // Get the latest StoreSessionId from the database
-            var latestStoreSession = await _storeSession.GetLatestStoreSession();
-
-            // Extract the numeric part from the latest StoreSessionId
-            int latestNumber = 0;
-            if (latestStoreSession != null && int.TryParse(latestStoreSession.StoreSessionId.Replace("STORESESSION", ""), out latestNumber))
+            var existingIds = _storeSession.Get().Select(ss => ss.StoreSessionId).ToHashSet();
+            string newStoreSessionId;
+            do
             {
-                latestNumber++; // Increment the numeric part
-            }
-            else
-            {
-                latestNumber = 1; // Start from 1 if no previous StoreSessionId found
-            }
-
-            // Format the new StoreSessionId
-            string newStoreSessionId = $"STORESESSION{latestNumber.ToString("D3")}";
+                // Generate a new ID based on a sequential number or timestamp
+                // Here, I'm using a timestamp-based format for simplicity
+                newStoreSessionId = "SS" + DateTime.Now.ToString("yyyyMMddHHmmssfff");
+            } while (existingIds.Contains(newStoreSessionId));
 
             return newStoreSessionId;
         }
@@ -95,7 +87,7 @@ namespace SWD392_BE.Services.Services
             }
         }
 
-        public async Task<ResultModel> addStore(StoreViewModel model, ClaimsPrincipal userCreate)
+        public async Task<ResultModel> AddStore(StoreViewModel model, ClaimsPrincipal userCreate)
         {
             ResultModel result = new ResultModel();
             try
@@ -109,34 +101,33 @@ namespace SWD392_BE.Services.Services
                     result.Message = "Store request model is null.";
                     return result;
                 }
-                var extistingStore = _storeRepository.Get(s => s.AreaId == model.AreaId && s.Address == model.Address);
-                if (extistingStore != null)
+
+                var existingStore = _storeRepository.Get(s => s.AreaId == model.AreaId && s.Address == model.Address);
+                if (existingStore != null)
                 {
                     result.IsSuccess = false;
                     result.Code = 400;
-                    result.Message = "At Address had store";
+                    result.Message = "A store already exists at the provided address.";
                     return result;
                 }
 
                 var existingPhone = _storeRepository.Get(s => s.Phone == model.Phone);
-
                 if (existingPhone != null)
                 {
                     result.IsSuccess = false;
                     result.Code = 400;
-                    result.Message = "Phone has been used";
+                    result.Message = "Phone number has already been used.";
                     return result;
                 }
 
+                var openTime = TimeSpan.Parse(model.OpenTime);
+                var closeTime = TimeSpan.Parse(model.CloseTime);
+
+                // Find all sessions that the store's operating hours span
                 var matchingSessions = await _session.FindAsync(s =>
-                (TimeSpan.Parse(model.OpenTime) >= s.StartTime &&
-                TimeSpan.Parse(model.OpenTime) <= s.EndTime) ||
-                (TimeSpan.Parse(model.CloseTime) >= s.StartTime &&
-                TimeSpan.Parse(model.CloseTime) <= s.EndTime));
+                    (openTime < s.EndTime && closeTime > s.StartTime));
 
-                var matchingSession = matchingSessions.FirstOrDefault(); // Get the first matching session
-
-                if (matchingSession == null)
+                if (!matchingSessions.Any())
                 {
                     result.IsSuccess = false;
                     result.Code = 400;
@@ -149,26 +140,29 @@ namespace SWD392_BE.Services.Services
                 newStore.CreatedBy = userCreate.FindFirst("UserName")?.Value;
                 newStore.CreatedDate = DateTime.Now;
                 newStore.Status = 1;
-                newStore.OpenTime = TimeSpan.Parse(model.OpenTime);
-                newStore.CloseTime = TimeSpan.Parse(model.CloseTime);
+                newStore.OpenTime = openTime;
+                newStore.CloseTime = closeTime;
 
                 _storeRepository.Add(newStore);
                 _storeRepository.SaveChanges();
 
-                var newStoreSessionId = await GenerateStoreSessionIdAsync();
-                // Add the store and session ID to the StoreSession table
-                var storeSession = new StoreSession
+                foreach (var session in matchingSessions)
                 {
-                    StoreSessionId = newStoreSessionId,
-                    StoreId = newStoreId,
-                    SessionId = matchingSession.SessionId // Assuming SessionId is unique and matches the session found
-                };
-                _storeSession.Add(storeSession);
+                    var newStoreSessionId = await GenerateUniqueStoreSessionIdAsync(); // Use the new unique ID generation method
+                    var storeSession = new StoreSession
+                    {
+                        StoreSessionId = newStoreSessionId,
+                        StoreId = newStoreId,
+                        SessionId = session.SessionId
+                    };
+                    _storeSession.Add(storeSession);
+                }
+
                 _storeSession.SaveChanges();
 
                 result.IsSuccess = true;
                 result.Code = 200;
-                result.Message = "Add Store Success";
+                result.Message = "Store added successfully.";
                 return result;
             }
             catch (Exception ex)
@@ -181,7 +175,7 @@ namespace SWD392_BE.Services.Services
         }
 
 
-        public async Task<ResultModel> GetStoresByStatusAreaAndSessionAsync(int? status, string? areaName, string? sessionId, int pageIndex, int pageSize)
+        public async Task<ResultModel> GetStoresByStatusAreaAndSessionAsync(int? status, string? areaName, string? sessionId)
         {
             ResultModel result = new ResultModel();
             try
@@ -195,20 +189,17 @@ namespace SWD392_BE.Services.Services
 
                 if (!string.IsNullOrEmpty(areaName))
                 {
-                    stores = stores.Where(s => s.Area.Name == areaName).ToList();
+                    stores = stores.Where(s => s.Area.Name.ToLower() == areaName.ToLower()).ToList();
                 }
 
                 if (!string.IsNullOrEmpty(sessionId))
                 {
-                    stores = stores.Where(s => s.StoreSessions.Any(ss => ss.SessionId == sessionId)).ToList();
+                    stores = stores.Where(s => s.StoreSessions.Any(ss => ss.SessionId.ToLower() == sessionId.ToLower())).ToList();
                 }
 
-                var totalItems = stores.Count;
-                var pagedStores = stores.Skip((pageIndex - 1) * pageSize)
-                                        .Take(pageSize)
-                                        .ToList();
+                
 
-                if (!pagedStores.Any())
+                if (!stores.Any())
                 {
                     result.IsSuccess = true;
                     result.Code = 201;
@@ -216,7 +207,7 @@ namespace SWD392_BE.Services.Services
                 }
                 else
                 {
-                    var storeViewModels = pagedStores.Select(s => new GetStoreViewModel
+                    var storeViewModels = stores.Select(s => new GetStoreViewModel
                     {
                         StoreId = s.StoreId,
                         AreaId = s.AreaId,
@@ -230,18 +221,12 @@ namespace SWD392_BE.Services.Services
                         Session = s.StoreSessions.Select(ss => ss.SessionId.ToString()).ToList()
                     }).ToList();
 
-                    var pagedResult = new PagedResultViewModel<GetStoreViewModel>
-                    {
-                        TotalItems = totalItems,
-                        PageNumber = pageIndex,
-                        PageSize = pageSize,
-                        Items = storeViewModels
-                    };
+                    
 
                     result.IsSuccess = true;
                     result.Code = 200;
                     result.Message = "Stores retrieved successfully";
-                    result.Data = pagedResult;
+                    result.Data = storeViewModels;
                 }
             }
             catch (Exception ex)
@@ -269,7 +254,7 @@ namespace SWD392_BE.Services.Services
                     return result;
                 }
 
-                var existingStore = _storeRepository.Get(s => s.StoreId==storeId);
+                var existingStore = _storeRepository.Get(s => s.StoreId == storeId);
                 if (existingStore == null)
                 {
                     result.IsSuccess = false;
@@ -277,38 +262,76 @@ namespace SWD392_BE.Services.Services
                     result.Message = "Store not found.";
                     return result;
                 }
+
                 var phoneStore = _storeRepository.Get(s => s.Phone == model.Phone && s.StoreId != storeId);
-                if(phoneStore != null)
+                if (phoneStore != null)
                 {
                     result.IsSuccess = false;
                     result.Code = 400;
-                    result.Message = "Phone was used";
+                    result.Message = "Phone number has already been used.";
                     return result;
                 }
+
                 var addressStore = _storeRepository.Get(s => s.Address == model.Address && s.AreaId == model.AreaId && s.StoreId != storeId);
-                if(addressStore != null)
+                if (addressStore != null)
                 {
                     result.IsSuccess = false;
                     result.Code = 400;
-                    result.Message = "Address had store";
-                    return result ;
+                    result.Message = "A store already exists at the provided address.";
+                    return result;
                 }
-               
+
+                var openTime = TimeSpan.Parse(model.OpenTime);
+                var closeTime = TimeSpan.Parse(model.CloseTime);
+
+                // Find all sessions that the store's operating hours span
+                var matchingSessions = await _session.FindAsync(s =>
+                    (openTime < s.EndTime && closeTime > s.StartTime));
+
+                if (!matchingSessions.Any())
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "No session found for the provided open and close times.";
+                    return result;
+                }
+
+                // Remove existing store sessions
+                var existingStoreSessions = _storeSession.Get().Where(ss => ss.StoreId == storeId).ToList();
+                foreach (var storeSession in existingStoreSessions)
+                {
+                    _storeSession.Remove(storeSession);
+                }
+
+                // Add new store sessions
+                foreach (var session in matchingSessions)
+                {
+                    var newStoreSessionId = await GenerateUniqueStoreSessionIdAsync();
+                    var storeSession = new StoreSession
+                    {
+                        StoreSessionId = newStoreSessionId,
+                        StoreId = storeId,
+                        SessionId = session.SessionId
+                    };
+                    _storeSession.Add(storeSession);
+                }
+
                 // Map the ViewModel to the existing store entity
                 _mapper.Map(model, existingStore);
 
                 // Update the additional fields
                 existingStore.ModifiedBy = userUpdate.FindFirst("UserName")?.Value;
                 existingStore.ModifiedDate = DateTime.UtcNow;
-                existingStore.OpenTime = TimeSpan.Parse(model.OpenTime);
-                existingStore.CloseTime = TimeSpan.Parse(model.CloseTime);
+                existingStore.OpenTime = openTime;
+                existingStore.CloseTime = closeTime;
 
                 _storeRepository.Update(existingStore);
                 await _storeRepository.SaveChangesAsync();
+                await _storeSession.SaveChangesAsync();
 
                 result.IsSuccess = true;
                 result.Code = 200;
-                result.Message = "Update Store Success";
+                result.Message = "Store updated successfully.";
                 return result;
             }
             catch (Exception ex)
@@ -319,6 +342,7 @@ namespace SWD392_BE.Services.Services
                 return result;
             }
         }
+
 
         public async Task<ResultModel> DeleteStore(DeleteStoreReqModel request, ClaimsPrincipal userDelete)
         {
