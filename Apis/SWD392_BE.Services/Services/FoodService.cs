@@ -113,13 +113,11 @@ namespace SWD392_BE.Services.Services
         }
 
 
-        public async Task<ResultModel> GetListFoodsAsync(string storeId, int pageIndex, int pageSize, int? cate)
+        public async Task<ResultModel> GetListFoodsAsync(string storeId, int? cate)
         {
             ResultModel result = new ResultModel();
             try
             {
-                // Ensure pageSize is within the range of 10 to 50
-                pageSize = Math.Clamp(pageSize, 10, 50);
 
                 // Retrieve and filter foods based on storeId and optional category
                 var filteredFoods = _foodRepository.GetList(s => s.StoreId == storeId).ToList();
@@ -129,12 +127,7 @@ namespace SWD392_BE.Services.Services
                     filteredFoods = filteredFoods.Where(f => f.Cate == cate.Value).ToList();
                 }
 
-                var totalItems = filteredFoods.Count();
-                var foods = filteredFoods.Skip((pageIndex - 1) * pageSize)
-                                    .Take(pageSize)
-                                    .ToList();
-
-                if (!foods.Any())
+                if (filteredFoods == null)
                 {
                     result.IsSuccess = true;
                     result.Code = 201;
@@ -142,18 +135,10 @@ namespace SWD392_BE.Services.Services
                 }
                 else
                 {
-                    var pagedResult = new PagedResultViewModel<Food>
-                    {
-                        TotalItems = totalItems,
-                        PageNumber = pageIndex,
-                        PageSize = pageSize,
-                        Items = foods
-                    };
-
                     result.IsSuccess = true;
                     result.Code = 200;
                     result.Message = "Foods retrieved successfully";
-                    result.Data = pagedResult;
+                    result.Data = filteredFoods;
                 }
             }
             catch (Exception ex)
