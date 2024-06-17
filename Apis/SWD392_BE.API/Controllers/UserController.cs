@@ -29,9 +29,9 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of users</returns>
         [HttpGet]
-        public async Task<IActionResult> GetUserList(int? status, string? campusName)
+        public async Task<IActionResult> GetUserList(string? userId, int? status, string? campusName)
         {
-            var result = await _userService.GetUserList(status, campusName);
+            var result = await _userService.GetUserList(userId,status, campusName);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
         #endregion
