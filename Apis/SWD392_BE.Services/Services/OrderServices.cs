@@ -33,7 +33,7 @@ namespace SWD392_BE.Services.Services
 
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    orders = orders.Where(o => o.UserId.ToLower() == userId).ToList();
+                    orders = orders.Where(o => o.UserId.ToLower() == userId.ToLower()).ToList();
                 }
 
                 if (createdDate.HasValue)
