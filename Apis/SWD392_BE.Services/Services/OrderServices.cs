@@ -1,4 +1,7 @@
-﻿using SWD392_BE.Repositories.Interfaces;
+﻿using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.Interfaces;
+using SWD392_BE.Repositories.Repositories;
+using SWD392_BE.Repositories.ViewModels.OrderModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Services.Interfaces;
 using System;
@@ -17,8 +20,7 @@ namespace SWD392_BE.Services.Services
         {
             _order = order;
         }
-
-        public async Task<ResultModel> getOrder()
+        public async Task<ResultModel> getAllOrder()
         {
             var result = new ResultModel();
             try
@@ -45,6 +47,42 @@ namespace SWD392_BE.Services.Services
                 result.Message = ex.Message;
                 return result;
             }
+        }
+        public async Task<ResultModel> GetOrderByUserIdAsync(string userId)
+        {
+            var result = await _order.GetOrderByUserIdAsync(userId);
+
+            if (!result.IsSuccess)
+            {
+                return result;
+            }
+
+            var orders = (List<Order>)result.Data;
+
+            var orderDetails = orders.Select(o => new GetOrderViewModel
+            {
+                OrderId = o.OrderId,
+                SessionId = o.SessionId,
+                TransationId = o.TransationId,
+                UserName = o.User.UserName,
+                StoreName = o.Store.Name,
+                Price = o.Price,
+                Quantity = o.Quantity,
+                Status = o.Status,
+                CreatedTime = o.CreatedTime,
+                CreatedDate = o.CreatedDate,
+                CreatedBy = o.CreatedBy,
+                ModifiedDate = o.ModifiedDate,
+                ModifiedBy = o.ModifiedBy,
+                // Add other properties as needed
+            }).ToList();
+
+            return new ResultModel
+            {
+                IsSuccess = true,
+                Code = 200,
+                Data = orderDetails
+            };
         }
     }
 }
