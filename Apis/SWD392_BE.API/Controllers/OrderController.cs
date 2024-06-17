@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Services.Interfaces;
+using SWD392_BE.Services.Services;
 
 namespace SWD392_BE.API.Controllers
 {
@@ -19,13 +20,13 @@ namespace SWD392_BE.API.Controllers
 
         #region Get orders
         /// <summary>
-        /// Get list of orders
+        /// Get list of order by filter
         /// </summary>
         /// <returns>A list of orders</returns>
         [HttpGet]
-        public async Task<IActionResult> getOrder()
+        public async Task<IActionResult> GetOrders( string? userId, DateTime? createdDate, int? status, string? storeName, string? sessionId)
         {
-            var result = await _order.getOrder();
+            var result = await _order.getOrders(userId, createdDate,status, storeName, sessionId);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
         #endregion

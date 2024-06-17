@@ -1,4 +1,6 @@
-﻿using SWD392_BE.Repositories.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Math.EC.Rfc7748;
+using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,8 +12,39 @@ namespace SWD392_BE.Repositories.Repositories
 {
     public class OrderRepository : GenericRepository<Order>, IOrderRepository
     {
-        public OrderRepository(CampusFoodSystemContext context) : base(context)
+        private readonly CampusFoodSystemContext _dbContext;
+        public OrderRepository(CampusFoodSystemContext dbContext) : base(dbContext)
         {
+            _dbContext = dbContext;
+        }
+
+        public async Task<List<Order>> GetOrders()
+        {
+            return await _dbContext.Orders
+                .Include(x => x.Store)
+                .Include(x => x.User)
+                .Select(x => new Order
+                {
+                    OrderId = x.OrderId,
+                    UserId = x.UserId,
+                    User = new User
+                    {
+                        Name = x.User.Name,
+                    },
+                    Price = x.Price,
+                    Quantity = x.Quantity,
+                    Store = new Store
+                    {
+                        Name = x.Store.Name,
+                    },
+                    Status = x.Status,
+                    CreatedTime = x.CreatedTime,
+                    CreatedDate = x.CreatedDate,
+                    ModifiedBy = x.ModifiedBy,
+                    ModifiedDate = x.ModifiedDate,
+                })
+                .AsNoTracking()
+                .ToListAsync();
         }
     }
 }
