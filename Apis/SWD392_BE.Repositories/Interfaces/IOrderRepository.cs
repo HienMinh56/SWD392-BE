@@ -1,4 +1,5 @@
 ﻿using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.ViewModels.ResultModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,5 +10,6 @@ namespace SWD392_BE.Repositories.Interfaces
 {
     public interface IOrderRepository : IGenericRepository<Order>
     {
+        public Task<ResultModel> GetOrderByUserIdAsync(string userId);
     }
 }
