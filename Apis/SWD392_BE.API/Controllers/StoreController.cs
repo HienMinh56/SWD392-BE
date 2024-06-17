@@ -53,7 +53,7 @@ namespace SWD392_BE.API.Controllers
         /// Update a store
         /// </summary>
         /// <returns>Status of action</returns>
-        [HttpPut]
+        [HttpPut("{storeId}")]
         public async Task<IActionResult> UpdateStore(string storeId,  UpdateStoreViewModel storeReq)
         {
             var currentUser = HttpContext.User;
