@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.ViewModels.FoodModel;
+using SWD392_BE.Repositories.ViewModels.OrderModel;
 using SWD392_BE.Repositories.ViewModels.StoreModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
 using System;
@@ -112,6 +113,17 @@ namespace SWD392_BE.Services.MapperProfile
 
             CreateMap<Food, DeleteFoodReqModel>()
             .ForMember(dest => dest.FoodId, opt => opt.MapFrom(src => src.FoodId));
+
+            CreateMap<Order, OrderListViewModel>()
+            .ForMember(dest => dest.OrderId, opt => opt.MapFrom(src => src.OrderId))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.User.Name))
+            .ForMember(dest => dest.SessionId, opt => opt.MapFrom(src => src.SessionId))
+            .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
+            .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
+            .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store.Name))
+            .ForMember(dest => dest.TransationId, opt => opt.MapFrom(src => src.TransationId))
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+            .ForMember(dest => dest.CreatedTime, opt => opt.Ignore());
         }
     }
 }

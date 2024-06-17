@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
@@ -12,49 +13,39 @@ namespace SWD392_BE.Repositories.Repositories
 {
     public class OrderRepository : GenericRepository<Order>, IOrderRepository
     {
-        private readonly CampusFoodSystemContext _context;
-
-        public OrderRepository(CampusFoodSystemContext context) : base(context)
+        private readonly CampusFoodSystemContext _dbContext;
+        public OrderRepository(CampusFoodSystemContext dbContext) : base(dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
 
-        public async Task<ResultModel> GetOrderByUserIdAsync(string userId)
+        public async Task<List<Order>> GetOrders()
         {
-            try
-            {
-                var orders = await _context.Orders
-                    .Where(o => o.UserId == userId)
-                    .Include(o => o.User)
-                    .Include(o => o.Store)
-                    .ToListAsync();
-
-                if (orders == null || !orders.Any())
+            return await _dbContext.Orders
+                .Include(x => x.Store)
+                .Include(x => x.User)
+                .Select(x => new Order
                 {
-                    return new ResultModel
+                    OrderId = x.OrderId,
+                    UserId = x.UserId,
+                    User = new User
                     {
-                        IsSuccess = false,
-                        Code = 404,
-                        Message = "No orders found for the given user ID."
-                    };
-                }
-
-                return new ResultModel
-                {
-                    IsSuccess = true,
-                    Code = 200,
-                    Data = orders
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ResultModel
-                {
-                    IsSuccess = false,
-                    Code = 500,
-                    Message = $"An error occurred while retrieving orders: {ex.Message}"
-                };
-            }
+                        Name = x.User.Name,
+                    },
+                    Price = x.Price,
+                    Quantity = x.Quantity,
+                    Store = new Store
+                    {
+                        Name = x.Store.Name,
+                    },
+                    Status = x.Status,
+                    CreatedTime = x.CreatedTime,
+                    CreatedDate = x.CreatedDate,
+                    ModifiedBy = x.ModifiedBy,
+                    ModifiedDate = x.ModifiedDate,
+                })
+                .AsNoTracking()
+                .ToListAsync();
         }
     }
 }

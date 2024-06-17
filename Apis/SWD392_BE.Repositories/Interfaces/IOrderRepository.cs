@@ -10,6 +10,6 @@ namespace SWD392_BE.Repositories.Interfaces
 {
     public interface IOrderRepository : IGenericRepository<Order>
     {
-        public Task<ResultModel> GetOrderByUserIdAsync(string userId);
+        Task<List<Order>> GetOrders();
     }
 }
