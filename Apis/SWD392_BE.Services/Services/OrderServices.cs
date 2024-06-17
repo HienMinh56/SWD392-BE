@@ -91,41 +91,5 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
-        public async Task<ResultModel> GetOrderByUserIdAsync(string userId)
-        {
-            var result = await _order.GetOrderByUserIdAsync(userId);
-
-            if (!result.IsSuccess)
-            {
-                return result;
-            }
-
-            var orders = (List<Order>)result.Data;
-
-            var orderDetails = orders.Select(o => new GetOrderViewModel
-            {
-                OrderId = o.OrderId,
-                SessionId = o.SessionId,
-                TransationId = o.TransationId,
-                UserName = o.User.UserName,
-                StoreName = o.Store.Name,
-                Price = o.Price,
-                Quantity = o.Quantity,
-                Status = o.Status,
-                CreatedTime = o.CreatedTime,
-                CreatedDate = o.CreatedDate,
-                CreatedBy = o.CreatedBy,
-                ModifiedDate = o.ModifiedDate,
-                ModifiedBy = o.ModifiedBy,
-                // Add other properties as needed
-            }).ToList();
-
-            return new ResultModel
-            {
-                IsSuccess = true,
-                Code = 200,
-                Data = orderDetails
-            };
-        }
     }
 }
