@@ -52,7 +52,7 @@ namespace SWD392_BE.API.Controllers
         /// Add new foods into store
         /// </summary>
         /// <returns>Status of action</returns>
-        [HttpPost]
+        [HttpPost("{storeId}")]
         public async Task<IActionResult> AddFood(string storeId, [FromForm] FoodRequestModel foodRequestModel)
         {
             if (!ModelState.IsValid)
@@ -102,7 +102,7 @@ namespace SWD392_BE.API.Controllers
         /// Update a food
         /// </summary>
         /// <returns>Status of action</returns>
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateFood(string id, [FromForm] UpdateFoodViewModel model, IFormFile image)
         {
             if (!ModelState.IsValid)
