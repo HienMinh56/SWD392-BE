@@ -32,12 +32,17 @@ namespace SWD392_BE.Services.Services
             _mapper = mapper;
         }
 
-            public async Task<ResultModel> GetUserList(int? status, string? campusName)
+            public async Task<ResultModel> GetUserList(string? userId,int? status, string? campusName)
         {
             var result = new ResultModel();
             try
             {
                 var users = await _userRepository.GetUsers();
+
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    users = users.Where(u => u.UserId.ToLower() == userId).ToList();
+                }
 
                 if (status.HasValue)
                 {
