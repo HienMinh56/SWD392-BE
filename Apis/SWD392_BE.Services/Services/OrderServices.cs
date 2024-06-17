@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SWD392_BE.Repositories.Entities;
+﻿using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Repositories;
 using SWD392_BE.Repositories.ViewModels.OrderModel;
@@ -90,6 +90,42 @@ namespace SWD392_BE.Services.Services
                 result.IsSuccess = false;
             }
             return result;
+        }
+        public async Task<ResultModel> GetOrderByUserIdAsync(string userId)
+        {
+            var result = await _order.GetOrderByUserIdAsync(userId);
+
+            if (!result.IsSuccess)
+            {
+                return result;
+            }
+
+            var orders = (List<Order>)result.Data;
+
+            var orderDetails = orders.Select(o => new GetOrderViewModel
+            {
+                OrderId = o.OrderId,
+                SessionId = o.SessionId,
+                TransationId = o.TransationId,
+                UserName = o.User.UserName,
+                StoreName = o.Store.Name,
+                Price = o.Price,
+                Quantity = o.Quantity,
+                Status = o.Status,
+                CreatedTime = o.CreatedTime,
+                CreatedDate = o.CreatedDate,
+                CreatedBy = o.CreatedBy,
+                ModifiedDate = o.ModifiedDate,
+                ModifiedBy = o.ModifiedBy,
+                // Add other properties as needed
+            }).ToList();
+
+            return new ResultModel
+            {
+                IsSuccess = true,
+                Code = 200,
+                Data = orderDetails
+            };
         }
     }
 }

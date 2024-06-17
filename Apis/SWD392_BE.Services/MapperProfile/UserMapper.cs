@@ -67,6 +67,12 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role))
             .ForMember(dest => dest.Balance, opt => opt.MapFrom(src => src.Balance));
 
+            CreateMap<EditUserViewModel, User>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.CampusId, opt => opt.MapFrom(src => src.CampusId))
+            .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone));
+
             //Store
             CreateMap<StoreViewModel, Store>()
             .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
