@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,9 +17,5 @@ namespace SWD392_BE.Repositories.ViewModels.FoodModel
         public string Description { get; set; } = null!;
 
         public int Cate { get; set; }
-
-        public string? Image { get; set; }
-
-        public int Status { get; set; }
     }
 }

@@ -77,7 +77,7 @@ namespace SWD392_BE.Services.Services
         {
             try
             {
-                var _refreshTokenList = _refreshTokenRepository.GetAll();
+                var _refreshTokenList = _refreshTokenRepository.Get();
                 foreach (var item in _refreshTokenList)
                 {
                     _refreshTokenRepository.Remove(item);
@@ -94,7 +94,7 @@ namespace SWD392_BE.Services.Services
         {
             try
             {
-                var _refreshToken = (List<Token>)_refreshTokenRepository.GetAll();
+                var _refreshToken = (List<Token>)_refreshTokenRepository.Get();
                 foreach (var item in _refreshToken)
                 {
                     if (item.Status == 2 || item.ExpiredTime <= DateTime.Now)

@@ -6,9 +6,11 @@ using SWD392_BE.Repositories;
 using SWD392_BE.Repositories.Helper;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Repositories;
+using SWD392_BE.Repositories.Utils.ConfigOptions;
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.MapperProfile;
 using SWD392_BE.Services.Services;
+using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -21,6 +23,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+builder.Services.Configure<GCSConfigOptions>(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -131,6 +135,10 @@ builder.Services.AddSwaggerGen(options =>
                         Array.Empty<string>()
                     }
                 });
+    // Lấy tệp XML cho chú thích Swagger
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 });
 builder.Services.AddAuthentication(item =>
 {
@@ -167,18 +175,30 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStoreRepository, StoreRepository>();
 builder.Services.AddScoped<IStoreService, StoreService>();
 
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+
+builder.Services.AddScoped<IStoreSessionRepository, StoreSessionRepository>();
+//builder.Services.AddScoped<IFoodService, FoodService>();
+
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
-//builder.Services.AddScoped<IStoreService, StoreService>();
+builder.Services.AddScoped<IAreaService, AreaService>();
 
 
 builder.Services.AddScoped<IFoodRepository, FoodRepository>();
 builder.Services.AddScoped<IFoodService, FoodService>();
 
 
+builder.Services.AddScoped<ICampusRepository, CampusRepository>();
+builder.Services.AddScoped<ICampusService, CampusService>();
+
+
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderServices>();
 
+builder.Services.AddSingleton<ICloudStorageService, CloudStorageService>();
 
 // db local
 
@@ -215,7 +235,7 @@ using (var scope = app.Services.CreateScope())
     refreshHandler.RemoveAllRefreshToken();
 }
 
-
+app.UseCors("app-cors");
 app.UseSwagger();
 app.UseSwaggerUI();
 

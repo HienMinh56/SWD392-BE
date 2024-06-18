@@ -1,20 +1,17 @@
 ﻿using AutoMapper;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using MimeKit;
 using SWD392_BE.Repositories.Entities;
-using SWD392_BE.Repositories.Helper;
-using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.Sercurity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SWD392_BE.Services.Services
 {
@@ -93,6 +90,7 @@ namespace SWD392_BE.Services.Services
                 await _accountRepo.SaveChangesAsync();
                 result.IsSuccess = true;
                 result.Code = 200;
+                result.Message = "Add New User Success";
                 return result;
             }
             catch (Exception e)
@@ -105,7 +103,7 @@ namespace SWD392_BE.Services.Services
         }
 
 
-        public async Task<ResultModel> MobileRegister(RegisterReqModel model)
+        public async Task<ResultModel> MobileRegister(CreateMobileViewModel model)
         {
             ResultModel result = new ResultModel();
             try
@@ -129,7 +127,7 @@ namespace SWD392_BE.Services.Services
                     return result;
                 }
                 // Check if email already exists
-                var existingEmail = _accountRepo.Get(u =>  u.Email == model.Email);
+                var existingEmail = _accountRepo.Get(u => u.Email == model.Email);
                 if (existingEmail != null)
                 {
                     result.IsSuccess = false;
@@ -166,6 +164,7 @@ namespace SWD392_BE.Services.Services
                 await _accountRepo.SaveChangesAsync();
                 result.IsSuccess = true;
                 result.Code = 200;
+                result.Message = "Add New Shiper Success";
                 return result;
             }
             catch (Exception e)
@@ -176,5 +175,97 @@ namespace SWD392_BE.Services.Services
                 return result;
             }
         }
+        public bool IsUserValid(string email)
+        {
+            var user = _accountRepo.Get(u => u.Email == email && u.Status == 1);
+            if (user != null)
+            {
+                return true;
+            }
+            return false;
+        }
+        private string GenerateRandomPassword()
+        {
+            // Implement your method to generate a strong random password
+            // Example implementation:
+            const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_+-=";
+            var random = new Random();
+            var password = new string(Enumerable.Repeat(validChars, 12)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+            return password;
+        }
+        public async Task<ResultModel> SendPasswordResetEmail(string emailTo)
+        {
+            try
+            {
+                
+                if (!IsUserValid(emailTo))
+                {
+                    return new ResultModel
+                    {
+                        IsSuccess = false,
+                        Code = 400,
+                        Message = "User not found or email is not confirmed."
+                    };
+                }
+                var user = _accountRepo.Get(u => u.Email == emailTo);  
+                // Generate a new random password
+                var newPassword = GenerateRandomPassword();
+
+                // Hash the new password
+                user.Password = PasswordHasher.HashPassword(newPassword);
+
+                // Update user in database
+                _accountRepo.Update(user);
+                await _accountRepo.SaveChangesAsync(); // Assuming async method for saving changes
+
+                // Prepare email message
+                string smtpHost = _configuration["EmailSettings:EmailHost"];
+                int smtpPort = int.Parse(_configuration["EmailSettings:EmailPort"]);
+                string emailUserName = _configuration["EmailSettings:EmailUserName"];
+                string emailPassword = _configuration["EmailSettings:EmailPassword"];
+
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("Dev NomNom", emailUserName));
+                message.To.Add(new MailboxAddress("", emailTo));
+                message.Subject = "Password Reset";
+
+                // Body of the email containing the new password
+                var builder = new BodyBuilder
+                {
+                    HtmlBody = $@"<p>Xin chào {user.UserName},</p>
+                         <p>Cảm ơn bạn đã sử dụng ứng dụng của chúng tôi. Chúc bạn có những trải nghiệm vui vẻ và ngon miệng.</p>
+                         <p>Đây là mật khẩu mới của bạn: {newPassword}</p>"
+                };
+
+                message.Body = builder.ToMessageBody();
+
+                // Send email
+                using (var client = new SmtpClient())
+                {
+                    client.Connect(smtpHost, smtpPort, SecureSocketOptions.StartTls);
+                    client.Authenticate(emailUserName, emailPassword);
+                    client.Send(message);
+                    client.Disconnect(true);
+                }
+
+                return new ResultModel
+                {
+                    IsSuccess = true,
+                    Code = 200,
+                    Message = "Email sent successfully."
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResultModel
+                {
+                    IsSuccess = false,
+                    Code = 500,
+                    Message = $"Failed to send email: {ex.Message}"
+                };
+            }
+        }
+
     }
 }

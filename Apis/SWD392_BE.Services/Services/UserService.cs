@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
+using SWD392_BE.Repositories.Repositories;
+using SWD392_BE.Repositories.ViewModels.PageModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
 using SWD392_BE.Services.Interfaces;
@@ -20,19 +22,27 @@ namespace SWD392_BE.Services.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly ICampusRepository _campusRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository, IMapper mapper)
+        public UserService(IUserRepository userRepository, ICampusRepository campusRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _campusRepository = campusRepository;
             _mapper = mapper;
         }
-        public async Task<ResultModel> GetUserList(int? status, string? campusName)
+
+            public async Task<ResultModel> GetUserList(string? userId,int? status, string? campusName)
         {
             var result = new ResultModel();
             try
             {
                 var users = await _userRepository.GetUsers();
+
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    users = users.Where(u => u.UserId.ToLower() == userId.ToLower()).ToList();
+                }
 
                 if (status.HasValue)
                 {
@@ -41,7 +51,7 @@ namespace SWD392_BE.Services.Services
 
                 if (!string.IsNullOrEmpty(campusName))
                 {
-                    users = users.Where(u => u.Campus.Name == campusName).ToList();
+                    users = users.Where(u => u.Campus.Name.ToLower() == campusName.ToLower()).ToList();
                 }
 
                 if (!users.Any())
@@ -63,7 +73,8 @@ namespace SWD392_BE.Services.Services
                         Phone = u.Phone,
                         Role = u.Role,
                         Balance = u.Balance,
-                        Status = u.Status
+                        Status = u.Status,
+                        CreatedDate = u.CreatedDate
                     }).ToList();
 
                     result.Data = userViewModels;
@@ -79,6 +90,7 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
+
         public User GetUserById(string id)
         {
             try
@@ -87,7 +99,6 @@ namespace SWD392_BE.Services.Services
 
                 if (user == null)
                 {
-                    // Handle the case where the user is not found, e.g., return null or throw an exception
                     return null;
                 }
 
@@ -120,7 +131,7 @@ namespace SWD392_BE.Services.Services
         }
         private int checkNameAndEmail(string name, string email, string userId)
         {
-            var users = _userRepository.GetAll();
+            var users = _userRepository.Get();
             if (users.FirstOrDefault(c => c.Name == name && c.UserId != userId) != null)
             {
                 return 0;
@@ -155,7 +166,7 @@ namespace SWD392_BE.Services.Services
                     return result;
                 }
                 // Check if Phone already exists
-                var existingPhone = _userRepository.Get(x => x.Phone == model.Phone);
+                var existingPhone = _userRepository.Get(x => x.Phone == model.Phone && x.UserId != userId);
                 if (existingPhone != null)
                 {
                     result.IsSuccess = false;
@@ -195,6 +206,86 @@ namespace SWD392_BE.Services.Services
                 return result;
             }
             return result;
+        }
+        public async Task<ResultModel> EditUser(string userId, EditUserViewModel model, ClaimsPrincipal userUpdate)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var existingUser = _userRepository.Get(x => x.UserId == userId);
+                if (existingUser == null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 404;
+                    result.Message = "Cannot find user";
+                    return result;
+                }
+
+                // Check if email already exists
+                var existingEmail = _userRepository.Get(x => x.Email == model.Email && x.UserId != userId);
+                if (existingEmail != null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Email already exists";
+                    return result;
+                }
+
+                // Check if Phone already exists
+                var existingPhone = _userRepository.Get(x => x.Phone == model.Phone && x.UserId != userId);
+                if (existingPhone != null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Phone already exists";
+                    return result;
+                }
+
+                // Check if the old password is correct
+                if (!PasswordHasher.VerifyPassword(model.OldPassword, existingUser.Password))
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Old password is incorrect";
+                    return result;
+                }
+
+                // Check if the new password and confirm password match
+                if (model.NewPassword != model.ConfirmPassword)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "New password and confirm password do not match";
+                    return result;
+                }
+
+                // Map the ViewModel to the existing user entity
+                _mapper.Map(model, existingUser);
+
+                // Update the additional fields
+                existingUser.Name = model.Name;
+                existingUser.Password = PasswordHasher.HashPassword(model.NewPassword); // Update the password
+                existingUser.Email = model.Email;
+                existingUser.CampusId = model.CampusId;
+                existingUser.Phone = model.Phone;
+                existingUser.ModifiedBy = userUpdate.FindFirst("UserName")?.Value;
+                existingUser.ModifiedDate = DateTime.Now;
+
+                _userRepository.Update(existingUser);
+                _userRepository.SaveChanges();
+
+                result.IsSuccess = true;
+                result.Code = 200;
+                result.Message = "Edit User Success";
+                return result;
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Code = 400;
+                result.Message = ex.Message;
+                return result;
+            }
         }
         public async Task<ResultModel> DeleteUser(DeleteUserReqModel request, ClaimsPrincipal userDelete)
         {
@@ -247,5 +338,57 @@ namespace SWD392_BE.Services.Services
                 return result;
             }
         }
+
+        public async Task<ResultModel> GetUsersSortedByCreatedDateAscending()
+        {
+            try
+            {
+                var users = await _userRepository.GetUsersSortedByCreatedDateAscending();
+                return new ResultModel
+                {
+                    IsSuccess = true,
+                    Code = 200,
+                    Message = "Success",
+                    Data = users
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResultModel
+                {
+                    IsSuccess = false,
+                    Code = 500,
+                    Message = ex.Message,
+                    Data = null
+                };
+            }
+        }
+
+        public async Task<ResultModel> GetUsersSortedByCreatedDateDescending()
+        {
+            try
+            {
+                var users = await _userRepository.GetUsersSortedByCreatedDateDescending();
+                return new ResultModel
+                {
+                    IsSuccess = true,
+                    Code = 200,
+                    Message = "Success",
+                    Data = users
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResultModel
+                {
+                    IsSuccess = false,
+                    Code = 500,
+                    Message = ex.Message,
+                    Data = null
+                };
+            }
+        }
+
+        
     }
 }

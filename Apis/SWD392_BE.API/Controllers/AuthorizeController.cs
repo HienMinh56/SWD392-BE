@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using SWD392_BE.Repositories.Entities;
@@ -14,8 +15,9 @@ using System.Text;
 
 namespace SWD392_BE.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/authorize")]
     [ApiController]
+    [EnableCors("app-cors")]
     public class AuthorizeController : ControllerBase
     {
         private readonly IUserService _userServices;
@@ -102,7 +104,11 @@ namespace SWD392_BE.API.Controllers
         #endregion
 
         #region RefreshAccessToken
-        [HttpPost("RefreshAccessToken")]
+        /// <summary>
+        /// Refresh Token
+        /// </summary>
+        /// <returns>New Token and Refresh Token</returns>
+        [HttpPost("refresh-access-token")]
         public async Task<ActionResult> RefreshAccessToken(TokenViewModel token)
         {
             try
@@ -184,8 +190,12 @@ namespace SWD392_BE.API.Controllers
         #endregion
 
         #region Login
+        /// <summary>
+        /// Login into system
+        /// </summary>
+        /// <returns>Acces Token and Refresh Token</returns>
         [HttpPost]
-        [Route("Login")]
+        [Route("login")]
         public IActionResult Login(string userName, string password)
         {
             var user = _userServices.GetUserByUserName(userName);
@@ -213,7 +223,7 @@ namespace SWD392_BE.API.Controllers
 
         #region Logout
         [HttpPost]
-        [Route("Logout")]
+        [Route("logout")]
         public IActionResult Logout()
         {
             try
@@ -257,7 +267,12 @@ namespace SWD392_BE.API.Controllers
         }
         #endregion
 
-        [HttpGet("whoami")]
+        #region Who Am I
+        /// <summary>
+        /// Check infor of user
+        /// </summary>
+        /// <returns>Infor of user</returns>
+        [HttpGet("me")]
         public IActionResult WhoAmI()
         {
             // Kiểm tra xem người dùng đã được xác thực chưa
@@ -304,6 +319,6 @@ namespace SWD392_BE.API.Controllers
                 return Unauthorized();
             }
         }
-
+        #endregion
     }
 }

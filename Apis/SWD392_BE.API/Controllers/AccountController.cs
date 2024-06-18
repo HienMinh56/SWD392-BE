@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SWD392_BE.Repositories.Helper;
@@ -6,29 +6,39 @@ using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.UserModel;
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.Services;
+using System.Net.Mail;
+using System.Net;
+using MailKit.Net.Smtp;
+using MimeKit;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using SWD392_BE.Repositories.ViewModels.ResetPasswordModel;
+using Microsoft.Extensions.Configuration;
+using SmtpClient = MailKit.Net.Smtp.SmtpClient;
+using MailKit.Security;
 
 namespace SWD392_BE.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/account")]
     [ApiController]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
+        private readonly IUserService _userService;
+        private readonly IConfiguration _configuration;
 
-
-
-        public AccountController(IAccountService accountService)
+        public AccountController(IAccountService accountService,IUserService userService,IConfiguration configuration)
         {
             _accountService = accountService;
-
+            _userService = userService;
+            _configuration = configuration;
         }
 
-
-
-
-
-        [HttpPost("AddNewUser")]
+        #region Add a new user
+        /// <summary>
+        /// Add a new user by admin
+        /// </summary>
+        /// <returns>Status of action</returns>
+        [HttpPost]
         public async Task<ActionResult<ResultModel>> AddNewUser(RegisterReqModel model)
         {
             try
@@ -54,9 +64,15 @@ namespace SWD392_BE.API.Controllers
                 return StatusCode(500, result);
             }
         }
+        #endregion
 
-        [HttpPost("mobileRegister")]
-        public async Task<ActionResult<ResultModel>> MobileRegister(RegisterReqModel model)
+        #region Regis Account
+        /// <summary>
+        /// Register a new account
+        /// </summary>
+        /// <returns>Status of action</returns>
+        [HttpPost("mobile")]
+        public async Task<ActionResult<ResultModel>> MobileRegister(CreateMobileViewModel model)
         {
             try
             {
@@ -82,6 +98,22 @@ namespace SWD392_BE.API.Controllers
                 return StatusCode(500, result);
             }
         }
+        #endregion
+
+        [HttpPost("send-reset-email")]
+        public async Task<IActionResult> SendPasswordResetEmail([FromBody] string emailTo)
+        {
+            if (string.IsNullOrEmpty(emailTo))
+            {
+                return BadRequest("Email is required.");
+            }
+
+            var result = await _accountService.SendPasswordResetEmail(emailTo);
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
+
     }
 
 }

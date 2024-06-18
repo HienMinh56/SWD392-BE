@@ -9,7 +9,7 @@ namespace SWD392_BE.Repositories.Interfaces
 {
     public interface IGenericRepository<T> where T : class
     {
-        ICollection<T> GetAll();
+        ICollection<T> Get();
         ICollection<T> GetList(Expression<Func<T, bool>> expression);
         T Get(Expression<Func<T, bool>> expression);
         T Add(T entity);
@@ -18,6 +18,7 @@ namespace SWD392_BE.Repositories.Interfaces
         void Delete(string id);
         void Remove(T enity);
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
+        Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties);
         void ClearTrackers();
         int SaveChanges();
         Task SaveChangesAsync();

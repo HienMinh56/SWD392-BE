@@ -1,10 +1,15 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Repositories;
 using SWD392_BE.Repositories.ViewModels.FoodModel;
+using SWD392_BE.Repositories.ViewModels.PageModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Repositories.ViewModels.StoreModel;
+using SWD392_BE.Repositories.ViewModels.UserModel;
 using SWD392_BE.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -17,15 +22,36 @@ namespace SWD392_BE.Services.Services
 {
     public class FoodService : IFoodService
     {
+        private readonly ICloudStorageService _cloudStorageService;
         private readonly IFoodRepository _foodRepository;
         private readonly IMapper _mapper;
 
-        public FoodService(IFoodRepository foodRepository, IMapper mapper)
+        public FoodService(ICloudStorageService cloudStorageService, IFoodRepository foodRepository, IMapper mapper)
         {
+            _cloudStorageService = cloudStorageService;
             _foodRepository = foodRepository;
             _mapper = mapper;
         }
-        public async Task<ResultModel> addFood(string storeId, List<List<FoodViewModel>> foodLists, ClaimsPrincipal userCreate)
+        public Food GetFoodById(string id)
+        {
+            try
+            {
+                var data = _foodRepository.Get(x => x.FoodId == id);
+
+                if (data == null)
+                {
+                    // Handle the case where the user is not found, e.g., return null or throw an exception
+                    return null;
+                }
+
+                return data;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        public async Task<ResultModel> addFood(string storeId, List<FoodViewModel> foodLists, ClaimsPrincipal userCreate)
         {
             ResultModel result = new ResultModel();
             try
@@ -41,29 +67,34 @@ namespace SWD392_BE.Services.Services
                 string lastFoodId = await _foodRepository.GetLastFoodIdAsync();
                 int foodIdCounter = lastFoodId != null ? int.Parse(lastFoodId.Substring(4)) + 1 : 1; // Bắt đầu từ FoodId cuối cùng + 1
 
-                foreach (var foods in foodLists)
+
+                foreach (var food in foodLists)
                 {
-                    foreach (var food in foods)
+                    string newFoodId = "FOOD" + foodIdCounter.ToString("D3"); // Tạo FoodId theo thứ tự tăng dần
+                    var newFood = _mapper.Map<Food>(food);
+                    newFood.FoodId = newFoodId;
+                    newFood.StoreId = storeId;
+                    newFood.Name = food.Name;
+                    newFood.Price = food.Price;
+                    newFood.Title = food.Title;
+                    newFood.Description = food.Description;
+                    newFood.Cate = food.Cate;
+                    newFood.Status = 1;
+                    newFood.CreatedBy = userCreate.FindFirst("UserName")?.Value;
+                    newFood.CreatedDate = DateTime.Now;
+
+                    if (food.Image != null)
                     {
-                        string newFoodId = "FOOD" + foodIdCounter.ToString("D3"); // Tạo FoodId theo thứ tự tăng dần
-                        var newFood = _mapper.Map<Food>(food);
-                        newFood.FoodId = newFoodId;
-                        newFood.StoreId = storeId;
-                        newFood.Name = food.Name;
-                        newFood.Price = food.Price;
-                        newFood.Title = food.Title;
-                        newFood.Description = food.Description;
-                        newFood.Cate = food.Cate;
-                        newFood.Image = food.Image;
-                        newFood.Status = 1;
-                        newFood.CreatedBy = userCreate.FindFirst("UserName")?.Value;
-                        newFood.CreatedDate = DateTime.Now;
-
-                        _foodRepository.Add(newFood);
-
-                        foodIdCounter++; // Tăng biến đếm sau mỗi lần thêm món ăn
+                        string imageFileName = $"{newFoodId}_{food.Image.FileName}";
+                        newFood.Image = await _cloudStorageService.UploadFileAsync(food.Image, imageFileName);
                     }
+
+
+                    _foodRepository.Add(newFood);
+
+                    foodIdCounter++; // Tăng biến đếm sau mỗi lần thêm món ăn
                 }
+
 
                 _foodRepository.SaveChanges();
 
@@ -82,14 +113,21 @@ namespace SWD392_BE.Services.Services
         }
 
 
-
-        public async Task<ResultModel> getListFood(string storeId)
+        public async Task<ResultModel> GetListFoodsAsync(string storeId, int? cate)
         {
             ResultModel result = new ResultModel();
             try
             {
-                var foods = _foodRepository.GetList(s => s.StoreId == storeId);
-                if (foods == null)
+
+                // Retrieve and filter foods based on storeId and optional category
+                var filteredFoods = _foodRepository.GetList(s => s.StoreId == storeId).ToList();
+
+                if (cate.HasValue)
+                {
+                    filteredFoods = filteredFoods.Where(f => f.Cate == cate.Value).ToList();
+                }
+
+                if (filteredFoods == null)
                 {
                     result.IsSuccess = true;
                     result.Code = 201;
@@ -100,7 +138,7 @@ namespace SWD392_BE.Services.Services
                     result.IsSuccess = true;
                     result.Code = 200;
                     result.Message = "Foods retrieved successfully";
-                    result.Data = foods;
+                    result.Data = filteredFoods;
                 }
             }
             catch (Exception ex)
@@ -112,7 +150,9 @@ namespace SWD392_BE.Services.Services
 
             return result;
         }
-        public async Task<ResultModel> UpdateFoodAsync(string id, UpdateFoodViewModel model, ClaimsPrincipal userUpdate)
+
+
+        public async Task<ResultModel> UpdateFoodAsync(string id, UpdateFoodViewModel model, ClaimsPrincipal userUpdate, IFormFile image)
         {
             ResultModel result = new ResultModel();
             try
@@ -125,14 +165,6 @@ namespace SWD392_BE.Services.Services
                     return result;
                 }
 
-                if (_foodRepository == null)
-                {
-                    result.IsSuccess = false;
-                    result.Code = 500;
-                    result.Message = "Food repository is not initialized.";
-                    return result;
-                }
-
                 var existingFood = _foodRepository.Get(x => x.FoodId == id);
                 if (existingFood == null)
                 {
@@ -142,13 +174,37 @@ namespace SWD392_BE.Services.Services
                     return result;
                 }
 
+                // Update food properties except image
                 _mapper.Map(model, existingFood);
                 existingFood.Price = model.Price;
                 existingFood.Title = model.Title;
                 existingFood.Description = model.Description;
                 existingFood.Cate = model.Cate;
-                existingFood.Image = model.Image;
 
+                // Handle image upload if imageFile is provided
+                if (image != null && image.Length > 0)
+                {
+                    // Generate unique filename or use existing logic to determine filename
+                    string fileNameToSave = $"food_{existingFood.FoodId}_{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
+
+                    // Upload image to cloud storage
+                    string imageUrl = await _cloudStorageService.UploadFileAsync(image, fileNameToSave);
+
+                    if (!string.IsNullOrEmpty(imageUrl))
+                    {
+                        // Update food's image URL
+                        existingFood.Image = imageUrl;
+                    }
+                    else
+                    {
+                        result.IsSuccess = false;
+                        result.Code = 500;
+                        result.Message = "Failed to upload image to cloud storage.";
+                        return result;
+                    }
+                }
+
+                // Set modified by and date
                 var modifiedBy = userUpdate.FindFirst("UserName")?.Value;
                 if (string.IsNullOrEmpty(modifiedBy))
                 {
@@ -160,6 +216,8 @@ namespace SWD392_BE.Services.Services
 
                 existingFood.ModifiedBy = modifiedBy;
                 existingFood.ModifiedDate = DateTime.Now;
+
+                // Update and save changes
                 _foodRepository.Update(existingFood);
                 await _foodRepository.SaveChangesAsync();
 
@@ -175,6 +233,38 @@ namespace SWD392_BE.Services.Services
                 result.Message = $"Exception: {ex.Message}";
                 return result;
             }
+        }
+        public async Task<ResultModel> DeleteFood(DeleteFoodReqModel request, ClaimsPrincipal userDelete)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var food = GetFoodById(request.FoodId);
+                if (food == null)
+                {
+                    result.Message = "Food not found or deleted";
+                    result.Code = 404;
+                    result.IsSuccess = false;
+                    result.Data = null;
+                    return result;
+                }
+                food.DeletedBy = userDelete.FindFirst("UserName")?.Value;
+                food.DeletedDate = DateTime.UtcNow;
+                food.Status = food.Status = 2;
+                _foodRepository.Update(food);
+                _foodRepository.SaveChanges();
+
+                result.Message = "Delete Food successfully";
+                result.Code = 200;
+                result.IsSuccess = true;
+                result.Data = food;
+            }
+            catch (DbUpdateException ex)
+            {
+                result.Message = ex.Message;
+                result.IsSuccess = false;
+            }
+            return result;
         }
     }
 }
