@@ -27,7 +27,6 @@ namespace SWD392_BE.Services.Services
             _userRepository = userRepository;
             _mapper = mapper;
         }
-
         public async Task<ResultModel> GetUserList(int? status, string? campusName)
         {
             var result = new ResultModel();
