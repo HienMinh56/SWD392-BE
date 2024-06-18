@@ -113,80 +113,62 @@ namespace SWD392_BE.API.Controllers
         {
             try
             {
-                var jwtTokenHander = new JwtSecurityTokenHandler();
-                var TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("c2VydmVwZXJmZWN0bHljaGVlc2VxdWlja2NvYWNoY29sbGVjdHNsb3Bld2lzZWNhbWU=")),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidateLifetime = false
-                };
-                //ResetRefreshToken in DB if token is disable or expired will Remove RT
-                _refreshHandler.ResetRefreshToken();
-                //check validate of Parameter
-                var tokenVerification = jwtTokenHander.ValidateToken(token.AccessTokenToken, TokenValidationParameters, out var validatedToken);
-                if (tokenVerification == null)
-                {
-                    return Ok(new ResultModel
-                    {
-                        IsSuccess = false,
-                        Message = "Invalid Param"
-                    });
-                }
-                //check AccessToken expire?
-                var epochTime = long.Parse(tokenVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-                DateTimeOffset dateTimeUtc = DateTimeOffset.FromUnixTimeSeconds(epochTime);
-                DateTime dateTimeUtcConverted = dateTimeUtc.UtcDateTime;
-                if (dateTimeUtcConverted > DateTime.UtcNow)
-                {
-                    return Ok(new ResultModel
-                    {
-                        IsSuccess = false,
-                        Message = "AccessToken had not expired",
-                        Data = "Expire time: " + dateTimeUtcConverted.ToString()
-                    });
-                }
-                //check RefreshToken exist in DB
+                // Kiểm tra RefreshToken trong cơ sở dữ liệu
                 var storedToken = _refreshHandler.GetRefreshToken(token.RefreshToken);
                 if (storedToken == null)
                 {
                     return Ok(new ResultModel
                     {
                         IsSuccess = false,
-                        Message = "RefreshToken had not existed"
+                        Message = "RefreshToken does not exist"
                     });
                 }
-                //check RefreshToken is revoked?
+
+                // Kiểm tra RefreshToken có bị thu hồi không
                 if (storedToken.Status == 2)
                 {
                     return Ok(new ResultModel
                     {
                         IsSuccess = false,
-                        Message = "RefreshToken had been revoked"
+                        Message = "RefreshToken has been revoked"
                     });
                 }
-                var User = _userServices.GetUserById(storedToken.UserId);
-                var newAT = GenerateToken(User, token.RefreshToken);
+
+                // Kiểm tra RefreshToken có hết hạn không
+                if (storedToken.ExpiredTime < DateTime.UtcNow)
+                {
+                    return Ok(new ResultModel
+                    {
+                        IsSuccess = false,
+                        Message = "RefreshToken has expired"
+                    });
+                }
+
+                // Lấy thông tin người dùng từ UserId trong RefreshToken
+                var user = _userServices.GetUserById(storedToken.UserId);
+
+                // Tạo mới AccessToken
+                var newAccessToken = GenerateToken(user, token.RefreshToken);
 
                 return Ok(new ResultModel
                 {
                     IsSuccess = true,
-                    Message = "Refresh AT success fully",
-                    Data = newAT
+                    Message = "Successfully refreshed AccessToken",
+                    Data = newAccessToken
                 });
             }
             catch (Exception ex)
             {
+                // Xử lý lỗi
                 return BadRequest(new ResultModel
                 {
                     IsSuccess = false,
                     Code = 500,
-                    Message = "Something go wrong"
+                    Message = "Something went wrong"
                 });
             }
         }
+
         #endregion
 
         #region Login
