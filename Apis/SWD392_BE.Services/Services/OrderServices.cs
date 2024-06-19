@@ -24,12 +24,12 @@ namespace SWD392_BE.Services.Services
             _order = order;
         }
 
-        public async Task<ResultModel> getOrders(string? userId, string? userName,DateTime? createdDate, int? status, string? storeName, string? sessionId)
+        public async Task<ResultModel> getOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
         {
             var result = new ResultModel();
             try
             {
-                var orders =  _order.GetOrders();
+                var orders = _order.GetOrders();
 
                 if (!string.IsNullOrEmpty(userId))
                 {
@@ -93,6 +93,56 @@ namespace SWD392_BE.Services.Services
             {
                 result.Message = ex.Message;
                 result.IsSuccess = false;
+            }
+            return result;
+        }
+
+        public async Task<ResultModel> getTotalOrderAmount(DateTime startDate, DateTime endDate)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var totalAmount = await _order.GetOrders()
+                                                        .Where(o => o.CreatedDate.HasValue && o.CreatedDate.Value.Date >= startDate.Date && o.CreatedDate.Value.Date <= endDate.Date)
+                                                        .SumAsync(o => o.Price);
+
+                decimal percentageDifference = 0;
+                decimal previousTotalAmount = 0;
+
+                if (startDate.Date == endDate.Date)
+                {
+                    DateTime previousDate = startDate.AddDays(-1);
+
+                    previousTotalAmount = await _order.GetOrders()
+                                                      .Where(o => o.CreatedDate.HasValue
+                                                              && o.CreatedDate.Value.Date == previousDate.Date)
+                                                      .SumAsync(o => o.Price);
+
+                    decimal combinedAmount = totalAmount + previousTotalAmount;
+
+                    if (combinedAmount != 0)
+                    {
+                        decimal percentageToday = (totalAmount / combinedAmount) * 100;
+                        decimal percentageYesterday = (previousTotalAmount / combinedAmount) * 100;
+                        percentageDifference = Math.Round(percentageToday - percentageYesterday, 2);
+                    }
+                }
+
+                result.Data = new
+                {
+                    totalAmount,
+                    previousTotalAmount,
+                    percentageDifference = $"{percentageDifference}%"
+                };
+                result.Message = "Success";
+                result.IsSuccess = true;
+                result.Code = 200;
+            }
+            catch (Exception ex)
+            {
+                result.Message = ex.Message;
+                result.IsSuccess = false;
+                result.Code = 500;
             }
             return result;
         }
