@@ -24,36 +24,41 @@ namespace SWD392_BE.Services.Services
             _order = order;
         }
 
-        public async Task<ResultModel> getOrders(string? userId, DateTime? createdDate, int? status, string? storeName, string? sessionId)
+        public async Task<ResultModel> getOrders(string? userId, string? userName,DateTime? createdDate, int? status, string? storeName, string? sessionId)
         {
             var result = new ResultModel();
             try
             {
-                var orders = await _order.GetOrders();
+                var orders =  _order.GetOrders();
 
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    orders = orders.Where(o => o.UserId.ToLower() == userId.ToLower()).ToList();
+                    orders = orders.Where(o => o.UserId.ToLower() == userId.ToLower());
+                }
+
+                if (!string.IsNullOrEmpty(userName))
+                {
+                    orders = orders.Where(o => o.User.Name.ToLower().Contains(userName.ToLower()));
                 }
 
                 if (createdDate.HasValue)
                 {
-                    orders = orders.Where(o => o.CreatedDate == createdDate.Value).ToList();
+                    orders = orders.Where(o => o.CreatedDate == createdDate.Value);
                 }
 
                 if (status.HasValue)
                 {
-                    orders = orders.Where(o => o.Status == status.Value).ToList();
+                    orders = orders.Where(o => o.Status == status.Value);
                 }
 
                 if (!string.IsNullOrEmpty(storeName))
                 {
-                    orders = orders.Where(o => o.Store.Name.ToLower() == storeName.ToLower()).ToList();
+                    orders = orders.Where(o => o.Store.Name.ToLower() == storeName.ToLower());
                 }
 
                 if (!string.IsNullOrEmpty(sessionId))
                 {
-                    orders = orders.Where(o => o.SessionId == sessionId).ToList();
+                    orders = orders.Where(o => o.SessionId == sessionId);
                 }
 
                 if (!orders.Any())
