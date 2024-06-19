@@ -24,36 +24,41 @@ namespace SWD392_BE.Services.Services
             _order = order;
         }
 
-        public async Task<ResultModel> getOrders(string? userId, DateTime? createdDate, int? status, string? storeName, string? sessionId)
+        public async Task<ResultModel> getOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
         {
             var result = new ResultModel();
             try
             {
-                var orders = await _order.GetOrders();
+                var orders = _order.GetOrders();
 
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    orders = orders.Where(o => o.UserId.ToLower() == userId.ToLower()).ToList();
+                    orders = orders.Where(o => o.UserId.ToLower() == userId.ToLower());
+                }
+
+                if (!string.IsNullOrEmpty(userName))
+                {
+                    orders = orders.Where(o => o.User.Name.ToLower().Contains(userName.ToLower()));
                 }
 
                 if (createdDate.HasValue)
                 {
-                    orders = orders.Where(o => o.CreatedDate == createdDate.Value).ToList();
+                    orders = orders.Where(o => o.CreatedDate == createdDate.Value);
                 }
 
                 if (status.HasValue)
                 {
-                    orders = orders.Where(o => o.Status == status.Value).ToList();
+                    orders = orders.Where(o => o.Status == status.Value);
                 }
 
                 if (!string.IsNullOrEmpty(storeName))
                 {
-                    orders = orders.Where(o => o.Store.Name.ToLower() == storeName.ToLower()).ToList();
+                    orders = orders.Where(o => o.Store.Name.ToLower() == storeName.ToLower());
                 }
 
                 if (!string.IsNullOrEmpty(sessionId))
                 {
-                    orders = orders.Where(o => o.SessionId == sessionId).ToList();
+                    orders = orders.Where(o => o.SessionId == sessionId);
                 }
 
                 if (!orders.Any())
@@ -88,6 +93,56 @@ namespace SWD392_BE.Services.Services
             {
                 result.Message = ex.Message;
                 result.IsSuccess = false;
+            }
+            return result;
+        }
+
+        public async Task<ResultModel> getTotalOrderAmount(DateTime startDate, DateTime endDate)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var totalAmount = await _order.GetOrders()
+                                                        .Where(o => o.CreatedDate.HasValue && o.CreatedDate.Value.Date >= startDate.Date && o.CreatedDate.Value.Date <= endDate.Date)
+                                                        .SumAsync(o => o.Price);
+
+                decimal percentageDifference = 0;
+                decimal previousTotalAmount = 0;
+
+                if (startDate.Date == endDate.Date)
+                {
+                    DateTime previousDate = startDate.AddDays(-1);
+
+                    previousTotalAmount = await _order.GetOrders()
+                                                      .Where(o => o.CreatedDate.HasValue
+                                                              && o.CreatedDate.Value.Date == previousDate.Date)
+                                                      .SumAsync(o => o.Price);
+
+                    decimal combinedAmount = totalAmount + previousTotalAmount;
+
+                    if (combinedAmount != 0)
+                    {
+                        decimal percentageToday = (totalAmount / combinedAmount) * 100;
+                        decimal percentageYesterday = (previousTotalAmount / combinedAmount) * 100;
+                        percentageDifference = Math.Round(percentageToday - percentageYesterday, 2);
+                    }
+                }
+
+                result.Data = new
+                {
+                    totalAmount,
+                    previousTotalAmount,
+                    percentageDifference = $"{percentageDifference}%"
+                };
+                result.Message = "Success";
+                result.IsSuccess = true;
+                result.Code = 200;
+            }
+            catch (Exception ex)
+            {
+                result.Message = ex.Message;
+                result.IsSuccess = false;
+                result.Code = 500;
             }
             return result;
         }

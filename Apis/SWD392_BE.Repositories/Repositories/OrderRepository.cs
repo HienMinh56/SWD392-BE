@@ -19,33 +19,12 @@ namespace SWD392_BE.Repositories.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<List<Order>> GetOrders()
+        public IQueryable<Order> GetOrders()
         {
-            return await _dbContext.Orders
-                .Include(x => x.Store)
-                .Include(x => x.User)
-                .Select(x => new Order
-                {
-                    OrderId = x.OrderId,
-                    UserId = x.UserId,
-                    User = new User
-                    {
-                        Name = x.User.Name,
-                    },
-                    Price = x.Price,
-                    Quantity = x.Quantity,
-                    Store = new Store
-                    {
-                        Name = x.Store.Name,
-                    },
-                    Status = x.Status,
-                    CreatedTime = x.CreatedTime,
-                    CreatedDate = x.CreatedDate,
-                    ModifiedBy = x.ModifiedBy,
-                    ModifiedDate = x.ModifiedDate,
-                })
-                .AsNoTracking()
-                .ToListAsync();
+            return _dbContext.Orders
+                .Include(o => o.User)
+                .Include(o => o.Store)
+                .AsQueryable();
         }
     }
 }
