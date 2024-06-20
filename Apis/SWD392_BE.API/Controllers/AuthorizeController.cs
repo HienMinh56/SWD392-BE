@@ -87,12 +87,12 @@ namespace SWD392_BE.API.Controllers
             using (var randomnumbergenerator = RandomNumberGenerator.Create())
             {
                 randomnumbergenerator.GetBytes(randomnumber);
-                string refreshtoken = Convert.ToBase64String(randomnumber);
+                string refreshtoken = Convert.ToBase64String(randomnumber).TrimEnd('=');
                 var refreshTokenEntity = new Token
                 {
                     UserId = user.UserId,
                     AccessToken = new Random().Next().ToString(),
-                    RefreshToken = refreshtoken.ToString(),
+                    RefreshToken = refreshtoken,
                     ExpiredTime = DateTime.Now.AddDays(7),
                     Status = 1
                 };
@@ -102,6 +102,7 @@ namespace SWD392_BE.API.Controllers
             }
         }
         #endregion
+
 
         #region RefreshAccessToken
         /// <summary>
