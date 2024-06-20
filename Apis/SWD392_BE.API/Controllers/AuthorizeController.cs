@@ -124,7 +124,7 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>New Token and Refresh Token</returns>
         [HttpPost("refresh-access-token")]
-        public async Task<ActionResult> RefreshAccessToken(TokenViewModel token)
+        public async Task<ActionResult> RefreshAccessToken(RefreshTokenModel token)
         {
             try
             {
