@@ -79,29 +79,43 @@ namespace SWD392_BE.API.Controllers
         #endregion
 
         #region GenerateRefreshToken
-        // Hàm tạo refresh token
+        // Hàm tạo refresh token chỉ chứa ký tự chữ cái và mã hóa Base64
         [NonAction]
         public string GenerateRefreshToken(User user)
         {
-            var randomnumber = new byte[32];
-            using (var randomnumbergenerator = RandomNumberGenerator.Create())
-            {
-                randomnumbergenerator.GetBytes(randomnumber);
-                string refreshtoken = Convert.ToBase64String(randomnumber).TrimEnd('=');
-                var refreshTokenEntity = new Token
-                {
-                    UserId = user.UserId,
-                    AccessToken = new Random().Next().ToString(),
-                    RefreshToken = refreshtoken,
-                    ExpiredTime = DateTime.Now.AddDays(7),
-                    Status = 1
-                };
+            const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const int randomStringLength = 32; // Chọn độ dài phù hợp
 
-                _refreshHandler.GenerateRefreshToken(refreshTokenEntity);
-                return refreshtoken;
+            var randomBytes = new byte[randomStringLength];
+            using (var randomNumberGenerator = RandomNumberGenerator.Create())
+            {
+                randomNumberGenerator.GetBytes(randomBytes);
             }
+
+            var chars = new char[randomStringLength];
+            for (int i = 0; i < randomStringLength; i++)
+            {
+                chars[i] = validChars[randomBytes[i] % validChars.Length];
+            }
+
+            string randomString = new string(chars);
+            string base64String = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(randomString));
+
+            var refreshTokenEntity = new Token
+            {
+                UserId = user.UserId,
+                AccessToken = new Random().Next().ToString(),
+                RefreshToken = base64String.TrimEnd('='),
+                ExpiredTime = DateTime.Now.AddDays(7),
+                Status = 1
+            };
+
+            _refreshHandler.GenerateRefreshToken(refreshTokenEntity);
+            return base64String.TrimEnd('=');
         }
         #endregion
+
+
 
 
         #region RefreshAccessToken
