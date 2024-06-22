@@ -24,7 +24,7 @@ builder.Services.AddControllers();
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
-builder.Services.Configure<GCSConfigOptions>(builder.Configuration);
+builder.Services.Configure<GCSConfigOptions>(Configuration.GetSection("GCSConfigOptions"));
 
 builder.Services.AddEndpointsApiExplorer();
 

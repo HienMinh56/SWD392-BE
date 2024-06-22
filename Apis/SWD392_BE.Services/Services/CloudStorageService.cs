@@ -7,9 +7,7 @@ using Microsoft.Extensions.Options;
 using SWD392_BE.Repositories.Utils.ConfigOptions;
 using SWD392_BE.Services.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace SWD392_BE.Services.Services
@@ -28,22 +26,34 @@ namespace SWD392_BE.Services.Services
             try
             {
                 var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                _logger.LogInformation($"Current Environment: {environment}");
+
                 if (environment == Environments.Production)
                 {
-                    // Store the json file in Secrets.
-                    _googleCredential = GoogleCredential.FromJson(_options.GCPStorageAuthFile);
+                    var base64JsonAuth = Environment.GetEnvironmentVariable("GCP_STORAGE_AUTH");
+                    if (string.IsNullOrEmpty(base64JsonAuth))
+                    {
+                        throw new InvalidOperationException("GCP_STORAGE_AUTH environment variable is not set.");
+                    }
+
+                    var jsonAuthBytes = Convert.FromBase64String(base64JsonAuth);
+                    var jsonAuth = System.Text.Encoding.UTF8.GetString(jsonAuthBytes);
+                    _googleCredential = GoogleCredential.FromJson(jsonAuth);
                 }
                 else
                 {
                     _googleCredential = GoogleCredential.FromFile(_options.GCPStorageAuthFile);
                 }
+
+                _logger.LogInformation("Google credentials successfully loaded.");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"{ex.Message}");
+                _logger.LogError($"Error loading Google credentials: {ex.Message}");
                 throw;
             }
         }
+
         public async Task DeleteFileAsync(string fileNameToDelete)
         {
             try
@@ -56,7 +66,7 @@ namespace SWD392_BE.Services.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured while deleting file {fileNameToDelete}: {ex.Message}");
+                _logger.LogError($"Error occurred while deleting file {fileNameToDelete}: {ex.Message}");
                 throw;
             }
         }
@@ -67,14 +77,13 @@ namespace SWD392_BE.Services.Services
             {
                 var sac = _googleCredential.UnderlyingCredential as ServiceAccountCredential;
                 var urlSigner = UrlSigner.FromServiceAccountCredential(sac);
-                // provides limited permission and time to make a request: time here is mentioned for 30 minutes.
                 var signedUrl = await urlSigner.SignAsync(_options.GoogleCloudStorageBucketName, fileNameToRead, TimeSpan.FromMinutes(timeOutInMinutes));
                 _logger.LogInformation($"Signed url obtained for file {fileNameToRead}");
                 return signedUrl.ToString();
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured while obtaining signed url for file {fileNameToRead}: {ex.Message}");
+                _logger.LogError($"Error occurred while obtaining signed url for file {fileNameToRead}: {ex.Message}");
                 throw;
             }
         }
@@ -87,10 +96,8 @@ namespace SWD392_BE.Services.Services
                 using (var memoryStream = new MemoryStream())
                 {
                     await fileToUpload.CopyToAsync(memoryStream);
-                    // Create Storage Client from Google Credential
                     using (var storageClient = StorageClient.Create(_googleCredential))
                     {
-                        // upload file stream
                         var uploadedFile = await storageClient.UploadObjectAsync(_options.GoogleCloudStorageBucketName, fileNameToSave, fileToUpload.ContentType, memoryStream);
                         _logger.LogInformation($"Uploaded: file {fileNameToSave} to storage {_options.GoogleCloudStorageBucketName}");
                         return uploadedFile.MediaLink;

@@ -79,29 +79,44 @@ namespace SWD392_BE.API.Controllers
         #endregion
 
         #region GenerateRefreshToken
-        // Hàm tạo refresh token
+        // Hàm tạo refresh token chỉ chứa ký tự chữ cái và mã hóa Base64
         [NonAction]
         public string GenerateRefreshToken(User user)
         {
-            var randomnumber = new byte[32];
-            using (var randomnumbergenerator = RandomNumberGenerator.Create())
-            {
-                randomnumbergenerator.GetBytes(randomnumber);
-                string refreshtoken = Convert.ToBase64String(randomnumber);
-                var refreshTokenEntity = new Token
-                {
-                    UserId = user.UserId,
-                    AccessToken = new Random().Next().ToString(),
-                    RefreshToken = refreshtoken.ToString(),
-                    ExpiredTime = DateTime.Now.AddDays(7),
-                    Status = 1
-                };
+            const string validChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const int randomStringLength = 32; // Chọn độ dài phù hợp
 
-                _refreshHandler.GenerateRefreshToken(refreshTokenEntity);
-                return refreshtoken;
+            var randomBytes = new byte[randomStringLength];
+            using (var randomNumberGenerator = RandomNumberGenerator.Create())
+            {
+                randomNumberGenerator.GetBytes(randomBytes);
             }
+
+            var chars = new char[randomStringLength];
+            for (int i = 0; i < randomStringLength; i++)
+            {
+                chars[i] = validChars[randomBytes[i] % validChars.Length];
+            }
+
+            string randomString = new string(chars);
+            string base64String = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(randomString));
+
+            var refreshTokenEntity = new Token
+            {
+                UserId = user.UserId,
+                AccessToken = new Random().Next().ToString(),
+                RefreshToken = base64String.TrimEnd('='),
+                ExpiredTime = DateTime.Now.AddDays(7),
+                Status = 1
+            };
+
+            _refreshHandler.GenerateRefreshToken(refreshTokenEntity);
+            return base64String.TrimEnd('=');
         }
         #endregion
+
+
+
 
         #region RefreshAccessToken
         /// <summary>
@@ -109,81 +124,62 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>New Token and Refresh Token</returns>
         [HttpPost("refresh-access-token")]
-        public async Task<ActionResult> RefreshAccessToken(TokenViewModel token)
+        public async Task<ActionResult> RefreshAccessToken(RefreshTokenModel token)
         {
             try
             {
-                var jwtTokenHander = new JwtSecurityTokenHandler();
-                var TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("c2VydmVwZXJmZWN0bHljaGVlc2VxdWlja2NvYWNoY29sbGVjdHNsb3Bld2lzZWNhbWU=")),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidateLifetime = false
-                };
-                //ResetRefreshToken in DB if token is disable or expired will Remove RT
-                _refreshHandler.ResetRefreshToken();
-                //check validate of Parameter
-                var tokenVerification = jwtTokenHander.ValidateToken(token.AccessTokenToken, TokenValidationParameters, out var validatedToken);
-                if (tokenVerification == null)
-                {
-                    return Ok(new ResultModel
-                    {
-                        IsSuccess = false,
-                        Message = "Invalid Param"
-                    });
-                }
-                //check AccessToken expire?
-                var epochTime = long.Parse(tokenVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-                DateTimeOffset dateTimeUtc = DateTimeOffset.FromUnixTimeSeconds(epochTime);
-                DateTime dateTimeUtcConverted = dateTimeUtc.UtcDateTime;
-                if (dateTimeUtcConverted > DateTime.UtcNow)
-                {
-                    return Ok(new ResultModel
-                    {
-                        IsSuccess = false,
-                        Message = "AccessToken had not expired",
-                        Data = "Expire time: " + dateTimeUtcConverted.ToString()
-                    });
-                }
-                //check RefreshToken exist in DB
+                // Kiểm tra RefreshToken trong cơ sở dữ liệu
                 var storedToken = _refreshHandler.GetRefreshToken(token.RefreshToken);
                 if (storedToken == null)
                 {
                     return Ok(new ResultModel
                     {
                         IsSuccess = false,
-                        Message = "RefreshToken had not existed"
+                        Message = "RefreshToken does not exist"
                     });
                 }
-                //check RefreshToken is revoked?
+
+                // Kiểm tra RefreshToken có bị thu hồi không
                 if (storedToken.Status == 2)
                 {
                     return Ok(new ResultModel
                     {
                         IsSuccess = false,
-                        Message = "RefreshToken had been revoked"
+                        Message = "RefreshToken has been revoked"
                     });
                 }
-                var User = _userServices.GetUserById(storedToken.UserId);
-                var newAT = GenerateToken(User, token.RefreshToken);
+
+                // Kiểm tra RefreshToken có hết hạn không
+                if (storedToken.ExpiredTime < DateTime.UtcNow)
+                {
+                    return Ok(new ResultModel
+                    {
+                        IsSuccess = false,
+                        Message = "RefreshToken has expired"
+                    });
+                }
+
+                // Lấy thông tin người dùng từ UserId trong RefreshToken
+                var user = _userServices.GetUserById(storedToken.UserId);
+
+                // Tạo mới AccessToken
+                var newAccessToken = GenerateToken(user, token.RefreshToken);
 
                 return Ok(new ResultModel
                 {
                     IsSuccess = true,
-                    Message = "Refresh AT success fully",
-                    Data = newAT
+                    Message = "Successfully refreshed AccessToken",
+                    Data = newAccessToken
                 });
             }
             catch (Exception ex)
             {
+                // Xử lý lỗi
                 return BadRequest(new ResultModel
                 {
                     IsSuccess = false,
                     Code = 500,
-                    Message = "Something go wrong"
+                    Message = "Something went wrong"
                 });
             }
         }

@@ -10,8 +10,9 @@ namespace SWD392_BE.Repositories.Interfaces
 {
     public interface IOrderRepository : IGenericRepository<Order>
     {
-        Task<List<Order>> GetOrders();
+
 
         Task<List<Order>> GetOrdersByTransactionId(string transactionId);
+        IQueryable<Order> GetOrders();
     }
 }

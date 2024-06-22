@@ -25,9 +25,31 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of orders</returns>
         [HttpGet]
-        public async Task<IActionResult> GetOrders( string? userId, DateTime? createdDate, int? status, string? storeName, string? sessionId)
+        public async Task<IActionResult> GetOrders( string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
         {
-            var result = await _order.getOrders(userId, createdDate,status, storeName, sessionId);
+            var result = await _order.getOrders(userId, userName, createdDate, status, storeName, sessionId);
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+        #endregion
+
+        #region Get Total Order Amount
+        /// <summary>
+        /// Get the total order amount between specified dates
+        /// </summary>
+        /// <param name="startDate">The start date for the calculation (required).</param>
+        /// <param name="endDate">The end date for the calculation (required).</param>
+        /// <returns>The total order amount</returns>
+
+        [HttpGet("totalAmount")]
+        public async Task<IActionResult> GetTotalOrderAmount(DateTime startDate, DateTime endDate)
+        {
+            if (startDate > endDate)
+            {
+                return BadRequest(new { message = "Start date must be less than or equal end date." });
+            }
+
+            var result = await _order.getTotalOrderAmount(startDate, endDate);
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }

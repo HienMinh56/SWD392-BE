@@ -9,7 +9,8 @@ namespace SWD392_BE.Services.Interfaces
 {
     public interface IOrderService
     {
-        Task<ResultModel> getOrders(string? userId, DateTime? createdDate, 
+        Task<ResultModel> getOrders(string? userId, string? userName,DateTime? createdDate, 
                                     int? status, string? storeName, string? sessionId);
+        Task<ResultModel> getTotalOrderAmount(DateTime startDate, DateTime endDate);
     }
 }
