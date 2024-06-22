@@ -1,4 +1,5 @@
 ﻿using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.ViewModels.ResultModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,5 @@ namespace SWD392_BE.Repositories.Interfaces
         Task<User> GetUserByUserName(string userName);
         Task<List<User>> GetUsersSortedByCreatedDateAscending();
         Task<List<User>> GetUsersSortedByCreatedDateDescending();
-
     }
 }
