@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.Interfaces;
+using SWD392_BE.Repositories.ViewModels.TransactionModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,21 +10,35 @@ using System.Threading.Tasks;
 
 namespace SWD392_BE.Repositories.Repositories
 {
-    public class TransactionRepository
+    public class TransactionRepository : ITransactionRepository
     {
         private readonly CampusFoodSystemContext _context;
+        private readonly IOrderRepository _orderRepository;
 
-        public TransactionRepository(CampusFoodSystemContext context)
+        public TransactionRepository(CampusFoodSystemContext context, IOrderRepository orderRepository)
         {
             _context = context;
+            _orderRepository = orderRepository;
         }
 
-        public async Task<Transaction> GetTransaction()
+        public async Task<List<TransactionUserViewModel>?> GetTransaction(string? username = null, DateTime? createdDate = null)
         {
-            return _context.Transactions
+            var query = _context.Transactions.AsQueryable();
+
+            if (!string.IsNullOrEmpty(username))
+            {
+                query = query.Where(x => x.User.UserName.ToLower().Contains(username.ToLower()));
+            }
+
+            if (createdDate.HasValue)
+            {
+                var date = createdDate.Value.Date;
+                query = query.Where(x => x.CreatedDate == date);
+            }
+
+            return await query
                 .Include(x => x.User)
-                .Include(x => x.Orders)
-                .Select(x => new Transaction
+                .Select(x => new TransactionUserViewModel
                 {
                     TransationId = x.TransationId,
                     UserId = x.UserId,
@@ -30,28 +46,18 @@ namespace SWD392_BE.Repositories.Repositories
                     Type = x.Type,
                     CreatedDate = x.CreatedDate,
                     CreatedBy = x.CreatedBy,
-                    User = new User
+                    Status = x.Status,
+                    User = new UserViewModel
                     {
                         UserId = x.User.UserId,
                         Name = x.User.Name,
                         UserName = x.User.UserName,
-                        Email = x.User.Email,
-                        CampusId = x.User.CampusId,
-                        Phone = x.User.Phone,
-                        Role = x.User.Role,
-                        Status = x.User.Status,
-                        Balance = x.User.Balance,
-                        CreatedDate = x.User.CreatedDate,
-                        CreatedBy = x.User.CreatedBy,
-                    },
-
-
-
-
+                    }
                 })
-                .AsNoTracking()
-                .FirstOrDefault();
+                .OrderByDescending(x => x.CreatedDate)
+                .ToListAsync();
         }
+
     }
 
 }

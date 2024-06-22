@@ -26,5 +26,6 @@ namespace SWD392_BE.Repositories.Repositories
 
             return lastFood?.FoodId;
         }
+
     }
 }

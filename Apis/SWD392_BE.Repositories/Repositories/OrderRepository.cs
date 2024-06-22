@@ -47,6 +47,17 @@ namespace SWD392_BE.Repositories.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<List<Order>> GetOrdersByTransactionId(string transactionId)
+        {
+            var orders = await _dbContext.Transactions
+                .Where(t => t.TransationId == transactionId)
+                .SelectMany(t => t.Orders)
+                .ToListAsync();
+
+            return orders;
+        }
+
     }
 }
 

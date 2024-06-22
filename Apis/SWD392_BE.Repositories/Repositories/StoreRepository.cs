@@ -106,5 +106,19 @@ namespace SWD392_BE.Repositories.Repositories
                            .Include(s => s.Foods)
                            .FirstOrDefault(s => s.StoreId == storeId);
         }
+
+        public async Task<IEnumerable<Store>> SearchStoreByNameOrPhone(string keyword)
+        {
+            keyword = StringExtensions.RemoveDiacritics(keyword.ToLower().Trim());
+
+            var stores = await _context.Stores
+                .AsNoTracking()
+                .ToListAsync();
+
+            return stores.Where(s => StringExtensions.RemoveDiacritics
+            (s.Name.ToLower()).Contains(keyword)
+            || s.Phone.Contains(keyword.Trim()));
+        }
+
     }
 }
