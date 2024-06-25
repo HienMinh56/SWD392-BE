@@ -10,6 +10,5 @@ namespace SWD392_BE.Repositories.ViewModels.PaymentModel
     {
         public string UserId { get; set; }
         public decimal Amount { get; set; }
-        public string TxnRef { get; set; }
     }
 }

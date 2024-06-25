@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SWD392_BE.Repositories.ViewModels.PaymentModel;
+using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Services.Interfaces;
 
 namespace SWD392_BE.API.Controllers
@@ -16,35 +17,47 @@ namespace SWD392_BE.API.Controllers
             _vnPayService = vnPayService;
         }
 
-        [HttpPost("vnpay-payment")]
-        public IActionResult CreatePayment([FromBody] VnPayPaymentRequest model)
+        [HttpPost("create-payment-url")]
+        public IActionResult CreatePaymentUrl([FromBody] VnPayPaymentRequest model)
         {
             var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+            if (ipAddress == null)
+            {
+                return BadRequest("Unable to determine IP address.");
+            }
+
             var paymentUrl = _vnPayService.CreatePaymentUrl(model, ipAddress);
             return Ok(new { paymentUrl });
         }
 
-        [HttpGet("vnpay-return")]
+        [HttpGet("vnpay_return")]
         public async Task<IActionResult> VnPayReturn()
         {
             SortedList<string, string> responseData = new SortedList<string, string>();
-
-            foreach (string key in Request.Query.Keys)
+            foreach (var key in Request.Query.Keys)
             {
-                if (!string.IsNullOrEmpty(key) && key.StartsWith("vnp_"))
+                responseData.Add(key, Request.Query[key]);
+            }
+
+            if (responseData.ContainsKey("vnp_SecureHash"))
+            {
+                string vnp_SecureHash = Request.Query["vnp_SecureHash"];
+                bool isValidSignature = _vnPayService.ValidateSignature(vnp_SecureHash, responseData);
+
+                if (isValidSignature)
                 {
-                    responseData.Add(key, Request.Query[key]);
+                    var result = await _vnPayService.ProcessPaymentResponse(responseData);
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest(new ResultModel { IsSuccess = false, Code = 97, Message = "Invalid signature" });
                 }
             }
-
-            string inputHash = Request.Query["vnp_SecureHash"];
-            if (_vnPayService.ValidateSignature(inputHash, responseData))
+            else
             {
-                var result = await _vnPayService.ProcessPaymentResponse(responseData);
-                return result.IsSuccess ? Ok(result) : BadRequest(result);
+                return BadRequest(new ResultModel { IsSuccess = false, Code = 97, Message = "Missing secure hash" });
             }
-
-            return BadRequest(new { message = "Invalid signature" });
         }
     }
 }

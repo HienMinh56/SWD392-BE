@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.PaymentModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
@@ -6,98 +8,121 @@ using SWD392_BE.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SWD392_BE.Services.Services
 {
-    public class VnPayService :IVnPayService
+    public class VnPayService : IVnPayService
     {
         private readonly IUserService _userService;
         private readonly IConfiguration _configuration;
+        private readonly ITransactionRepository _transactionRepository;
 
-        public VnPayService(IUserService userService, IConfiguration configuration)
+        public VnPayService(IUserService userService, IConfiguration configuration, ITransactionRepository transactionRepository)
         {
             _userService = userService;
             _configuration = configuration;
+            _transactionRepository = transactionRepository;
+        }
+
+        private string GenerateTransactionId()
+        {
+            var latestTransaction = _transactionRepository.GetLatestTransaction();
+            if (latestTransaction == null)
+            {
+                return "TRANS001";
+            }
+
+            var latestId = latestTransaction.TransationId;
+            var numericPart = int.Parse(latestId.Substring(5)) + 1;
+            return $"TRANS{numericPart:D3}";
         }
 
         public string CreatePaymentUrl(VnPayPaymentRequest model, string ipAddress)
         {
-            Random random = new Random();
-            string randomTxnRef = random.Next(100000, 999999).ToString();
-            var requestData = new SortedList<string, string>(new VnPayCompare())
-    {
-        { "vnp_Version", "2.1.0" },
-        { "vnp_Command", "pay" },
-        { "vnp_TmnCode", _configuration["VNPAY:TmnCode"] },
-        { "vnp_Amount", ((int)(model.Amount * 100)).ToString() },
-        { "vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss") },
-        { "vnp_CurrCode", "VND" },
-        { "vnp_IpAddr", ipAddress },
-        { "vnp_Locale", "vn" },
-        { "vnp_OrderInfo", Uri.EscapeDataString($"Deposit {model.Amount} into wallet with transaction id: {model.TxnRef}") },
-        { "vnp_OrderType", "other" },
-        { "vnp_ReturnUrl", Uri.EscapeDataString(_configuration["VNPAY:ReturnUrl"]) },
-        { "vnp_TxnRef", randomTxnRef },
-        { "vnp_ExpireDate", DateTime.Now.AddMinutes(15).ToString("yyyyMMddHHmmss") },
-        { "vnp_BankCode", "NCB" }
-    };
+            var transaction = new Transaction
+            {
+                TransationId = GenerateTransactionId(),
+                UserId = model.UserId,
+                Type = 2, // recharge
+                Amonut = (int)(model.Amount * 100),
+                Status = 2, // Pending
+                CreatedDate = DateTime.Now,
+                CreatTime = DateTime.Now.TimeOfDay
+            };
+            _transactionRepository.Add(transaction);
+            _transactionRepository.SaveChanges();
 
-            string signData = string.Join("&", requestData.Select(kv => $"{kv.Key}={kv.Value}"));
-            string vnpSecureHash = HmacSHA512(_configuration["VNPAY:HashSecret"], signData);
-            return $"{_configuration["VNPAY:Url"]}?{signData}&vnp_SecureHash={vnpSecureHash}";
+            string txnRef = transaction.Id.ToString(); 
+
+            var vnPay = new VnPayLibrary();
+            vnPay.AddRequestData("vnp_Version", VnPayLibrary.VERSION);
+            vnPay.AddRequestData("vnp_Command", "pay");
+            vnPay.AddRequestData("vnp_TmnCode", _configuration["VNPAY:TmnCode"]);
+            vnPay.AddRequestData("vnp_Amount", ((int)(model.Amount * 100)).ToString());
+            vnPay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            vnPay.AddRequestData("vnp_CurrCode", "VND");
+            vnPay.AddRequestData("vnp_IpAddr", ipAddress);
+            vnPay.AddRequestData("vnp_Locale", "vn");
+            vnPay.AddRequestData("vnp_OrderInfo", Uri.EscapeDataString($"Deposit {model.Amount} into wallet with transaction id: {txnRef}"));
+            vnPay.AddRequestData("vnp_OrderType", "other");
+            vnPay.AddRequestData("vnp_ReturnUrl", Uri.EscapeDataString(_configuration["VNPAY:ReturnUrl"]));
+            vnPay.AddRequestData("vnp_TxnRef", txnRef);
+            vnPay.AddRequestData("vnp_ExpireDate", DateTime.Now.AddMinutes(15).ToString("yyyyMMddHHmmss"));
+            vnPay.AddRequestData("vnp_BankCode", "NCB");
+
+            string paymentUrl = vnPay.CreateRequestUrl(_configuration["VNPAY:Url"], _configuration["VNPAY:HashSecret"]);
+
+            return paymentUrl;
         }
+
         public bool ValidateSignature(string inputHash, SortedList<string, string> responseData)
         {
-            string signData = string.Join("&", responseData
-                .Where(kv => kv.Key != "vnp_SecureHash")
-                .OrderBy(kv => kv.Key)
-                .Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"));
-
-            string computedHash = HmacSHA512(_configuration["VNPAY:HashSecret"], signData);
-            return inputHash == computedHash;
+            var vnPay = new VnPayLibrary();
+            foreach (var kv in responseData)
+            {
+                vnPay.AddResponseData(kv.Key, kv.Value);
+            }
+            return vnPay.ValidateSignature(inputHash, _configuration["VNPAY:HashSecret"]);
         }
 
         public async Task<ResultModel> ProcessPaymentResponse(SortedList<string, string> responseData)
         {
             string vnp_ResponseCode = responseData["vnp_ResponseCode"];
-            if (vnp_ResponseCode == "00")
+            int responseCode;
+            if (!int.TryParse(vnp_ResponseCode, out responseCode))
             {
-                string userId = responseData["vnp_OrderInfo"];
-                var user = _userService.GetUserById(userId);
+                responseCode = -1; 
+            }
+
+            string txnRef = responseData["vnp_TxnRef"];
+            var transaction = _transactionRepository.GetById(int.Parse(txnRef));
+
+            if (transaction != null && responseCode == 0)
+            {
+                transaction.Status = 1; // Success
+                _transactionRepository.Update(transaction);
+                await _transactionRepository.SaveChangesAsync();
+
+                var user = _userService.GetUserById(transaction.UserId);
                 if (user != null)
                 {
-                    var result = await _userService.UpdateUserBalance(userId, int.Parse(responseData["vnp_Amount"]) / 100);
+                    var result = await _userService.UpdateUserBalance(transaction.UserId, transaction.Amonut / 100);
+                    result.Code = responseCode; 
                     return result;
                 }
             }
-
-            return new ResultModel { IsSuccess = false, Code = 400, Message = "Payment failed" };
-        }
-
-        private string HmacSHA512(string key, string data, Encoding encoding = null)
-        {
-            if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(data))
+            else
             {
-                throw new ArgumentException("Key and data cannot be null or empty.");
+                if (transaction != null)
+                {
+                    transaction.Status = 3; // Failed
+                    _transactionRepository.Update(transaction);
+                    await _transactionRepository.SaveChangesAsync();
+                }
             }
 
-            encoding = encoding ?? Encoding.UTF8;
-
-            using (var hmac = new HMACSHA512(encoding.GetBytes(key)))
-            {
-                var hash = hmac.ComputeHash(encoding.GetBytes(data));
-                return Convert.ToBase64String(hash);
-            }
-        }
-        private class VnPayCompare : IComparer<string>
-        {
-            public int Compare(string x, string y)
-            {
-                return string.CompareOrdinal(x, y);
-            }
+            return new ResultModel { IsSuccess = false, Code = responseCode, Message = "Payment failed" };
         }
     }
 }
