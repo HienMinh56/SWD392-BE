@@ -57,8 +57,5 @@ namespace SWD392_BE.Repositories.Repositories
                 .OrderByDescending(x => x.CreatedDate)
                 .ToListAsync();
         }
-
     }
-
 }
-

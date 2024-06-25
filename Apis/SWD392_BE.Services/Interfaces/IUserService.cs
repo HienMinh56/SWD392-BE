@@ -22,5 +22,6 @@ namespace SWD392_BE.Services.Interfaces
         public Task<ResultModel> GetUsersSortedByCreatedDateAscending();
         public Task<ResultModel> GetUsersSortedByCreatedDateDescending();
         public Task<ResultModel> EditUser(string userId, EditUserViewModel model, ClaimsPrincipal userUpdate);
+        Task<ResultModel> UpdateUserBalance(string userId, int amount);
     }
 }
