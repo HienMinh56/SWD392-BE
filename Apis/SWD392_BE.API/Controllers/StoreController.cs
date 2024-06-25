@@ -54,7 +54,7 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>Status of action</returns>
         [HttpPut("{storeId}")]
-        public async Task<IActionResult> UpdateStore(string storeId,  UpdateStoreViewModel storeReq)
+        public async Task<IActionResult> UpdateStore(string storeId, UpdateStoreViewModel storeReq)
         {
             var currentUser = HttpContext.User;
             var result = await _storeService.UpdateStoreAsync(storeId, storeReq, currentUser);
@@ -72,6 +72,18 @@ namespace SWD392_BE.API.Controllers
         {
             var currentUser = HttpContext.User;
             var result = await _storeService.DeleteStore(request, currentUser);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+        #endregion
+        #region Search store
+        /// <summary>
+        /// Search store by name or phone
+        /// </summary>
+        /// <returns>A store</returns>
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchStoreByNameOrPhone([FromQuery] string keyword)
+        {
+            var result = await _storeService.SearchStoreByNameOrPhone(keyword);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
         #endregion
