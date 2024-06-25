@@ -32,7 +32,7 @@ namespace SWD392_BE.Services.Services
             _mapper = mapper;
         }
 
-            public async Task<ResultModel> GetUserList(string? userId,int? status, string? campusName)
+        public async Task<ResultModel> GetUserList(string? userId, int? status, string? campusName)
         {
             var result = new ResultModel();
             try
@@ -389,6 +389,35 @@ namespace SWD392_BE.Services.Services
             }
         }
 
-        
+        public async Task<ResultModel> UpdateUserBalance(string userId, int amount)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var existingUser = _userRepository.Get(x => x.UserId == userId);
+                if (existingUser == null)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 404;
+                    result.Message = "User not found";
+                    return result;
+                }
+
+                existingUser.Balance += amount;
+                _userRepository.Update(existingUser);
+                await _userRepository.SaveChangesAsync();
+
+                result.IsSuccess = true;
+                result.Code = 200;
+                result.Message = "User balance updated successfully";
+            }
+            catch (Exception ex)
+            {
+                result.IsSuccess = false;
+                result.Code = 500;
+                result.Message = ex.Message;
+            }
+            return result;
+        }
     }
 }
