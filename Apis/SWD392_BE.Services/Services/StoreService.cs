@@ -65,7 +65,7 @@ namespace SWD392_BE.Services.Services
         }
 
 
-
+        
 
         public Store GetStoreById(string id)
         {
@@ -197,7 +197,7 @@ namespace SWD392_BE.Services.Services
                     stores = stores.Where(s => s.StoreSessions.Any(ss => ss.SessionId.ToLower() == sessionId.ToLower())).ToList();
                 }
 
-
+                
 
                 if (!stores.Any())
                 {
@@ -221,7 +221,7 @@ namespace SWD392_BE.Services.Services
                         Session = s.StoreSessions.Select(ss => ss.SessionId.ToString()).ToList()
                     }).ToList();
 
-
+                    
 
                     result.IsSuccess = true;
                     result.Code = 200;
@@ -370,33 +370,6 @@ namespace SWD392_BE.Services.Services
                 result.Data = store;
             }
             catch (DbUpdateException ex)
-            {
-                result.Message = ex.Message;
-                result.IsSuccess = false;
-            }
-            return result;
-        }
-
-        public async Task<ResultModel> SearchStoreByNameOrPhone(string keyword)
-        {
-            var result = new ResultModel();
-            try
-            {
-                var store = await _storeRepository.SearchStoreByNameOrPhone(keyword);
-                if (store == null)
-                {
-                    result.Message = "Store not found";
-                    result.Code = 404;
-                    result.IsSuccess = false;
-                    result.Data = null;
-                    return result;
-                }
-                result.Message = "Store found";
-                result.Code = 200;
-                result.IsSuccess = true;
-                result.Data = store;
-            }
-            catch (Exception ex)
             {
                 result.Message = ex.Message;
                 result.IsSuccess = false;
