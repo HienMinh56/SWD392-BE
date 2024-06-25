@@ -32,7 +32,7 @@ namespace SWD392_BE.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<ResultModel> GetUserList(string? userId, int? status, string? campusName)
+            public async Task<ResultModel> GetUserList(string? userId,int? status, string? campusName)
         {
             var result = new ResultModel();
             try
