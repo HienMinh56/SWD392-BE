@@ -14,5 +14,7 @@ namespace SWD392_BE.Repositories.Interfaces
         Task<List<Store>> FetchStoresAsync();
         public Store GetStoreWithFoods(string storeId);
         Task<IEnumerable<GetStoreViewModel>> GetStoresByStatusAreaAndSessionAsync(int? status, string? areaName, string? sessionId);
+
+        Task<IEnumerable<Store>?> SearchStoreByNameOrPhone(string keyword);
     }
 }
