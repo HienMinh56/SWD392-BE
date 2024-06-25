@@ -200,6 +200,13 @@ builder.Services.AddScoped<IOrderService, OrderServices>();
 
 builder.Services.AddSingleton<ICloudStorageService, CloudStorageService>();
 
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IVnPayService, VnPayService>();
+
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+
+
 // db local
 
 builder.Services.AddDbContext<CampusFoodSystemContext>(options =>
