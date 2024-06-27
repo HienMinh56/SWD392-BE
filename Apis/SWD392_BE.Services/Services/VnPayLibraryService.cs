@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SWD392_BE.Services.Services
 {
-    public class VnPayLibrary
+    public class VnPayLibraryService
     {
         public const string VERSION = "2.1.0";
         private SortedList<String, String> _requestData = new SortedList<String, String>(new VnPayCompare());

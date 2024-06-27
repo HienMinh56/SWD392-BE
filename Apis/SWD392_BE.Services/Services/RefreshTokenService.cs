@@ -27,7 +27,6 @@ namespace SWD392_BE.Services.Services
                 var existingToken = _refreshTokenRepository.Get(x => x.UserId == token.UserId);
                 if (existingToken != null)
                 {
-                    // Thực hiện cập nhật thực thể đã tồn tại
                     existingToken.AccessToken = token.AccessToken;
                     existingToken.RefreshToken = token.RefreshToken;
                     existingToken.ExpiredTime = token.ExpiredTime;
@@ -36,7 +35,6 @@ namespace SWD392_BE.Services.Services
                 }
                 else
                 {
-                    // Thêm thực thể mới nếu không tồn tại
                     _refreshTokenRepository.Add(token);
                 }
                 _refreshTokenRepository.SaveChanges();
