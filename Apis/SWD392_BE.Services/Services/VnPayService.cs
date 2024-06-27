@@ -65,10 +65,9 @@ namespace SWD392_BE.Services.Services
             vnPay.AddRequestData("vnp_IpAddr", ipAddress);
             vnPay.AddRequestData("vnp_Locale", "vn");
             vnPay.AddRequestData("vnp_OrderInfo", Uri.EscapeDataString($"Deposit {model.Amount} into wallet with transaction id: {txnRef}"));
-            vnPay.AddRequestData("vnp_OrderType", "other");
+            vnPay.AddRequestData("vnp_OrderType", "others");
             vnPay.AddRequestData("vnp_ReturnUrl", Uri.EscapeDataString(_configuration["VNPAY:ReturnUrl"]));
             vnPay.AddRequestData("vnp_TxnRef", txnRef);
-            vnPay.AddRequestData("vnp_ExpireDate", DateTime.Now.AddMinutes(15).ToString("yyyyMMddHHmmss"));
             vnPay.AddRequestData("vnp_BankCode", "NCB");
 
             string paymentUrl = vnPay.CreateRequestUrl(_configuration["VNPAY:Url"], _configuration["VNPAY:HashSecret"]);
