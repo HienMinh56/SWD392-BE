@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.Helper;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.ViewModels.StoreModel;
 using System;
@@ -105,6 +106,19 @@ namespace SWD392_BE.Repositories.Repositories
             return _context.Stores
                            .Include(s => s.Foods)
                            .FirstOrDefault(s => s.StoreId == storeId);
+        }
+
+        public async Task<IEnumerable<Store>> SearchStoreByNameOrPhone(string keyword)
+        {
+            keyword = StringExtensions.RemoveDiacritics(keyword.ToLower().Trim());
+
+            var stores = await _context.Stores
+                .AsNoTracking()
+                .ToListAsync();
+
+            return stores.Where(s => StringExtensions.RemoveDiacritics
+            (s.Name.ToLower()).Contains(keyword)
+            || s.Phone.Contains(keyword.Trim()));
         }
     }
 }
