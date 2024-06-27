@@ -17,7 +17,12 @@ namespace SWD392_BE.API.Controllers
             _vnPayService = vnPayService;
         }
 
-        [HttpPost("create-payment-url")]
+        #region Created url 
+        /// <summary>
+        /// Created url VN PAY
+        /// </summary>
+        /// <returns>Link to VN PAY</returns>
+        [HttpPost("url")]
         public IActionResult CreatePaymentUrl([FromBody] VnPayPaymentRequest model)
         {
             var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
@@ -29,7 +34,13 @@ namespace SWD392_BE.API.Controllers
             var paymentUrl = _vnPayService.CreatePaymentUrl(model, ipAddress);
             return Ok(new { paymentUrl });
         }
+        #endregion
 
+        #region Get return 
+        /// <summary>
+        /// Get return from VN PAY
+        /// </summary>
+        /// <returns>message from VN PAY</returns>
         [HttpGet("vnpay_return")]
         public async Task<IActionResult> VnPayReturn()
         {
@@ -59,5 +70,6 @@ namespace SWD392_BE.API.Controllers
                 return BadRequest(new ResultModel { IsSuccess = false, Code = 97, Message = "Missing secure hash" });
             }
         }
+        #endregion
     }
 }
