@@ -55,8 +55,8 @@ namespace SWD392_BE.Services.Services
 
             string txnRef = transaction.Id.ToString(); 
 
-            var vnPay = new VnPayLibrary();
-            vnPay.AddRequestData("vnp_Version", VnPayLibrary.VERSION);
+            var vnPay = new VnPayLibraryService();
+            vnPay.AddRequestData("vnp_Version", VnPayLibraryService.VERSION);
             vnPay.AddRequestData("vnp_Command", "pay");
             vnPay.AddRequestData("vnp_TmnCode", _configuration["VNPAY:TmnCode"]);
             vnPay.AddRequestData("vnp_Amount", ((int)(model.Amount * 100)).ToString());
@@ -77,7 +77,7 @@ namespace SWD392_BE.Services.Services
 
         public bool ValidateSignature(string inputHash, SortedList<string, string> responseData)
         {
-            var vnPay = new VnPayLibrary();
+            var vnPay = new VnPayLibraryService();
             foreach (var kv in responseData)
             {
                 vnPay.AddResponseData(kv.Key, kv.Value);

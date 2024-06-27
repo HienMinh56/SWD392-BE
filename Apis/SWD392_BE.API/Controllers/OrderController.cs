@@ -37,8 +37,8 @@ namespace SWD392_BE.API.Controllers
         /// <summary>
         /// Get the total order amount between specified dates
         /// </summary>
-        /// <param name="startDate">The start date for the calculation (required).</param>
-        /// <param name="endDate">The end date for the calculation (required).</param>
+        /// <param name="startDate">The start date for the calculation.</param>
+        /// <param name="endDate">The end date for the calculation.</param>
         /// <returns>The total order amount</returns>
 
         [HttpGet("totalAmount")]
@@ -50,6 +50,43 @@ namespace SWD392_BE.API.Controllers
             }
 
             var result = await _order.getTotalOrderAmount(startDate, endDate);
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+        #endregion
+
+        #region Get data for chart 
+        /// <summary>
+        /// Get data for chart by day, week, month
+        /// </summary>
+        /// <param name="type">The type of data to retrieve: day, week, month</param>
+        /// <param name="year">The year for the calculation </param>
+        /// <param name="month">The month for the calculation (required for day and week types)</param>
+        /// <returns>Amount 7 day in week, all week in month, all month in year</returns>
+        [HttpGet("data-chart")]
+        public async Task<IActionResult> GetOrderAmounts(string type, int year, int month = 0)
+        {
+            ResultModel result;
+
+            switch (type.ToLower())
+            {
+                case "day":
+                    if (month == 0) return BadRequest(new { message = "Month is required for type 'day'." });
+                    result = await _order.getOrderAmountPerDayInMonth(year, month);
+                    break;
+
+                case "week":
+                    if (month == 0) return BadRequest(new { message = "Month is required for type 'week'." });
+                    result = await _order.getOrderAmountPerWeekInMonth(year, month);
+                    break;
+
+                case "month":
+                    result = await _order.getOrderAmountPerMonthInYear(year);
+                    break;
+
+                default:
+                    return BadRequest(new { message = "Invalid type. Valid types are 'day', 'week', 'month'." });
+            }
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
