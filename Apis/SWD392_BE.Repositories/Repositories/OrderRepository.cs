@@ -26,6 +26,13 @@ namespace SWD392_BE.Repositories.Repositories
                 .Include(o => o.Store)
                 .AsQueryable();
         }
+
+        public async Task<List<Order>> GetOrdersByDateRange(DateTime startDate, DateTime endDate)
+        {
+            return await _dbContext.Orders
+                                 .Where(o => o.CreatedDate >= startDate && o.CreatedDate <= endDate)
+                                 .ToListAsync();
+        }
     }
 }
 

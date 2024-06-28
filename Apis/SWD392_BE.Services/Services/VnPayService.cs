@@ -55,8 +55,8 @@ namespace SWD392_BE.Services.Services
 
             string txnRef = transaction.Id.ToString(); 
 
-            var vnPay = new VnPayLibrary();
-            vnPay.AddRequestData("vnp_Version", VnPayLibrary.VERSION);
+            var vnPay = new VnPayLibraryService();
+            vnPay.AddRequestData("vnp_Version", VnPayLibraryService.VERSION);
             vnPay.AddRequestData("vnp_Command", "pay");
             vnPay.AddRequestData("vnp_TmnCode", _configuration["VNPAY:TmnCode"]);
             vnPay.AddRequestData("vnp_Amount", ((int)(model.Amount * 100)).ToString());
@@ -65,10 +65,9 @@ namespace SWD392_BE.Services.Services
             vnPay.AddRequestData("vnp_IpAddr", ipAddress);
             vnPay.AddRequestData("vnp_Locale", "vn");
             vnPay.AddRequestData("vnp_OrderInfo", Uri.EscapeDataString($"Deposit {model.Amount} into wallet with transaction id: {txnRef}"));
-            vnPay.AddRequestData("vnp_OrderType", "other");
+            vnPay.AddRequestData("vnp_OrderType", "others");
             vnPay.AddRequestData("vnp_ReturnUrl", Uri.EscapeDataString(_configuration["VNPAY:ReturnUrl"]));
             vnPay.AddRequestData("vnp_TxnRef", txnRef);
-            vnPay.AddRequestData("vnp_ExpireDate", DateTime.Now.AddMinutes(15).ToString("yyyyMMddHHmmss"));
             vnPay.AddRequestData("vnp_BankCode", "NCB");
 
             string paymentUrl = vnPay.CreateRequestUrl(_configuration["VNPAY:Url"], _configuration["VNPAY:HashSecret"]);
@@ -78,7 +77,7 @@ namespace SWD392_BE.Services.Services
 
         public bool ValidateSignature(string inputHash, SortedList<string, string> responseData)
         {
-            var vnPay = new VnPayLibrary();
+            var vnPay = new VnPayLibraryService();
             foreach (var kv in responseData)
             {
                 vnPay.AddResponseData(kv.Key, kv.Value);
