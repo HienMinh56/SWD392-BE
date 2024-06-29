@@ -197,12 +197,21 @@ namespace SWD392_BE.API.Controllers
             var user = _userServices.GetUserByUserName(userName);
             if (user != null && user.Status == 1)
             {
-                // Hash the input password with SHA256
+                // Assuming PasswordHasher is a utility class you have for hashing and verifying passwords
                 var hashedInputPasswordString = PasswordHasher.HashPassword(password);
 
-                // Compare the hashed input password with the stored hashed password
                 if (hashedInputPasswordString == user.Password)
                 {
+                    // Convert user.Id to string using .ToString()
+                    var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName)
+            };
+
+                    var identity = new ClaimsIdentity(claims, "Bearer");
+                    var principal = new ClaimsPrincipal(identity);
+
                     _refreshHandler.ResetRefreshToken();
                     var token = GenerateToken(user, null);
                     return Ok(token);
@@ -215,6 +224,8 @@ namespace SWD392_BE.API.Controllers
                 Data = null
             });
         }
+
+
         #endregion
 
         #region Logout

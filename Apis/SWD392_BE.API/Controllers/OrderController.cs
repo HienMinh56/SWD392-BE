@@ -5,19 +5,20 @@ using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.Services;
+using System.Security.Claims;
 
 namespace SWD392_BE.API.Controllers
 {
-        [Route("api/v1/order")]
-        [ApiController]
-        public class OrderController : ControllerBase
-        {
-            private readonly IOrderService _order;
+    [Route("api/v1/order")]
+    [ApiController]
+    public class OrderController : ControllerBase
+    {
+        private readonly IOrderService _order;
 
-            public OrderController(IOrderService order)
-            {
-                _order = order;
-            }
+        public OrderController(IOrderService order)
+        {
+            _order = order;
+        }
 
         #region Get All orders
         /// <summary>
@@ -25,7 +26,7 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of orders</returns>
         [HttpGet]
-        public async Task<IActionResult> GetOrders( string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
+        public async Task<IActionResult> GetOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
         {
             var result = await _order.getOrders(userId, userName, createdDate, status, storeName, sessionId);
 
