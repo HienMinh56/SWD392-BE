@@ -121,7 +121,7 @@ namespace SWD392_BE.Services.MapperProfile
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
             .ForMember(dest => dest.Quantity, opt => opt.MapFrom(src => src.Quantity))
             .ForMember(dest => dest.StoreName, opt => opt.MapFrom(src => src.Store.Name))
-            .ForMember(dest => dest.TransationId, opt => opt.MapFrom(src => src.TransationId))
+            .ForMember(dest => dest.TransationId, opt => opt.MapFrom(src => src.TransactionId))
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
             .ForMember(dest => dest.CreatedTime, opt => opt.Ignore());
         }

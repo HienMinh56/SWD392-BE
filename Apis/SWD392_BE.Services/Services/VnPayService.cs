@@ -33,7 +33,7 @@ namespace SWD392_BE.Services.Services
                 return "TRANS001";
             }
 
-            var latestId = latestTransaction.TransationId;
+            var latestId = latestTransaction.TransactionId;
             var numericPart = int.Parse(latestId.Substring(5)) + 1;
             return $"TRANS{numericPart:D3}";
         }
@@ -42,7 +42,7 @@ namespace SWD392_BE.Services.Services
         {
             var transaction = new Transaction
             {
-                TransationId = GenerateTransactionId(),
+                TransactionId = GenerateTransactionId(),
                 UserId = model.UserId,
                 Type = 2, // recharge
                 Amonut = (int)(model.Amount * 100),

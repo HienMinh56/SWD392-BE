@@ -116,9 +116,7 @@ public partial class CampusFoodSystemContext : DbContext
             entity.Property(e => e.FoodId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Image)
-                .HasMaxLength(1)
-                .IsUnicode(false);
+            entity.Property(e => e.Image).IsUnicode(false);
             entity.Property(e => e.ModifiedBy).IsUnicode(false);
             entity.Property(e => e.ModifiedDate).HasColumnType("date");
             entity.Property(e => e.Name).HasMaxLength(50);
@@ -154,7 +152,7 @@ public partial class CampusFoodSystemContext : DbContext
             entity.Property(e => e.StoreId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.TransationId)
+            entity.Property(e => e.TransactionId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.UserId)
@@ -173,9 +171,9 @@ public partial class CampusFoodSystemContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Order_Store");
 
-            entity.HasOne(d => d.Transation).WithMany(p => p.Orders)
-                .HasPrincipalKey(p => p.TransationId)
-                .HasForeignKey(d => d.TransationId)
+            entity.HasOne(d => d.Transaction).WithMany(p => p.Orders)
+                .HasPrincipalKey(p => p.TransactionId)
+                .HasForeignKey(d => d.TransactionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Order_Transaction");
 
@@ -192,12 +190,7 @@ public partial class CampusFoodSystemContext : DbContext
 
             entity.ToTable("OrderDetail");
 
-            entity.HasIndex(e => e.OrderDetailId, "UQ__OrderDet__D3B9D36DF2818A29").IsUnique();
-
             entity.Property(e => e.FoodId)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.OrderDetailId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.OrderId)
@@ -318,11 +311,11 @@ public partial class CampusFoodSystemContext : DbContext
 
             entity.ToTable("Transaction");
 
-            entity.HasIndex(e => e.TransationId, "UQ__Transact__B1E731540C7B27D0").IsUnique();
+            entity.HasIndex(e => e.TransactionId, "UQ__Transact__B1E731540C7B27D0").IsUnique();
 
             entity.Property(e => e.CreatedBy).IsUnicode(false);
             entity.Property(e => e.CreatedDate).HasColumnType("date");
-            entity.Property(e => e.TransationId)
+            entity.Property(e => e.TransactionId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.UserId)
@@ -354,7 +347,7 @@ public partial class CampusFoodSystemContext : DbContext
             entity.Property(e => e.Email).IsUnicode(false);
             entity.Property(e => e.ModifiedBy).IsUnicode(false);
             entity.Property(e => e.ModifiedDate).HasColumnType("date");
-            entity.Property(e => e.Name).IsUnicode(false);
+            entity.Property(e => e.Name).HasMaxLength(50);
             entity.Property(e => e.Password).IsUnicode(false);
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)

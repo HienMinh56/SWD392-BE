@@ -77,7 +77,7 @@ namespace SWD392_BE.Services.Services
                         Price = o.Price,
                         Quantity = o.Quantity,
                         StoreName = o.Store.Name,
-                        TransationId = o.TransationId,
+                        TransationId = o.TransactionId,
                         Status = o.Status,
                         CreatedTime = o.CreatedTime,
                         CreatedDate = o.CreatedDate,

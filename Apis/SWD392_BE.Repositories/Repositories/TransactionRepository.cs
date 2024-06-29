@@ -68,7 +68,7 @@ namespace SWD392_BE.Repositories.Repositories
                 .Include(x => x.User)
                 .Select(x => new TransactionUserViewModel
                 {
-                    TransationId = x.TransationId,
+                    TransationId = x.TransactionId,
                     UserId = x.UserId,
                     Type = x.Type,
                     CreatedDate = x.CreatedDate,
