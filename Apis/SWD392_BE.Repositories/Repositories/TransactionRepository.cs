@@ -49,6 +49,14 @@ namespace SWD392_BE.Repositories.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Transaction> AddTransaction(Transaction transaction)
+        {
+            _context.Transactions.Add(transaction);
+            await _context.SaveChangesAsync();
+            return transaction;
+        }
+
         public async Task<List<TransactionUserViewModel>?> GetTransaction(string? username = null, DateTime? createdDate = null)
         {
             var query = _context.Transactions.AsQueryable();

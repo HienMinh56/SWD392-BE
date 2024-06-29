@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.ViewModels.FoodModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.Services;
@@ -92,5 +93,29 @@ namespace SWD392_BE.API.Controllers
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
         #endregion
+
+        #region Create Order
+        /// <summary>
+        /// Create a new order with food items and quantities.
+        /// </summary>
+        /// <param name="foodItems">A list of food items and their quantities.</param>
+        /// <returns>The result of the order creation process.</returns>
+        [HttpPost]
+        public async Task<IActionResult> CreateOrder([FromBody] List<FoodItemModel> foodItems)
+        {
+            if (foodItems == null || !foodItems.Any())
+            {
+                return BadRequest(new { message = "Food items list cannot be empty." });
+            }
+
+            // Convert the incoming model to the expected tuple format for the service layer
+            var orderItems = foodItems.Select(fi => (fi.FoodId, fi.Quantity)).ToList();
+
+            var result = await _order.CreateOrderAsync(orderItems);
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+        #endregion
+
     }
 }

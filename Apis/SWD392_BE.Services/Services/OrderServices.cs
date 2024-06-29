@@ -151,20 +151,50 @@ namespace SWD392_BE.Services.Services
             return result;
         }
 
-        public async Task<ResultModel> CreateOrderAsync(List<string> orderDetailIds)
+        public async Task<ResultModel> getOrderAmountPerDayInMonth(int year, int month)
         {
             var result = new ResultModel();
             try
             {
-                // Assuming you have a way to get the current user's ID and name
-                var currentUser = _httpContextAccessor.HttpContext.User;
-                var userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                var userName = currentUser.FindFirst(ClaimTypes.Name)?.Value;
+                var startDate = new DateTime(year, month, 1);
+                var endDate = startDate.AddMonths(1).AddDays(-1);
 
-                // Create the order with the provided session ID, store ID, and the list of order detail IDs
-                var order = await _order.CreateOrder(orderDetailIds);
+                var orders = await _order.GetOrdersByDateRange(startDate, endDate);
 
-                // Assuming the CreateOrder method in the repository now returns the created order object
+                var data = orders.Where(o => o.CreatedDate.HasValue)
+                                 .GroupBy(o => o.CreatedDate.Value.Date)
+                                 .Select(g => new OrderAmountPerDayViewModel
+                                 {
+                                     Date = g.Key,
+                                     TotalAmount = g.Sum(o => o.Price)
+                                 })
+                                 .ToList();
+
+                result.Data = data;
+                result.Message = "Success";
+                result.IsSuccess = true;
+                result.Code = 200;
+            }
+            catch (Exception ex)
+            {
+                result.Message = ex.Message;
+                result.IsSuccess = false;
+                result.Code = 500;
+            }
+            return result;
+        }
+
+        public async Task<ResultModel> CreateOrderAsync(List<(string FoodId, int Quantity)> foodItems)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserName");
+                var userName = userNameClaim?.Value;
+                var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId");
+                var userId = userIdClaim.Value;
+
+                var order = await _order.CreateOrder(foodItems, userId, userName);
                 if (order != null)
                 {
                     result.Data = order;
@@ -177,20 +207,20 @@ namespace SWD392_BE.Services.Services
                     result.Data = null;
                     result.Message = "Failed to create order";
                     result.IsSuccess = false;
-                    result.Code = 400; // Bad Request or another appropriate status code
+                    result.Code = 400;
                 }
             }
             catch (Exception ex)
             {
                 result.Message = $"An error occurred: {ex.Message}";
                 result.IsSuccess = false;
-                result.Code = 500; // Internal Server Error
             }
 
             return result;
         }
 
-public async Task<ResultModel> getOrderAmountPerWeekInMonth(int year, int month)
+
+        public async Task<ResultModel> getOrderAmountPerWeekInMonth(int year, int month)
         {
             var result = new ResultModel();
             try
