@@ -8,6 +8,7 @@ namespace SWD392_BE.Repositories.Interfaces
     public interface ITransactionRepository : IGenericRepository<Transaction>
     {
         IEnumerable<Transaction> GetRecentTransactions();
+        Transaction GetByTransactionId(string transactionId);
         Transaction GetLatestTransaction();
         Transaction GetById(int id);
         void Update(Transaction transaction);

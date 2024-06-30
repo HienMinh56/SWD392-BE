@@ -1,4 +1,5 @@
 ﻿using SWD392_BE.Repositories.Interfaces;
+using SWD392_BE.Repositories.Repositories;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Services.Interfaces;
 using System;
@@ -50,6 +51,5 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
-
     }
 }
