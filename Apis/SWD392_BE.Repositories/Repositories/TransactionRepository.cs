@@ -82,6 +82,8 @@ namespace SWD392_BE.Repositories.Repositories
                     CreatedDate = x.CreatedDate,
                     CreatedBy = x.CreatedBy,
                     Status = x.Status,
+                    Amount = x.Amount,
+                    CreatTime = x.CreatTime,
                     User = new UserViewModel
                     {
                         UserId = x.User.UserId,
@@ -90,6 +92,7 @@ namespace SWD392_BE.Repositories.Repositories
                     }
                 })
                 .OrderByDescending(x => x.CreatedDate)
+                .ThenByDescending(x => x.CreatTime)
                 .ToListAsync();
         }
     }

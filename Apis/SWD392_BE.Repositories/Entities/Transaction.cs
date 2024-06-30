@@ -13,7 +13,7 @@ public partial class Transaction
 
     public int Type { get; set; }
 
-    public int Amonut { get; set; }
+    public int Amount { get; set; }
 
     public int Status { get; set; }
 

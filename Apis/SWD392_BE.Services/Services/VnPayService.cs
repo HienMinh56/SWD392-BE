@@ -45,7 +45,7 @@ namespace SWD392_BE.Services.Services
                 TransactionId = GenerateTransactionId(),
                 UserId = model.UserId,
                 Type = 2, // recharge
-                Amonut = (int)(model.Amount * 100),
+                Amount = (int)(model.Amount * 100),
                 Status = 2, // Pending
                 CreatedDate = DateTime.Now,
                 CreatTime = DateTime.Now.TimeOfDay
@@ -53,7 +53,7 @@ namespace SWD392_BE.Services.Services
             _transactionRepository.Add(transaction);
             _transactionRepository.SaveChanges();
 
-            string txnRef = transaction.Id.ToString(); 
+            string txnRef = transaction.Id.ToString();
 
             var vnPay = new VnPayLibraryService();
             vnPay.AddRequestData("vnp_Version", VnPayLibraryService.VERSION);
@@ -91,7 +91,7 @@ namespace SWD392_BE.Services.Services
             int responseCode;
             if (!int.TryParse(vnp_ResponseCode, out responseCode))
             {
-                responseCode = -1; 
+                responseCode = -1;
             }
 
             string txnRef = responseData["vnp_TxnRef"];
@@ -106,8 +106,8 @@ namespace SWD392_BE.Services.Services
                 var user = _userService.GetUserById(transaction.UserId);
                 if (user != null)
                 {
-                    var result = await _userService.UpdateUserBalance(transaction.UserId, transaction.Amonut / 100);
-                    result.Code = responseCode; 
+                    var result = await _userService.UpdateUserBalance(transaction.UserId, transaction.Amount / 100);
+                    result.Code = responseCode;
                     return result;
                 }
             }
