@@ -2,22 +2,24 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.ViewModels.FoodModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using SWD392_BE.Services.Interfaces;
 using SWD392_BE.Services.Services;
+using System.Security.Claims;
 
 namespace SWD392_BE.API.Controllers
 {
-        [Route("api/v1/order")]
-        [ApiController]
-        public class OrderController : ControllerBase
-        {
-            private readonly IOrderService _order;
+    [Route("api/v1/order")]
+    [ApiController]
+    public class OrderController : ControllerBase
+    {
+        private readonly IOrderService _order;
 
-            public OrderController(IOrderService order)
-            {
-                _order = order;
-            }
+        public OrderController(IOrderService order)
+        {
+            _order = order;
+        }
 
         #region Get All orders
         /// <summary>
@@ -25,7 +27,7 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of orders</returns>
         [HttpGet]
-        public async Task<IActionResult> GetOrders( string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
+        public async Task<IActionResult> GetOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
         {
             var result = await _order.getOrders(userId, userName, createdDate, status, storeName, sessionId);
 
@@ -91,5 +93,29 @@ namespace SWD392_BE.API.Controllers
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
         #endregion
+
+        #region Create Order
+        /// <summary>
+        /// Create a new order with food items and quantities.
+        /// </summary>
+        /// <param name="foodItems">A list of food items and their quantities.</param>
+        /// <returns>The result of the order creation process.</returns>
+        [HttpPost]
+        public async Task<IActionResult> CreateOrder([FromBody] List<FoodItemModel> foodItems)
+        {
+            if (foodItems == null || !foodItems.Any())
+            {
+                return BadRequest(new { message = "Food items list cannot be empty." });
+            }
+
+            // Convert the incoming model to the expected tuple format for the service layer
+            var orderItems = foodItems.Select(fi => (fi.FoodId, fi.Quantity)).ToList();
+
+            var result = await _order.CreateOrderAsync(orderItems);
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+        #endregion
+
     }
 }

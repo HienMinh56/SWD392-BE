@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-﻿using SWD392_BE.Repositories.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Repositories;
 using SWD392_BE.Repositories.ViewModels.OrderModel;
@@ -9,6 +10,7 @@ using SWD392_BE.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,10 +20,12 @@ namespace SWD392_BE.Services.Services
     public class OrderServices : IOrderService
     {
         private readonly IOrderRepository _order;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public OrderServices(IOrderRepository order)
+        public OrderServices(IOrderRepository order, IHttpContextAccessor httpContextAccessor)
         {
             _order = order;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ResultModel> getOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
@@ -146,6 +150,7 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
+
         public async Task<ResultModel> getOrderAmountPerDayInMonth(int year, int month)
         {
             var result = new ResultModel();
@@ -178,6 +183,42 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
+
+        public async Task<ResultModel> CreateOrderAsync(List<(string FoodId, int Quantity)> foodItems)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserName");
+                var userName = userNameClaim?.Value;
+                var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId");
+                var userId = userIdClaim.Value;
+
+                var order = await _order.CreateOrder(foodItems, userId, userName);
+                if (order != null)
+                {
+                    result.Data = order;
+                    result.Message = "Order created successfully";
+                    result.IsSuccess = true;
+                    result.Code = 200;
+                }
+                else
+                {
+                    result.Data = null;
+                    result.Message = "Failed to create order";
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Message = $"An error occurred: {ex.Message}";
+                result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
 
         public async Task<ResultModel> getOrderAmountPerWeekInMonth(int year, int month)
         {
@@ -279,5 +320,8 @@ namespace SWD392_BE.Services.Services
 
             return weeks;
         }
+
+
+
     }
 }

@@ -15,7 +15,9 @@ namespace SWD392_BE.Repositories.ViewModels.TransactionModel
         public DateTime? CreatedDate { get; set; }
         public string CreatedBy { get; set; }
         public int Status { get; set; }
+        public TimeSpan? CreatTime { get; set; }
         public UserViewModel User { get; set; }
+
     }
 
     public class UserViewModel

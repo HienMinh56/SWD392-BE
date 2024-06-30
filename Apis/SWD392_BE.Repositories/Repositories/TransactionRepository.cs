@@ -54,6 +54,14 @@ namespace SWD392_BE.Repositories.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Transaction> AddTransaction(Transaction transaction)
+        {
+            _context.Transactions.Add(transaction);
+            await _context.SaveChangesAsync();
+            return transaction;
+        }
+
         public async Task<List<TransactionUserViewModel>?> GetTransaction(string? username = null, DateTime? createdDate = null)
         {
             var query = _context.Transactions.AsQueryable();
@@ -79,6 +87,8 @@ namespace SWD392_BE.Repositories.Repositories
                     CreatedDate = x.CreatedDate,
                     CreatedBy = x.CreatedBy,
                     Status = x.Status,
+                    Amount = x.Amount,
+                    CreatTime = x.CreatTime,
                     User = new UserViewModel
                     {
                         UserId = x.User.UserId,
@@ -87,6 +97,7 @@ namespace SWD392_BE.Repositories.Repositories
                     }
                 })
                 .OrderByDescending(x => x.CreatedDate)
+                .ThenByDescending(x => x.CreatTime)
                 .ToListAsync();
 
             foreach (var transaction in _transactions)

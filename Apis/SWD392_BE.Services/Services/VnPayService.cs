@@ -95,7 +95,7 @@ namespace SWD392_BE.Services.Services
             }
 
             string txnRef = responseData["vnp_TxnRef"];
-            var transaction = _transactionRepository.GetByTransactionId(txnRef); // Sử dụng phương thức lấy transaction bằng transactionId thay vì Id
+            var transaction = _transactionRepository.GetById(int.Parse(txnRef));
 
             if (transaction != null && responseCode == 0)
             {
