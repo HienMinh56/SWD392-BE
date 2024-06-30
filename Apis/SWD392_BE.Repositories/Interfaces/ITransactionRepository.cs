@@ -15,5 +15,7 @@ namespace SWD392_BE.Repositories.Interfaces
         void SaveChanges();
         Task SaveChangesAsync();
         Task<List<TransactionUserViewModel>?> GetTransaction(string? username = null, DateTime? createdDate = null);
+        Task<List<Transaction>> GetAllTransactionsAsync();
+
     }
 }
