@@ -48,7 +48,7 @@ namespace SWD392_BE.Repositories.Repositories
             {
                 TransactionId = newTransactionId,
                 UserId = userId,
-                Type = 2,
+                Type = 1,
                 Status = 2,
                 CreatedDate = DateTime.Now,
                 CreatTime = DateTime.Now.TimeOfDay
