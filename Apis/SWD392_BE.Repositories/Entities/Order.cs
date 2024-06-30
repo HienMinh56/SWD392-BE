@@ -19,7 +19,7 @@ public partial class Order
 
     public string StoreId { get; set; } = null!;
 
-    public string TransationId { get; set; } = null!;
+    public string TransactionId { get; set; } = null!;
 
     public int Status { get; set; }
 
@@ -39,7 +39,7 @@ public partial class Order
 
     public virtual Store Store { get; set; } = null!;
 
-    public virtual Transaction Transation { get; set; } = null!;
+    public virtual Transaction Transaction { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
 }

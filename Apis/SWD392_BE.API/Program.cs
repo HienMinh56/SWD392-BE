@@ -198,7 +198,7 @@ builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderServices>();
 
-builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>(); 
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 builder.Services.AddSingleton<ICloudStorageService, CloudStorageService>();
@@ -207,8 +207,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 
-builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpContextAccessor>().HttpContext!);
+builder.Services.AddHttpContextAccessor();
 
 // db local
 
@@ -230,7 +231,7 @@ builder.Services.AddCors(options =>
         });
 });
 
-// builder.Services.AddWebAPIService();
+//builder.Services.AddWebAPIService();
 
 
 
@@ -248,7 +249,6 @@ using (var scope = app.Services.CreateScope())
 app.UseCors("app-cors");
 app.UseSwagger();
 app.UseSwaggerUI();
-
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

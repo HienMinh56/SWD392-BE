@@ -10,5 +10,6 @@ namespace SWD392_BE.Services.Interfaces
     public interface ITransactionService
     {
         Task<ResultModel> GetTransactionList(string? username = null, DateTime? createdDate = null);
+        Task<string> CheckLatestTransactionStatusByUserIdAndType(string userId, int type);
     }
 }

@@ -19,6 +19,11 @@ namespace SWD392_BE.Repositories.Repositories
             _transactions = context.Transactions;
         }
 
+        public Transaction GetByTransactionId(string transactionId)
+        {
+            return _context.Transactions.FirstOrDefault(t => t.TransactionId == transactionId);
+        }
+
         public IEnumerable<Transaction> GetRecentTransactions()
         {
             return _transactions.OrderByDescending(t => t.Id).Take(10).ToList();
@@ -49,6 +54,14 @@ namespace SWD392_BE.Repositories.Repositories
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<Transaction> AddTransaction(Transaction transaction)
+        {
+            _context.Transactions.Add(transaction);
+            await _context.SaveChangesAsync();
+            return transaction;
+        }
+
         public async Task<List<TransactionUserViewModel>?> GetTransaction(string? username = null, DateTime? createdDate = null)
         {
             var query = _context.Transactions.AsQueryable();
@@ -68,12 +81,14 @@ namespace SWD392_BE.Repositories.Repositories
                 .Include(x => x.User)
                 .Select(x => new TransactionUserViewModel
                 {
-                    TransationId = x.TransationId,
+                    TransationId = x.TransactionId,
                     UserId = x.UserId,
                     Type = x.Type,
                     CreatedDate = x.CreatedDate,
                     CreatedBy = x.CreatedBy,
                     Status = x.Status,
+                    Amount = x.Amount,
+                    CreatTime = x.CreatTime,
                     User = new UserViewModel
                     {
                         UserId = x.User.UserId,
@@ -82,7 +97,19 @@ namespace SWD392_BE.Repositories.Repositories
                     }
                 })
                 .OrderByDescending(x => x.CreatedDate)
+                .ThenByDescending(x => x.CreatTime)
                 .ToListAsync();
+
+            foreach (var transaction in _transactions)
+            {
+                Console.WriteLine($"TransactionId: {transaction.TransactionId}, Amount: {transaction.Amount}");
+            }
+
+  
+        }
+        public async Task<List<Transaction>> GetAllTransactionsAsync()
+        {
+            return await _transactions.ToListAsync();
         }
     }
 }

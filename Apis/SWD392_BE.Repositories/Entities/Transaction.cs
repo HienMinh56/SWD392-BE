@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SWD392_BE.Repositories.Entities;
 
@@ -7,13 +8,13 @@ public partial class Transaction
 {
     public int Id { get; set; }
 
-    public string TransationId { get; set; } = null!;
+    public string TransactionId { get; set; } = null!;
 
     public string UserId { get; set; } = null!;
 
     public int Type { get; set; }
 
-    public int Amonut { get; set; }
+    public int Amount { get; set; }
 
     public int Status { get; set; }
 

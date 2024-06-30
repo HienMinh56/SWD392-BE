@@ -7,8 +7,6 @@ public partial class OrderDetail
 {
     public int Id { get; set; }
 
-    public string OrderDetailId { get; set; } = null!;
-
     public string OrderId { get; set; } = null!;
 
     public string FoodId { get; set; } = null!;

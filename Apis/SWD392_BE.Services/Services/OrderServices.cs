@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-﻿using SWD392_BE.Repositories.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
 using SWD392_BE.Repositories.Repositories;
 using SWD392_BE.Repositories.ViewModels.OrderModel;
@@ -9,6 +10,7 @@ using SWD392_BE.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,10 +20,12 @@ namespace SWD392_BE.Services.Services
     public class OrderServices : IOrderService
     {
         private readonly IOrderRepository _order;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public OrderServices(IOrderRepository order)
+        public OrderServices(IOrderRepository order, IHttpContextAccessor httpContextAccessor)
         {
             _order = order;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ResultModel> getOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
@@ -77,7 +81,7 @@ namespace SWD392_BE.Services.Services
                         Price = o.Price,
                         Quantity = o.Quantity,
                         StoreName = o.Store.Name,
-                        TransationId = o.TransationId,
+                        TransationId = o.TransactionId,
                         Status = o.Status,
                         CreatedTime = o.CreatedTime,
                         CreatedDate = o.CreatedDate,
@@ -146,5 +150,178 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
+
+        public async Task<ResultModel> getOrderAmountPerDayInMonth(int year, int month)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var startDate = new DateTime(year, month, 1);
+                var endDate = startDate.AddMonths(1).AddDays(-1);
+
+                var orders = await _order.GetOrdersByDateRange(startDate, endDate);
+
+                var data = orders.Where(o => o.CreatedDate.HasValue)
+                                 .GroupBy(o => o.CreatedDate.Value.Date)
+                                 .Select(g => new OrderAmountPerDayViewModel
+                                 {
+                                     Date = g.Key,
+                                     TotalAmount = g.Sum(o => o.Price)
+                                 })
+                                 .ToList();
+
+                result.Data = data;
+                result.Message = "Success";
+                result.IsSuccess = true;
+                result.Code = 200;
+            }
+            catch (Exception ex)
+            {
+                result.Message = ex.Message;
+                result.IsSuccess = false;
+                result.Code = 500;
+            }
+            return result;
+        }
+
+        public async Task<ResultModel> CreateOrderAsync(List<(string FoodId, int Quantity)> foodItems)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserName");
+                var userName = userNameClaim?.Value;
+                var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "UserId");
+                var userId = userIdClaim.Value;
+
+                var order = await _order.CreateOrder(foodItems, userId, userName);
+                if (order != null)
+                {
+                    result.Data = order;
+                    result.Message = "Order created successfully";
+                    result.IsSuccess = true;
+                    result.Code = 200;
+                }
+                else
+                {
+                    result.Data = null;
+                    result.Message = "Failed to create order";
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Message = $"An error occurred: {ex.Message}";
+                result.IsSuccess = false;
+            }
+
+            return result;
+        }
+
+
+        public async Task<ResultModel> getOrderAmountPerWeekInMonth(int year, int month)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var weeks = getWeeksInMonth(year, month);
+                var orderAmountPerWeek = new List<OrderAmountPerWeekViewModel>();
+
+                foreach (var week in weeks)
+                {
+                    var orders = await _order.GetOrdersByDateRange(week.StartDate, week.EndDate);
+                    var totalAmount = orders.Sum(o => o.Price);
+
+                    orderAmountPerWeek.Add(new OrderAmountPerWeekViewModel
+                    {
+                        StartDate = week.StartDate,
+                        EndDate = week.EndDate,
+                        TotalAmount = totalAmount
+                    });
+                }
+
+                result.Data = orderAmountPerWeek;
+                result.Message = "Success";
+                result.IsSuccess = true;
+                result.Code = 200;
+            }
+            catch (Exception ex)
+            {
+                result.Message = ex.Message;
+                result.IsSuccess = false;
+                result.Code = 500;
+            }
+            return result;
+        }
+
+        public async Task<ResultModel> getOrderAmountPerMonthInYear(int year)
+        {
+            var result = new ResultModel();
+            try
+            {
+                var data = new List<OrderAmountPerMonthViewModel>();
+
+                for (int month = 1; month <= 12; month++)
+                {
+                    var startDate = new DateTime(year, month, 1);
+                    var endDate = startDate.AddMonths(1).AddDays(-1);
+
+                    var orders = await _order.GetOrdersByDateRange(startDate, endDate);
+                    var totalAmount = orders.Sum(o => o.Price);
+
+                    data.Add(new OrderAmountPerMonthViewModel
+                    {
+                        Month = month,
+                        TotalAmount = totalAmount
+                    });
+                }
+
+                result.Data = data;
+                result.Message = "Success";
+                result.IsSuccess = true;
+                result.Code = 200;
+            }
+            catch (Exception ex)
+            {
+                result.Message = ex.Message;
+                result.IsSuccess = false;
+                result.Code = 500;
+            }
+            return result;
+        }
+
+        private List<(DateTime StartDate, DateTime EndDate)> getWeeksInMonth(int year, int month, DayOfWeek startOfWeek = DayOfWeek.Monday)
+        {
+            var weeks = new List<(DateTime StartDate, DateTime EndDate)>();
+            var firstDayOfMonth = new DateTime(year, month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+            var currentStartOfWeek = firstDayOfMonth;
+            while (currentStartOfWeek.DayOfWeek != startOfWeek)
+            {
+                currentStartOfWeek = currentStartOfWeek.AddDays(-1);
+            }
+
+            var currentEndOfWeek = currentStartOfWeek.AddDays(6);
+
+            while (currentStartOfWeek <= lastDayOfMonth)
+            {
+                if (currentEndOfWeek > lastDayOfMonth)
+                {
+                    currentEndOfWeek = lastDayOfMonth;
+                }
+
+                weeks.Add((currentStartOfWeek, currentEndOfWeek));
+
+                currentStartOfWeek = currentStartOfWeek.AddDays(7);
+                currentEndOfWeek = currentStartOfWeek.AddDays(6);
+            }
+
+            return weeks;
+        }
+
+
+
     }
 }

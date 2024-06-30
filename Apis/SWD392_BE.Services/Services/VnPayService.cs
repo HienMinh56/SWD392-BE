@@ -33,7 +33,7 @@ namespace SWD392_BE.Services.Services
                 return "TRANS001";
             }
 
-            var latestId = latestTransaction.TransationId;
+            var latestId = latestTransaction.TransactionId;
             var numericPart = int.Parse(latestId.Substring(5)) + 1;
             return $"TRANS{numericPart:D3}";
         }
@@ -42,10 +42,10 @@ namespace SWD392_BE.Services.Services
         {
             var transaction = new Transaction
             {
-                TransationId = GenerateTransactionId(),
+                TransactionId = GenerateTransactionId(),
                 UserId = model.UserId,
                 Type = 2, // recharge
-                Amonut = (int)(model.Amount * 100),
+                Amount = (int)(model.Amount * 100),
                 Status = 2, // Pending
                 CreatedDate = DateTime.Now,
                 CreatTime = DateTime.Now.TimeOfDay
@@ -53,10 +53,10 @@ namespace SWD392_BE.Services.Services
             _transactionRepository.Add(transaction);
             _transactionRepository.SaveChanges();
 
-            string txnRef = transaction.Id.ToString(); 
+            string txnRef = transaction.TransactionId.ToString();
 
-            var vnPay = new VnPayLibrary();
-            vnPay.AddRequestData("vnp_Version", VnPayLibrary.VERSION);
+            var vnPay = new VnPayLibraryService();
+            vnPay.AddRequestData("vnp_Version", VnPayLibraryService.VERSION);
             vnPay.AddRequestData("vnp_Command", "pay");
             vnPay.AddRequestData("vnp_TmnCode", _configuration["VNPAY:TmnCode"]);
             vnPay.AddRequestData("vnp_Amount", ((int)(model.Amount * 100)).ToString());
@@ -65,10 +65,9 @@ namespace SWD392_BE.Services.Services
             vnPay.AddRequestData("vnp_IpAddr", ipAddress);
             vnPay.AddRequestData("vnp_Locale", "vn");
             vnPay.AddRequestData("vnp_OrderInfo", Uri.EscapeDataString($"Deposit {model.Amount} into wallet with transaction id: {txnRef}"));
-            vnPay.AddRequestData("vnp_OrderType", "other");
-            vnPay.AddRequestData("vnp_ReturnUrl", Uri.EscapeDataString(_configuration["VNPAY:ReturnUrl"]));
+            vnPay.AddRequestData("vnp_OrderType", "others");
+            vnPay.AddRequestData("vnp_ReturnUrl", _configuration["VNPAY:ReturnUrl"]);
             vnPay.AddRequestData("vnp_TxnRef", txnRef);
-            vnPay.AddRequestData("vnp_ExpireDate", DateTime.Now.AddMinutes(15).ToString("yyyyMMddHHmmss"));
             vnPay.AddRequestData("vnp_BankCode", "NCB");
 
             string paymentUrl = vnPay.CreateRequestUrl(_configuration["VNPAY:Url"], _configuration["VNPAY:HashSecret"]);
@@ -78,7 +77,7 @@ namespace SWD392_BE.Services.Services
 
         public bool ValidateSignature(string inputHash, SortedList<string, string> responseData)
         {
-            var vnPay = new VnPayLibrary();
+            var vnPay = new VnPayLibraryService();
             foreach (var kv in responseData)
             {
                 vnPay.AddResponseData(kv.Key, kv.Value);
@@ -92,11 +91,11 @@ namespace SWD392_BE.Services.Services
             int responseCode;
             if (!int.TryParse(vnp_ResponseCode, out responseCode))
             {
-                responseCode = -1; 
+                responseCode = -1;
             }
 
             string txnRef = responseData["vnp_TxnRef"];
-            var transaction = _transactionRepository.GetById(int.Parse(txnRef));
+            var transaction = _transactionRepository.GetByTransactionId(txnRef);
 
             if (transaction != null && responseCode == 0)
             {
@@ -107,8 +106,8 @@ namespace SWD392_BE.Services.Services
                 var user = _userService.GetUserById(transaction.UserId);
                 if (user != null)
                 {
-                    var result = await _userService.UpdateUserBalance(transaction.UserId, transaction.Amonut / 100);
-                    result.Code = responseCode; 
+                    var result = await _userService.UpdateUserBalance(transaction.UserId, transaction.Amount / 100);
+                    result.Code = responseCode;
                     return result;
                 }
             }

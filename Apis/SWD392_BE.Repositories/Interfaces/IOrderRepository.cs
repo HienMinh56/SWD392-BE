@@ -11,5 +11,7 @@ namespace SWD392_BE.Repositories.Interfaces
     public interface IOrderRepository : IGenericRepository<Order>
     {
         IQueryable<Order> GetOrders();
+        Task<List<Order>> GetOrdersByDateRange(DateTime startDate, DateTime endDate);
+        Task<Order> CreateOrder(List<(string foodId, int quantity)> foodItems, string userId, string userName);
     }
 }
