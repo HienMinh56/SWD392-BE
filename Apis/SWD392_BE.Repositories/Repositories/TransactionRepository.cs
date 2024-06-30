@@ -19,6 +19,11 @@ namespace SWD392_BE.Repositories.Repositories
             _transactions = context.Transactions;
         }
 
+        public Transaction GetByTransactionId(string transactionId)
+        {
+            return _context.Transactions.FirstOrDefault(t => t.TransactionId == transactionId);
+        }
+
         public IEnumerable<Transaction> GetRecentTransactions()
         {
             return _transactions.OrderByDescending(t => t.Id).Take(10).ToList();

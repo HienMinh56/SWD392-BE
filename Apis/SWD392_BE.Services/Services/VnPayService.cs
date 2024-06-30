@@ -53,7 +53,7 @@ namespace SWD392_BE.Services.Services
             _transactionRepository.Add(transaction);
             _transactionRepository.SaveChanges();
 
-            string txnRef = transaction.Id.ToString(); 
+            string txnRef = transaction.TransactionId.ToString();
 
             var vnPay = new VnPayLibraryService();
             vnPay.AddRequestData("vnp_Version", VnPayLibraryService.VERSION);
@@ -66,7 +66,7 @@ namespace SWD392_BE.Services.Services
             vnPay.AddRequestData("vnp_Locale", "vn");
             vnPay.AddRequestData("vnp_OrderInfo", Uri.EscapeDataString($"Deposit {model.Amount} into wallet with transaction id: {txnRef}"));
             vnPay.AddRequestData("vnp_OrderType", "others");
-            vnPay.AddRequestData("vnp_ReturnUrl", Uri.EscapeDataString(_configuration["VNPAY:ReturnUrl"]));
+            vnPay.AddRequestData("vnp_ReturnUrl", _configuration["VNPAY:ReturnUrl"]);
             vnPay.AddRequestData("vnp_TxnRef", txnRef);
             vnPay.AddRequestData("vnp_BankCode", "NCB");
 
@@ -91,11 +91,11 @@ namespace SWD392_BE.Services.Services
             int responseCode;
             if (!int.TryParse(vnp_ResponseCode, out responseCode))
             {
-                responseCode = -1; 
+                responseCode = -1;
             }
 
             string txnRef = responseData["vnp_TxnRef"];
-            var transaction = _transactionRepository.GetById(int.Parse(txnRef));
+            var transaction = _transactionRepository.GetByTransactionId(txnRef); // Sử dụng phương thức lấy transaction bằng transactionId thay vì Id
 
             if (transaction != null && responseCode == 0)
             {
@@ -107,7 +107,7 @@ namespace SWD392_BE.Services.Services
                 if (user != null)
                 {
                     var result = await _userService.UpdateUserBalance(transaction.UserId, transaction.Amonut / 100);
-                    result.Code = responseCode; 
+                    result.Code = responseCode;
                     return result;
                 }
             }
