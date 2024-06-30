@@ -45,7 +45,7 @@ namespace SWD392_BE.Services.Services
                 TransactionId = GenerateTransactionId(),
                 UserId = model.UserId,
                 Type = 2, // recharge
-                Amonut = (int)(model.Amount * 100),
+                Amount = (int)(model.Amount * 100),
                 Status = 2, // Pending
                 CreatedDate = DateTime.Now,
                 CreatTime = DateTime.Now.TimeOfDay
@@ -106,7 +106,7 @@ namespace SWD392_BE.Services.Services
                 var user = _userService.GetUserById(transaction.UserId);
                 if (user != null)
                 {
-                    var result = await _userService.UpdateUserBalance(transaction.UserId, transaction.Amonut / 100);
+                    var result = await _userService.UpdateUserBalance(transaction.UserId, transaction.Amount / 100);
                     result.Code = responseCode;
                     return result;
                 }

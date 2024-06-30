@@ -88,6 +88,17 @@ namespace SWD392_BE.Repositories.Repositories
                 })
                 .OrderByDescending(x => x.CreatedDate)
                 .ToListAsync();
+
+            foreach (var transaction in _transactions)
+            {
+                Console.WriteLine($"TransactionId: {transaction.TransactionId}, Amount: {transaction.Amount}");
+            }
+
+  
+        }
+        public async Task<List<Transaction>> GetAllTransactionsAsync()
+        {
+            return await _transactions.ToListAsync();
         }
     }
 }

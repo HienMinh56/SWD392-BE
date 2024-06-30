@@ -51,5 +51,28 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
+
+        public async Task<string> CheckLatestTransactionStatusByUserIdAndType(string userId, int type)
+        {
+            var transactions = await _transactionRepo.GetAllTransactionsAsync();
+            var latestTransaction = transactions?
+                .Where(t => t.UserId == userId && t.Type == type)
+                .OrderByDescending(t => t.Id)
+                .FirstOrDefault();
+
+            if (latestTransaction != null)
+            {
+                if (latestTransaction.Status == 1)
+                {
+                    return "Thành công";
+                }
+                else if (latestTransaction.Status == 2)
+                {
+                    return "Thất bại";
+                }
+            }
+
+            return "Không tìm thấy giao dịch";
+        }
     }
 }
