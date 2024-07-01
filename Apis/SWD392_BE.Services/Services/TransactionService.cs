@@ -18,13 +18,13 @@ namespace SWD392_BE.Services.Services
         {
             _transactionRepo = transactionRepo;
         }
-        public async Task<ResultModel> GetTransactionList(string? username = null, DateTime? createdDate = null)
+        public async Task<ResultModel> GetTransactionList(string? userId = null, DateTime? createdDate = null)
         {
             ResultModel result = new ResultModel();
 
             try
             {
-                var transactions = await _transactionRepo.GetTransaction(username, createdDate);
+                var transactions = await _transactionRepo.GetTransaction(userId, createdDate);
                 if (transactions == null || transactions.Count == 0)
                 {
                     result.IsSuccess = false;

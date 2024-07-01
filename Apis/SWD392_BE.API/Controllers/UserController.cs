@@ -154,6 +154,19 @@ namespace SWD392_BE.API.Controllers
             }
         }
         #endregion
+
+        #region Update user balance
+        /// <summary>
+        /// Update user balance
+        /// </summary>
+        /// <returns></returns>
+        [HttpPut("balnce")]
+        public async Task<IActionResult> UpdateUserBalance(string userId, int amount)
+        {
+            var result = await _userService.UpdateUserBalance(userId, amount);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+        #endregion
     }
 }
 
