@@ -26,5 +26,30 @@ namespace SWD392_BE.Repositories.Repositories
 
             return lastFood?.FoodId;
         }
+
+        public async Task<string> GetStoreNameAsync(string storeId)
+        {
+            var store = await _context.Stores.FirstOrDefaultAsync(s => s.StoreId == storeId);
+            return store?.Name ?? "Unknown Store";
+        }
+
+        public async Task<int> GetTotalFoodsAsync(string storeId, int? cate)
+        {
+            var query = _context.Foods.Where(f => f.StoreId == storeId);
+
+            if (cate.HasValue)
+            {
+                query = query.Where(f => f.Cate == cate.Value);
+            }
+
+            return await query.CountAsync();
+        }
+
+        public async Task<int> GetTotalOrdersAsync(string storeId)
+        {
+            return await _context.Orders
+                                 .Where(o => o.StoreId == storeId && o.Status == 1) // Assuming status 1 means active order
+                                 .CountAsync();
+        }
     }
 }

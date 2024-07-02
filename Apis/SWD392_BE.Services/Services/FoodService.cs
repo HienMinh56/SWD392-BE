@@ -118,6 +118,8 @@ namespace SWD392_BE.Services.Services
             ResultModel result = new ResultModel();
             try
             {
+                // Retrieve store name
+                string storeName = await _foodRepository.GetStoreNameAsync(storeId);
 
                 // Retrieve and filter foods based on storeId and optional category
                 var filteredFoods = _foodRepository.GetList(s => s.StoreId == storeId).ToList();
@@ -126,6 +128,12 @@ namespace SWD392_BE.Services.Services
                 {
                     filteredFoods = filteredFoods.Where(f => f.Cate == cate.Value).ToList();
                 }
+
+                // Calculate total number of foods
+                int totalFoods = await _foodRepository.GetTotalFoodsAsync(storeId, cate);
+
+                // Calculate total number of orders
+                int totalOrders = await _foodRepository.GetTotalOrdersAsync(storeId);
 
                 if (filteredFoods == null)
                 {
@@ -138,7 +146,13 @@ namespace SWD392_BE.Services.Services
                     result.IsSuccess = true;
                     result.Code = 200;
                     result.Message = "Foods retrieved successfully";
-                    result.Data = filteredFoods;
+                    result.Data = new
+                    {
+                        StoreName = storeName,
+                        TotalFoods = totalFoods,
+                        TotalOrders = totalOrders,
+                        Foods = filteredFoods
+                    };
                 }
             }
             catch (Exception ex)
@@ -150,6 +164,7 @@ namespace SWD392_BE.Services.Services
 
             return result;
         }
+
 
 
         public async Task<ResultModel> UpdateFoodAsync(string id, UpdateFoodViewModel model, ClaimsPrincipal userUpdate, IFormFile image)
