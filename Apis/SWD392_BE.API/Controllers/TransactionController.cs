@@ -14,9 +14,9 @@ namespace SWD392_BE.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTransactionList(string? username = null, DateTime? createdDate = null)
+        public async Task<IActionResult> GetTransactionList(string? userId = null, DateTime? createdDate = null)
         {
-            var result = await _transactionService.GetTransactionList(username, createdDate);
+            var result = await _transactionService.GetTransactionList(userId, createdDate);
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
     }

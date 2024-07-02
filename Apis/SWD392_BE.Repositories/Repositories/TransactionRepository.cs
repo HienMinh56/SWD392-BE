@@ -62,13 +62,13 @@ namespace SWD392_BE.Repositories.Repositories
             return transaction;
         }
 
-        public async Task<List<TransactionUserViewModel>?> GetTransaction(string? username = null, DateTime? createdDate = null)
+        public async Task<List<TransactionUserViewModel>?> GetTransaction(string? userId = null, DateTime? createdDate = null)
         {
             var query = _context.Transactions.AsQueryable();
 
-            if (!string.IsNullOrEmpty(username))
+            if (!string.IsNullOrEmpty(userId))
             {
-                query = query.Where(x => x.User.UserName.ToLower().Contains(username.ToLower()));
+                query = query.Where(x => x.User.UserId.ToLower().Contains(userId.ToLower()));
             }
 
             if (createdDate.HasValue)
