@@ -52,5 +52,9 @@ namespace SWD392_BE.Repositories.Repositories
                                  .Where(o => o.StoreId == storeId && o.Status == 1) // Assuming status 1 means active order
                                  .CountAsync();
         }
+        public Task<Food> GetAsync(Expression<Func<Food, bool>> predicate)
+        {
+            return _context.Foods.FirstOrDefaultAsync(predicate);
+        }
     }
 }
