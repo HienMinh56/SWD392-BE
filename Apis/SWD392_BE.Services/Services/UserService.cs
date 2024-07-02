@@ -402,7 +402,13 @@ namespace SWD392_BE.Services.Services
                     result.Message = "User not found";
                     return result;
                 }
-
+                if (amount < 0 && existingUser.Balance + amount < 0)
+                {
+                    result.IsSuccess = false;
+                    result.Code = 400;
+                    result.Message = "Not enough balance";
+                    return result;
+                }
                 existingUser.Balance += amount;
                 _userRepository.Update(existingUser);
                 await _userRepository.SaveChangesAsync();
