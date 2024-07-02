@@ -15,5 +15,6 @@ namespace SWD392_BE.Repositories.Interfaces
         Task<string> GetStoreNameAsync(string storeId);
         Task<int> GetTotalFoodsAsync(string storeId, int? cate);
         Task<int> GetTotalOrdersAsync(string storeId);
+        Task<Food> GetAsync(Expression<Func<Food, bool>> predicate);
     }
 }

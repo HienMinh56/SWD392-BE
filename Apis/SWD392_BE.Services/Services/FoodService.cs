@@ -118,11 +118,28 @@ namespace SWD392_BE.Services.Services
             ResultModel result = new ResultModel();
             try
             {
-                // Retrieve store name
                 string storeName = await _foodRepository.GetStoreNameAsync(storeId);
 
                 // Retrieve and filter foods based on storeId and optional category
-                var filteredFoods = _foodRepository.GetList(s => s.StoreId == storeId).ToList();
+                var filteredFoods = _foodRepository.GetList(s => s.StoreId == storeId).Select(f => new GetFoodViewModel
+                {
+                    Id = f.Id,
+                    FoodId = f.FoodId,
+                    Name = f.Name,
+                    StoreId = f.StoreId,
+                    Price = f.Price,
+                    Title = f.Title,
+                    Description = f.Description,
+                    Cate = f.Cate,
+                    Image = f.Image,
+                    Status = f.Status,
+                    CreatedDate = f.CreatedDate,
+                    CreatedBy = f.CreatedBy,
+                    ModifiedDate = f.ModifiedDate,
+                    ModifiedBy = f.ModifiedBy,
+                    DeletedDate = f.DeletedDate,
+                    DeletedBy = f.DeletedBy,
+                }).ToList();
 
                 if (cate.HasValue)
                 {
