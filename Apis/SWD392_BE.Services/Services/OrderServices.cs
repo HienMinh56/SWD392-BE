@@ -322,6 +322,32 @@ namespace SWD392_BE.Services.Services
         }
 
 
-
+        public Task<ResultModel> updateOrderStatus(string orderId, int status, ClaimsPrincipal user)
+        {
+            var order = _order.Get(o => o.OrderId == orderId);
+            if (order == null)
+            {
+                return Task.FromResult(new ResultModel
+                {
+                    Message = "Order not found",
+                    IsSuccess = false,
+                    Code = 404
+                });
+            }
+            else
+            {
+                   order.Status = status;
+                order.ModifiedBy = user.Claims.FirstOrDefault(c => c.Type == "UserName")?.Value;
+                order.ModifiedDate = DateTime.Now;
+                _order.Update(order);
+                _order.SaveChanges();
+                return Task.FromResult(new ResultModel
+                {
+                    Message = "Order status updated successfully",
+                    IsSuccess = true,
+                    Code = 200
+                });
+            }
+        }
     }
 }
