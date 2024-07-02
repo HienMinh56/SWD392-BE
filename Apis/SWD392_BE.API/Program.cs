@@ -178,7 +178,7 @@ builder.Services.AddScoped<IStoreService, StoreService>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 
 builder.Services.AddScoped<IStoreSessionRepository, StoreSessionRepository>();
-//builder.Services.AddScoped<IFoodService, FoodService>();
+
 
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 builder.Services.AddScoped<IAreaService, AreaService>();
@@ -197,6 +197,9 @@ builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderServices>();
+
+builder.Services.AddScoped<IOrderDetailsRepository, OrderDetailsRepository>();
+builder.Services.AddScoped<IOrderDetailsServices, OrderDetailsServices>();
 
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>(); 
 builder.Services.AddScoped<ITransactionService, TransactionService>();

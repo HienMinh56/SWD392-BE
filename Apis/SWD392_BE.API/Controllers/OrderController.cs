@@ -117,5 +117,16 @@ namespace SWD392_BE.API.Controllers
         }
         #endregion
 
+        #region Update Order Status
+        [HttpPut("{orderId}")]
+        public async Task<IActionResult> UpdateOrderStatus(string orderId, int status)
+        {
+            var currentUser = HttpContext.User;
+            var result = await _order.updateOrderStatus(orderId, status, currentUser);
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+        #endregion
+
     }
 }
