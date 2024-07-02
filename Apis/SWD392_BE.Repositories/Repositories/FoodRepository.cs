@@ -4,6 +4,7 @@ using SWD392_BE.Repositories.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,6 +26,11 @@ namespace SWD392_BE.Repositories.Repositories
                                             .FirstOrDefaultAsync();
 
             return lastFood?.FoodId;
+        }
+
+        public Task<Food> GetAsync(Expression<Func<Food, bool>> predicate)
+        {
+            return _context.Foods.FirstOrDefaultAsync(predicate);
         }
     }
 }
