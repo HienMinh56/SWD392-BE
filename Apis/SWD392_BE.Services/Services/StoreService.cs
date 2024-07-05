@@ -33,19 +33,7 @@ namespace SWD392_BE.Services.Services
         }
 
 
-        private async Task<string> GenerateUniqueStoreSessionIdAsync()
-        {
-            var existingIds = _storeSession.Get().Select(ss => ss.StoreSessionId).ToHashSet();
-            string newStoreSessionId;
-            do
-            {
-                // Generate a new ID based on a sequential number or timestamp
-                // Here, I'm using a timestamp-based format for simplicity
-                newStoreSessionId = "SS" + DateTime.Now.ToString("yyyyMMddHHmmssfff");
-            } while (existingIds.Contains(newStoreSessionId));
-
-            return newStoreSessionId;
-        }
+       
 
         public async Task<string> GenerateNewStoreIdAsync()
         {
@@ -148,10 +136,8 @@ namespace SWD392_BE.Services.Services
 
                 foreach (var session in matchingSessions)
                 {
-                    var newStoreSessionId = await GenerateUniqueStoreSessionIdAsync(); // Use the new unique ID generation method
                     var storeSession = new StoreSession
                     {
-                        StoreSessionId = newStoreSessionId,
                         StoreId = newStoreId,
                         SessionId = session.SessionId
                     };
@@ -306,10 +292,8 @@ namespace SWD392_BE.Services.Services
                 // Add new store sessions
                 foreach (var session in matchingSessions)
                 {
-                    var newStoreSessionId = await GenerateUniqueStoreSessionIdAsync();
                     var storeSession = new StoreSession
                     {
-                        StoreSessionId = newStoreSessionId,
                         StoreId = storeId,
                         SessionId = session.SessionId
                     };

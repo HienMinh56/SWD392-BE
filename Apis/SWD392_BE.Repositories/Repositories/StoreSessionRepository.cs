@@ -17,10 +17,6 @@ namespace SWD392_BE.Repositories.Repositories
         {
             _context = context;
         }
-        public async Task<StoreSession> GetLatestStoreSession()
-        {
-            return await _context.StoreSessions.OrderByDescending(ss => ss.StoreSessionId)
-                                               .FirstOrDefaultAsync();
-        }
+        
     }
 }
