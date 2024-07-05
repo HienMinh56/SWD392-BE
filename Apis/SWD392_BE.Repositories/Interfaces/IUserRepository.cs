@@ -14,5 +14,6 @@ namespace SWD392_BE.Repositories.Interfaces
         Task<User> GetUserByUserName(string userName);
         Task<List<User>> GetUsersSortedByCreatedDateAscending();
         Task<List<User>> GetUsersSortedByCreatedDateDescending();
+        IQueryable<User> GetAll();
     }
 }

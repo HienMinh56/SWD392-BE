@@ -425,5 +425,10 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
+
+        public async Task<int> GetTotalUserCountAsync()
+        {
+            return await _userRepository.GetAll().CountAsync();
+        }
     }
 }
