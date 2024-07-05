@@ -20,5 +20,6 @@ namespace SWD392_BE.Services.Interfaces
 
         Task<ResultModel> CreateOrderAsync(List<(string FoodId, int Quantity)> foodItems);
         Task<ResultModel> updateOrderStatus(string orderId, int status, ClaimsPrincipal user);
+        Task<ResultModel> GetTotalOrderCountAsync();
     }
 }
