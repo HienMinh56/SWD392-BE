@@ -9,6 +9,6 @@ namespace SWD392_BE.Repositories.Interfaces
 {
     public interface IStoreSessionRepository : IGenericRepository<StoreSession>
     {
-        Task<StoreSession> GetLatestStoreSession();
+
     }
 }

@@ -32,21 +32,6 @@ namespace SWD392_BE.Services.Services
             _mapper = mapper;
         }
 
-
-        private async Task<string> GenerateUniqueStoreSessionIdAsync()
-        {
-            var existingIds = _storeSession.Get().Select(ss => ss.StoreSessionId).ToHashSet();
-            string newStoreSessionId;
-            do
-            {
-                // Generate a new ID based on a sequential number or timestamp
-                // Here, I'm using a timestamp-based format for simplicity
-                newStoreSessionId = "SS" + DateTime.Now.ToString("yyyyMMddHHmmssfff");
-            } while (existingIds.Contains(newStoreSessionId));
-
-            return newStoreSessionId;
-        }
-
         public async Task<string> GenerateNewStoreIdAsync()
         {
             var lastStoreId = await _storeRepository.GetLastStoreIdAsync();
@@ -148,10 +133,8 @@ namespace SWD392_BE.Services.Services
 
                 foreach (var session in matchingSessions)
                 {
-                    var newStoreSessionId = await GenerateUniqueStoreSessionIdAsync(); // Use the new unique ID generation method
                     var storeSession = new StoreSession
                     {
-                        StoreSessionId = newStoreSessionId,
                         StoreId = newStoreId,
                         SessionId = session.SessionId
                     };
@@ -175,12 +158,22 @@ namespace SWD392_BE.Services.Services
         }
 
 
-        public async Task<ResultModel> GetStoresByStatusAreaAndSessionAsync(int? status, string? areaName, string? sessionId)
+        public async Task<ResultModel> GetStoresByStatusAreaAndSessionAsync(string? Name, string? StoreId, int? status, string? areaName, string? sessionId)
         {
             ResultModel result = new ResultModel();
             try
             {
                 var stores = await _storeRepository.FetchStoresAsync();
+
+                if (!string.IsNullOrEmpty(Name))
+                {
+                    stores = stores.Where(s => s.Name.ToLower() == Name.ToLower()).ToList();
+                }
+
+                if (!string.IsNullOrEmpty(StoreId))
+                {
+                    stores = stores.Where(s => s.StoreId.ToLower() == StoreId.ToLower()).ToList();
+                }
 
                 if (status.HasValue)
                 {
@@ -306,10 +299,8 @@ namespace SWD392_BE.Services.Services
                 // Add new store sessions
                 foreach (var session in matchingSessions)
                 {
-                    var newStoreSessionId = await GenerateUniqueStoreSessionIdAsync();
                     var storeSession = new StoreSession
                     {
-                        StoreSessionId = newStoreSessionId,
                         StoreId = storeId,
                         SessionId = session.SessionId
                     };

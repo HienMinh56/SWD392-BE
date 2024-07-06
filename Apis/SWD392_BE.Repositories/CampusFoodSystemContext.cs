@@ -266,7 +266,7 @@ public partial class CampusFoodSystemContext : DbContext
 
             entity.ToTable("StoreSession");
 
-            entity.HasIndex(e => e.StoreSessionId, "UQ__StoreSes__6E52FC499D795946").IsUnique();
+            //entity.HasIndex(e => e.StoreSessionId, "UQ__StoreSes__6E52FC499D795946").IsUnique();
 
             entity.Property(e => e.SessionId)
                 .HasMaxLength(50)
@@ -274,9 +274,9 @@ public partial class CampusFoodSystemContext : DbContext
             entity.Property(e => e.StoreId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.StoreSessionId)
-                .HasMaxLength(50)
-                .IsUnicode(false);
+            //entity.Property(e => e.StoreSessionId)
+            //    .HasMaxLength(50)
+            //    .IsUnicode(false);
 
             entity.HasOne(d => d.Session).WithMany(p => p.StoreSessions)
                 .HasPrincipalKey(p => p.SessionId)

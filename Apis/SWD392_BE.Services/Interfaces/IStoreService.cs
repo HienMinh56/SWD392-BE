@@ -12,7 +12,7 @@ namespace SWD392_BE.Services.Interfaces
 {
     public interface IStoreService
     {
-        Task<ResultModel> GetStoresByStatusAreaAndSessionAsync(int? status, string? areaName, string? sessionId);
+        Task<ResultModel> GetStoresByStatusAreaAndSessionAsync(string? Name, string? StoreId, int? status, string? areaName, string? sessionId);
         public Task<ResultModel> AddStore(StoreViewModel storeReqModel, ClaimsPrincipal userCreate);
         public Task<ResultModel> UpdateStoreAsync(string storeId, UpdateStoreViewModel model, ClaimsPrincipal userUpdate);
         public Task<ResultModel> DeleteStore(DeleteStoreReqModel request, ClaimsPrincipal userDelete);

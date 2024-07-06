@@ -7,8 +7,6 @@ public partial class StoreSession
 {
     public int Id { get; set; }
 
-    public string StoreSessionId { get; set; } = null!;
-
     public string SessionId { get; set; } = null!;
 
     public string StoreId { get; set; } = null!;
