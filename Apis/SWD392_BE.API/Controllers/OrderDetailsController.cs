@@ -4,7 +4,7 @@ using SWD392_BE.Services.Interfaces;
 
 namespace SWD392_BE.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/order-details")]
     [ApiController]
     public class OrderDetailsController : ControllerBase
     {
