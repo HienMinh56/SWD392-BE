@@ -32,7 +32,7 @@ namespace SWD392_BE.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<ResultModel> GetUserList(string? userId, string? userName, string? email, string? phone, int? status, string? campusName)
+        public async Task<ResultModel> GetUserList(string? userId, string? Name, string? email, string? phone, int? status, string? campusName)
         {
             var result = new ResultModel();
             try
@@ -44,9 +44,9 @@ namespace SWD392_BE.Services.Services
                     users = users.Where(u => u.UserId.ToLower() == userId.ToLower()).ToList();
                 }
 
-                if (!string.IsNullOrEmpty(userName))
+                if (!string.IsNullOrEmpty(Name))
                 {
-                    users = users.Where(u => u.UserName.ToLower() == userName.ToLower()).ToList();
+                    users = users.Where(u => u.Name.ToLower() == Name.ToLower()).ToList();
                 }
 
                 if (!string.IsNullOrEmpty(email))

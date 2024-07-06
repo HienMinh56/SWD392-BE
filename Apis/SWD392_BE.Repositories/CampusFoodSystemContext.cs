@@ -273,6 +273,7 @@ public partial class CampusFoodSystemContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
 
+
             entity.HasOne(d => d.Session).WithMany(p => p.StoreSessions)
                 .HasPrincipalKey(p => p.SessionId)
                 .HasForeignKey(d => d.SessionId)
