@@ -120,5 +120,13 @@ namespace SWD392_BE.Repositories.Repositories
             (s.Name.ToLower()).Contains(keyword)
             || s.Phone.Contains(keyword.Trim()));
         }
+
+        public async Task<List<Store>> GetAllStoresWithSessionsAsync()
+        {
+            return await _context.Stores
+                .Include(s => s.StoreSessions)
+                    .ThenInclude(ss => ss.Session)
+                .ToListAsync();
+        }
     }
 }
