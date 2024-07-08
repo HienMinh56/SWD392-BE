@@ -157,18 +157,19 @@ namespace SWD392_BE.Services.Services
             try
             {
                 var startDate = new DateTime(year, month, 1);
-                var endDate = startDate.AddMonths(1).AddDays(-1);
+                var endDate = startDate.AddMonths(1).AddTicks(-1);
 
                 var orders = await _order.GetOrdersByDateRange(startDate, endDate);
 
-                var data = orders.Where(o => o.CreatedDate.HasValue)
-                                 .GroupBy(o => o.CreatedDate.Value.Date)
-                                 .Select(g => new OrderAmountPerDayViewModel
-                                 {
-                                     Date = g.Key,
-                                     TotalAmount = g.Sum(o => o.Price)
-                                 })
-                                 .ToList();
+                var data = orders
+                    .Where(o => o.CreatedDate.HasValue)
+                    .GroupBy(o => o.CreatedDate.Value.Date)
+                    .Select(g => new OrderAmountPerDayViewModel
+                    {
+                        Day = g.Key.ToString("yyyy-MM-dd"),
+                        TotalAmount = g.Sum(o => o.Price)
+                    })
+                    .ToList();
 
                 result.Data = data;
                 result.Message = "Success";
@@ -219,29 +220,14 @@ namespace SWD392_BE.Services.Services
             return result;
         }
 
-
         public async Task<ResultModel> getOrderAmountPerWeekInMonth(int year, int month)
         {
             var result = new ResultModel();
             try
             {
-                var weeks = getWeeksInMonth(year, month);
-                var orderAmountPerWeek = new List<OrderAmountPerWeekViewModel>();
+                var data = await _order.GetOrderAmountPerWeekInMonth(year, month);
 
-                foreach (var week in weeks)
-                {
-                    var orders = await _order.GetOrdersByDateRange(week.StartDate, week.EndDate);
-                    var totalAmount = orders.Sum(o => o.Price);
-
-                    orderAmountPerWeek.Add(new OrderAmountPerWeekViewModel
-                    {
-                        StartDate = week.StartDate,
-                        EndDate = week.EndDate,
-                        TotalAmount = totalAmount
-                    });
-                }
-
-                result.Data = orderAmountPerWeek;
+                result.Data = data;
                 result.Message = "Success";
                 result.IsSuccess = true;
                 result.Code = 200;
@@ -260,22 +246,7 @@ namespace SWD392_BE.Services.Services
             var result = new ResultModel();
             try
             {
-                var data = new List<OrderAmountPerMonthViewModel>();
-
-                for (int month = 1; month <= 12; month++)
-                {
-                    var startDate = new DateTime(year, month, 1);
-                    var endDate = startDate.AddMonths(1).AddDays(-1);
-
-                    var orders = await _order.GetOrdersByDateRange(startDate, endDate);
-                    var totalAmount = orders.Sum(o => o.Price);
-
-                    data.Add(new OrderAmountPerMonthViewModel
-                    {
-                        Month = month,
-                        TotalAmount = totalAmount
-                    });
-                }
+                var data = await _order.GetOrderAmountPerMonthInYear(year);
 
                 result.Data = data;
                 result.Message = "Success";
@@ -320,7 +291,6 @@ namespace SWD392_BE.Services.Services
 
             return weeks;
         }
-
 
         public Task<ResultModel> updateOrderStatus(string orderId, int status, ClaimsPrincipal user)
         {

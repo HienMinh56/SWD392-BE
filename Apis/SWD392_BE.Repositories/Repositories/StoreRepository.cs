@@ -84,7 +84,6 @@ namespace SWD392_BE.Repositories.Repositories
                 .ToListAsync();
         }
 
-
         public async Task<IEnumerable<Store>> FilterStoresAsync(string? areaId, int? status)
         {
             IQueryable<Store> query = _context.Stores;
@@ -101,6 +100,7 @@ namespace SWD392_BE.Repositories.Repositories
 
             return await query.ToListAsync();
         }
+
         public Store GetStoreWithFoods(string storeId)
         {
             return _context.Stores
@@ -119,6 +119,14 @@ namespace SWD392_BE.Repositories.Repositories
             return stores.Where(s => StringExtensions.RemoveDiacritics
             (s.Name.ToLower()).Contains(keyword)
             || s.Phone.Contains(keyword.Trim()));
+        }
+
+        public async Task<List<Store>> GetAllStoresWithSessionsAsync()
+        {
+            return await _context.Stores
+                .Include(s => s.StoreSessions)
+                    .ThenInclude(ss => ss.Session)
+                .ToListAsync();
         }
     }
 }

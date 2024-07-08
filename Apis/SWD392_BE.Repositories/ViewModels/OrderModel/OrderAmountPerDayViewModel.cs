@@ -8,7 +8,7 @@ namespace SWD392_BE.Repositories.ViewModels.OrderModel
 {
     public class OrderAmountPerDayViewModel
     {
-        public DateTime Date { get; set; }
+        public string Day { get; set; }
         public decimal TotalAmount { get; set; }
     }
 }

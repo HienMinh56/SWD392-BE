@@ -3,10 +3,12 @@ using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Math.EC.Rfc7748;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
+using SWD392_BE.Repositories.ViewModels.OrderModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -153,6 +155,51 @@ namespace SWD392_BE.Repositories.Repositories
             return $"TRANS{numericPart:D3}";
         }
 
+        public async Task<List<OrderAmountPerMonthViewModel>> GetOrderAmountPerMonthInYear(int year)
+        {
+            var orders = await _dbContext.Orders
+                .Where(o => o.CreatedDate.HasValue && o.CreatedDate.Value.Year == year)
+                .ToListAsync();
+
+            var data = orders
+                .GroupBy(o => o.CreatedDate.Value.Month)
+                .Select(g => new OrderAmountPerMonthViewModel
+                {
+                    Month = g.Key.ToString("00"),
+                    TotalAmount = g.Sum(o => o.Price)
+                })
+                .ToList();
+
+            return data;
+        }
+
+        public async Task<List<OrderAmountPerWeekViewModel>> GetOrderAmountPerWeekInMonth(int year, int month)
+        {
+            var startDate = new DateTime(year, month, 1);
+            var endDate = startDate.AddMonths(1).AddDays(-1);
+
+            var orders = await _dbContext.Orders
+                .Where(o => o.CreatedDate.HasValue && o.CreatedDate.Value >= startDate && o.CreatedDate.Value <= endDate)
+                .ToListAsync();
+
+            var weekNumber = 1;
+            var weeks = new List<OrderAmountPerWeekViewModel>();
+
+            var groupedOrders = orders
+                .GroupBy(o => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(o.CreatedDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
+                .OrderBy(g => g.Key);
+
+            foreach (var group in groupedOrders)
+            {
+                weeks.Add(new OrderAmountPerWeekViewModel
+                {
+                    WeekNumber = $"Week {weekNumber}",
+                    TotalAmount = group.Sum(o => o.Price)
+                });
+                weekNumber++;
+            }
+
+            return weeks;
+        }
     }
 }
-
