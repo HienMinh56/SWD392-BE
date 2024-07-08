@@ -45,7 +45,7 @@ namespace SWD392_BE.API.Controllers
         /// <param name="endDate">The end date for the calculation.</param>
         /// <returns>The total order amount</returns>
 
-        [HttpGet("totalAmount")]
+        [HttpGet("totalInCome")]
         public async Task<IActionResult> GetTotalOrderAmount(DateTime startDate, DateTime endDate)
         {
             if (startDate > endDate)

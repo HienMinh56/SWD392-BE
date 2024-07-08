@@ -75,6 +75,7 @@ namespace SWD392_BE.API.Controllers
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
         #endregion
+
         #region Search store
         /// <summary>
         /// Search store by name or phone
