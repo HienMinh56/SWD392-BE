@@ -277,7 +277,7 @@ namespace SWD392_BE.Services.Services
 
                     data.Add(new OrderAmountPerMonthViewModel
                     {
-                        Month = month,
+                        Month = startDate.ToString("MM"),
                         TotalAmount = totalAmount
                     });
                 }

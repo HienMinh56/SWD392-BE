@@ -84,7 +84,6 @@ namespace SWD392_BE.Repositories.Repositories
                 .ToListAsync();
         }
 
-
         public async Task<IEnumerable<Store>> FilterStoresAsync(string? areaId, int? status)
         {
             IQueryable<Store> query = _context.Stores;
@@ -101,6 +100,7 @@ namespace SWD392_BE.Repositories.Repositories
 
             return await query.ToListAsync();
         }
+
         public Store GetStoreWithFoods(string storeId)
         {
             return _context.Stores

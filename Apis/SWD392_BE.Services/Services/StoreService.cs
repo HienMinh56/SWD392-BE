@@ -49,9 +49,6 @@ namespace SWD392_BE.Services.Services
             return newStoreId;
         }
 
-
-
-
         public Store GetStoreById(string id)
         {
             try
