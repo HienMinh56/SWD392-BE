@@ -44,17 +44,7 @@ namespace SWD392_BE.Repositories.Repositories
             //New Transaction
             var newTransactionId = await GenerateNewTransactionIdAsync();
 
-            var newTransaction = new Transaction
-            {
-                TransactionId = newTransactionId,
-                UserId = userId,
-                Type = 1,
-                Status = 2,
-                CreatedDate = DateTime.Now,
-                CreatTime = DateTime.Now.TimeOfDay
-            };
-            _dbContext.Transactions.Add(newTransaction);
-            await _dbContext.SaveChangesAsync();
+            
 
             // Find the session when create order
             var session = await GetCurrentSessionAsync();
@@ -98,6 +88,18 @@ namespace SWD392_BE.Repositories.Repositories
 
             order.Price = totalPrice;
             order.Quantity = foodItems.Sum(item => item.quantity);
+            var newTransaction = new Transaction
+            {
+                TransactionId = newTransactionId,
+                UserId = userId,
+                Type = 1,
+                Status = 2,
+                Amount = totalPrice,
+                CreatedDate = DateTime.Now,
+                CreatTime = DateTime.Now.TimeOfDay
+            };
+            _dbContext.Transactions.Add(newTransaction);
+            await _dbContext.SaveChangesAsync();
 
             try
             {
@@ -115,10 +117,21 @@ namespace SWD392_BE.Repositories.Repositories
 
         private async Task<string> GenerateNewOrderIdAsync()
         {
-            var lastOrder = await _dbContext.Orders.OrderByDescending(o => o.OrderId).FirstOrDefaultAsync();
-            var lastOrderIdNumber = lastOrder != null ? int.Parse(lastOrder.OrderId[5..]) : 0;
-            return $"ORDER{lastOrderIdNumber + 1:D6}";
+            try
+            {
+                var lastOrder = await _dbContext.Orders.OrderByDescending(o => o.Id).FirstOrDefaultAsync();
+                var lastOrderIdNumber = lastOrder != null ? lastOrder.Id : 0;
+
+                // Tạo mã ORDERID dựa trên số tự tăng Id của đơn hàng
+                return $"ORDER{lastOrderIdNumber + 1:D6}";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while generating new order ID: {ex.Message}");
+                throw; // Ném ngoại lệ để xử lý ở lớp gọi
+            }
         }
+
 
         private async Task<Session> GetCurrentSessionAsync()
         {
