@@ -101,20 +101,5 @@ namespace SWD392_BE.API.Controllers
             }
         }
         #endregion
-
-        [HttpGet("check-transaction-status")]
-        public async Task<IActionResult> CheckTransactionStatus(string userId)
-        {
-            try
-            {
-                var statusMessage = await _transactionService.CheckLatestTransactionStatusByUserIdAndType(userId, 2);
-                return Ok(statusMessage);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error checking transaction status");
-                return StatusCode(500, "Internal server error");
-            }
-        }
     }
 }
