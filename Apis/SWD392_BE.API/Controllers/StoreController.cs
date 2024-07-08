@@ -26,9 +26,9 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of stores</returns>
         [HttpGet]
-        public async Task<IActionResult> GetStoresByStatusAreaAndSession([FromQuery] int? status, [FromQuery] string? areaName, [FromQuery] string? sessionId)
+        public async Task<IActionResult> GetStoresByStatusAreaAndSession([FromQuery] string? Name, [FromQuery] string? StoreId, [FromQuery] int? status, [FromQuery] string? areaName, [FromQuery] string? sessionId)
         {
-            var stores = await _storeService.GetStoresByStatusAreaAndSessionAsync(status, areaName, sessionId);
+            var stores = await _storeService.GetStoresByStatusAreaAndSessionAsync(Name, StoreId ,status, areaName, sessionId);
             return Ok(stores);
         }
 

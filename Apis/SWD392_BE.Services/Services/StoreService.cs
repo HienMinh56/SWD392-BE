@@ -32,9 +32,6 @@ namespace SWD392_BE.Services.Services
             _mapper = mapper;
         }
 
-
-       
-
         public async Task<string> GenerateNewStoreIdAsync()
         {
             var lastStoreId = await _storeRepository.GetLastStoreIdAsync();
@@ -161,12 +158,22 @@ namespace SWD392_BE.Services.Services
         }
 
 
-        public async Task<ResultModel> GetStoresByStatusAreaAndSessionAsync(int? status, string? areaName, string? sessionId)
+        public async Task<ResultModel> GetStoresByStatusAreaAndSessionAsync(string? Name, string? StoreId, int? status, string? areaName, string? sessionId)
         {
             ResultModel result = new ResultModel();
             try
             {
                 var stores = await _storeRepository.FetchStoresAsync();
+
+                if (!string.IsNullOrEmpty(Name))
+                {
+                    stores = stores.Where(s => s.Name.ToLower() == Name.ToLower()).ToList();
+                }
+
+                if (!string.IsNullOrEmpty(StoreId))
+                {
+                    stores = stores.Where(s => s.StoreId.ToLower() == StoreId.ToLower()).ToList();
+                }
 
                 if (status.HasValue)
                 {

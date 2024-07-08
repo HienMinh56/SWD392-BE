@@ -17,6 +17,6 @@ namespace SWD392_BE.Repositories.Repositories
         {
             _context = context;
         }
-        
+
     }
 }
