@@ -1,4 +1,5 @@
 ﻿using SWD392_BE.Repositories.Entities;
+using SWD392_BE.Repositories.ViewModels.OrderModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using System;
 using System.Collections.Generic;
@@ -13,5 +14,8 @@ namespace SWD392_BE.Repositories.Interfaces
         IQueryable<Order> GetOrders();
         Task<List<Order>> GetOrdersByDateRange(DateTime startDate, DateTime endDate);
         Task<Order> CreateOrder(List<(string foodId, int quantity)> foodItems, string userId, string userName);
+        Task<List<OrderAmountPerMonthViewModel>> GetOrderAmountPerMonthInYear(int year);
+        Task<List<OrderAmountPerWeekViewModel>> GetOrderAmountPerWeekInMonth(int year, int month);
+
     }
 }
