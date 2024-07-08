@@ -88,5 +88,18 @@ namespace SWD392_BE.API.Controllers
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
         #endregion
+
+        #region Update store status manually
+        /// <summary>
+        /// Manually update store statuses
+        /// </summary>
+        /// <returns>Status of action</returns>
+        [HttpPost("status")]
+        public async Task<IActionResult> UpdateStoreStatus()
+        {
+            await _storeService.UpdateStoreStatusAsync();
+            return Ok(new { message = "Store statuses updated successfully." });
+        }
+        #endregion
     }
 }

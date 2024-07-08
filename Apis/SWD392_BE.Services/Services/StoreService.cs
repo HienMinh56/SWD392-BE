@@ -154,7 +154,6 @@ namespace SWD392_BE.Services.Services
             }
         }
 
-
         public async Task<ResultModel> GetStoresByStatusAreaAndSessionAsync(string? Name, string? StoreId, int? status, string? areaName, string? sessionId)
         {
             ResultModel result = new ResultModel();
@@ -228,7 +227,6 @@ namespace SWD392_BE.Services.Services
 
             return result;
         }
-
 
 
         public async Task<ResultModel> UpdateStoreAsync(string storeId, UpdateStoreViewModel model, ClaimsPrincipal userUpdate)
@@ -331,7 +329,6 @@ namespace SWD392_BE.Services.Services
             }
         }
 
-
         public async Task<ResultModel> DeleteStore(DeleteStoreReqModel request, ClaimsPrincipal userDelete)
         {
             var result = new ResultModel();
@@ -390,6 +387,33 @@ namespace SWD392_BE.Services.Services
                 result.IsSuccess = false;
             }
             return result;
+        }
+
+        public async Task UpdateStoreStatusAsync()
+        {
+            var stores = await _storeRepository.GetAllStoresWithSessionsAsync();
+            var currentTime = DateTime.Now.TimeOfDay;
+
+            foreach (var store in stores)
+            {
+                bool isOpen = false;
+
+                foreach (var storeSession in store.StoreSessions)
+                {
+                    var session = storeSession.Session;
+
+                    if (currentTime >= store.OpenTime && currentTime <= store.CloseTime &&
+                        currentTime >= session.StartTime && currentTime <= session.EndTime)
+                    {
+                        isOpen = true;
+                        break;
+                    }
+                }
+
+                store.Status = isOpen ? 1 : 2;
+            }
+
+            await _storeRepository.SaveChangesAsync();
         }
     }
 }
