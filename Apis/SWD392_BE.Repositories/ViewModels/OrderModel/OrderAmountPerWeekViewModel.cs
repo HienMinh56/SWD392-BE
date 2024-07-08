@@ -8,8 +8,7 @@ namespace SWD392_BE.Repositories.ViewModels.OrderModel
 {
     public class OrderAmountPerWeekViewModel
     {
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public string WeekNumber { get; set; }
         public decimal TotalAmount { get; set; }
     }
 }

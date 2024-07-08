@@ -156,19 +156,23 @@ namespace SWD392_BE.Services.Services
             var result = new ResultModel();
             try
             {
-                var startDate = new DateTime(year, month, 1);
-                var endDate = startDate.AddMonths(1).AddDays(-1);
+                var data = new List<OrderAmountPerDayViewModel>();
+                var daysInMonth = DateTime.DaysInMonth(year, month);
 
-                var orders = await _order.GetOrdersByDateRange(startDate, endDate);
+                for (int day = 1; day <= daysInMonth; day++)
+                {
+                    var startDate = new DateTime(year, month, day);
+                    var endDate = startDate.AddDays(1).AddTicks(-1);
 
-                var data = orders.Where(o => o.CreatedDate.HasValue)
-                                 .GroupBy(o => o.CreatedDate.Value.Date)
-                                 .Select(g => new OrderAmountPerDayViewModel
-                                 {
-                                     Date = g.Key,
-                                     TotalAmount = g.Sum(o => o.Price)
-                                 })
-                                 .ToList();
+                    var orders = await _order.GetOrdersByDateRange(startDate, endDate);
+                    var totalAmount = orders.Sum(o => o.Price);
+
+                    data.Add(new OrderAmountPerDayViewModel
+                    {
+                        Day = startDate.ToString("yyyy-MM-dd"), // Chuyển ngày thành chuỗi định dạng "yyyy-MM-dd"
+                        TotalAmount = totalAmount
+                    });
+                }
 
                 result.Data = data;
                 result.Message = "Success";
@@ -219,7 +223,6 @@ namespace SWD392_BE.Services.Services
             return result;
         }
 
-
         public async Task<ResultModel> getOrderAmountPerWeekInMonth(int year, int month)
         {
             var result = new ResultModel();
@@ -227,6 +230,7 @@ namespace SWD392_BE.Services.Services
             {
                 var weeks = getWeeksInMonth(year, month);
                 var orderAmountPerWeek = new List<OrderAmountPerWeekViewModel>();
+                int weekNumber = 1;
 
                 foreach (var week in weeks)
                 {
@@ -235,10 +239,11 @@ namespace SWD392_BE.Services.Services
 
                     orderAmountPerWeek.Add(new OrderAmountPerWeekViewModel
                     {
-                        StartDate = week.StartDate,
-                        EndDate = week.EndDate,
+                        WeekNumber = $"Week {weekNumber}",
                         TotalAmount = totalAmount
                     });
+
+                    weekNumber++;
                 }
 
                 result.Data = orderAmountPerWeek;
@@ -320,7 +325,6 @@ namespace SWD392_BE.Services.Services
 
             return weeks;
         }
-
 
         public Task<ResultModel> updateOrderStatus(string orderId, int status, ClaimsPrincipal user)
         {
