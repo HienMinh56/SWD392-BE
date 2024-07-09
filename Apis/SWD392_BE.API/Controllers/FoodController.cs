@@ -28,14 +28,14 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of foods</returns>
         [HttpGet]
-        public async Task<IActionResult> GetListFoodAsync([FromQuery] string storeId, [FromQuery] int? cate)
+        public async Task<IActionResult> GetListFoodAsync([FromQuery] string? foodId, [FromQuery] string? storeId, [FromQuery] int? cate)
         {
             if (string.IsNullOrEmpty(storeId))
             {
                 return BadRequest(new { Message = "storeId is required" });
             }
 
-            var result = await _foodService.GetListFoodsAsync(storeId, cate);
+            var result = await _foodService.GetListFoodsAsync(foodId, storeId, cate);
 
             if (result.IsSuccess)
             {

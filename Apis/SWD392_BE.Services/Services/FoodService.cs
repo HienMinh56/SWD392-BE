@@ -113,7 +113,7 @@ namespace SWD392_BE.Services.Services
         }
 
 
-        public async Task<ResultModel> GetListFoodsAsync(string storeId, int? cate)
+        public async Task<ResultModel> GetListFoodsAsync(string? foodId, string? storeId, int? cate)
         {
             ResultModel result = new ResultModel();
             try
@@ -140,6 +140,11 @@ namespace SWD392_BE.Services.Services
                     DeletedDate = f.DeletedDate,
                     DeletedBy = f.DeletedBy,
                 }).ToList();
+
+                if (!string.IsNullOrEmpty(foodId))
+                {
+                    filteredFoods = filteredFoods.Where(s => s.FoodId.ToLower() == foodId.ToLower()).ToList();
+                }
 
                 if (cate.HasValue)
                 {
