@@ -20,7 +20,8 @@ namespace SWD392_BE.Services
             {
                 new TimeSpan(4, 1, 0),    // 4:00 AM
                 new TimeSpan(8, 36, 0),   // 8:35 AM
-                new TimeSpan(11, 1, 0),    // 11:00 AM
+                new TimeSpan(11, 31, 0),    // 11:31 AM
+                new TimeSpan(16, 01, 0),    //16:01 test
                 new TimeSpan(23, 1, 0)      //test 20h
             };
         }
