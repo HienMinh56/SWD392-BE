@@ -45,7 +45,7 @@ namespace SWD392_BE.Services.Services
                 TransactionId = GenerateTransactionId(),
                 UserId = model.UserId,
                 Type = 2, // recharge
-                Amount = (int)(model.Amount * 100),
+                Amount = (int)(model.Amount),
                 Status = 2, // Pending
                 CreatedDate = DateTime.Now,
                 CreatTime = DateTime.Now.TimeOfDay
