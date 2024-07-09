@@ -28,14 +28,14 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of foods</returns>
         [HttpGet]
-        public async Task<IActionResult> GetListFoodAsync([FromQuery] string storeId, [FromQuery] int? cate)
+        public async Task<IActionResult> GetListFoodAsync([FromQuery] string? foodId, [FromQuery] string? storeId, [FromQuery] int? cate)
         {
             if (string.IsNullOrEmpty(storeId))
             {
                 return BadRequest(new { Message = "storeId is required" });
             }
 
-            var result = await _foodService.GetListFoodsAsync(storeId, cate);
+            var result = await _foodService.GetListFoodsAsync(foodId, storeId, cate);
 
             if (result.IsSuccess)
             {
@@ -103,7 +103,7 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>Status of action</returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateFood(string id, [FromForm] UpdateFoodViewModel model, IFormFile image)
+        public async Task<IActionResult> UpdateFood(string id, [FromForm] UpdateFoodViewModel model, IFormFile? image)
         {
             if (!ModelState.IsValid)
             {

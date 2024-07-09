@@ -38,7 +38,7 @@ namespace SWD392_BE.Repositories.Repositories
                                  .ToListAsync();
         }
 
-        public async Task<Order> CreateOrder(List<(string foodId, int quantity)> foodItems, string userId, string userName)
+        public async Task<Order> CreateOrder(List<(string foodId, int quantity, string note)> foodItems, string userId, string userName)
         {
             // Generate new OrderId
             var newOrderId = await GenerateNewOrderIdAsync();
@@ -81,7 +81,7 @@ namespace SWD392_BE.Repositories.Repositories
                     Price = food.Price * item.quantity,
                     OrderId = order.OrderId,
                     Status = 1,
-                    Note = null
+                    Note = item.note
                 };
 
                 totalPrice += orderDetail.Price;

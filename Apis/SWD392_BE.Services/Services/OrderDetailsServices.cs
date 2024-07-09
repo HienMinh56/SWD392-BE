@@ -47,7 +47,8 @@ namespace SWD392_BE.Services.Services
                     FoodTitle = food?.Title,
                     Quantity = orderDetail.Quantity,
                     Price = orderDetail.Price,
-                    Image = food?.Image
+                    Image = food?.Image,
+                    Note = orderDetail.Note
                 };
 
                 orderDetailDtos.Add(orderDetailDto);
