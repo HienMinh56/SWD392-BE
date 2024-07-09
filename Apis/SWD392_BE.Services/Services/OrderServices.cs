@@ -185,7 +185,7 @@ namespace SWD392_BE.Services.Services
             return result;
         }
 
-        public async Task<ResultModel> CreateOrderAsync(List<(string FoodId, int Quantity)> foodItems)
+        public async Task<ResultModel> CreateOrderAsync(List<(string FoodId, int Quantity, string Note)> foodItems)
         {
             var result = new ResultModel();
             try

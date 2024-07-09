@@ -74,7 +74,7 @@ namespace SWD392_BE.API.Controllers
             }
 
             // Convert the incoming model to the expected tuple format for the service layer
-            var orderItems = foodItems.Select(fi => (fi.FoodId, fi.Quantity)).ToList();
+            var orderItems = foodItems.Select(fi => (fi.FoodId, fi.Quantity, fi.Note)).ToList();
 
             var result = await _orderService.CreateOrderAsync(orderItems);
 
