@@ -106,7 +106,7 @@ namespace SWD392_BE.Services.Services
                 var user = _userService.GetUserById(transaction.UserId);
                 if (user != null)
                 {
-                    var result = await _userService.UpdateUserBalance(transaction.UserId, transaction.Amount/100);
+                    var result = await _userService.UpdateUserBalance(transaction.UserId, transaction.Amount/1000);
                     result.Code = responseCode;
                     return result;
                 }
