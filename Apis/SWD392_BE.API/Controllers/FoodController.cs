@@ -103,7 +103,7 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>Status of action</returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateFood(string id, [FromForm] UpdateFoodViewModel model, IFormFile image)
+        public async Task<IActionResult> UpdateFood(string id, [FromForm] UpdateFoodViewModel model, IFormFile? image)
         {
             if (!ModelState.IsValid)
             {

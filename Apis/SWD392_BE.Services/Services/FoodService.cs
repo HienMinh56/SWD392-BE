@@ -189,7 +189,7 @@ namespace SWD392_BE.Services.Services
 
 
 
-        public async Task<ResultModel> UpdateFoodAsync(string id, UpdateFoodViewModel model, ClaimsPrincipal userUpdate, IFormFile image)
+        public async Task<ResultModel> UpdateFoodAsync(string id, UpdateFoodViewModel model, ClaimsPrincipal userUpdate, IFormFile? image)
         {
             ResultModel result = new ResultModel();
             try
