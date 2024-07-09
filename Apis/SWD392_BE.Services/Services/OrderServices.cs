@@ -349,5 +349,27 @@ namespace SWD392_BE.Services.Services
                 });
             }
         }
+
+        public async Task<ResultModel> GetTotalOrderCountAsync()
+        {
+            var result = new ResultModel();
+            try
+            {
+                var totalOrderCount = await _order.GetOrders().CountAsync();
+
+                result.Data = totalOrderCount;
+                result.Message = "Success";
+                result.IsSuccess = true;
+                result.Code = 200;
+            }
+            catch (Exception ex)
+            {
+                result.Message = $"An error occurred: {ex.Message}";
+                result.IsSuccess = false;
+                result.Code = 500;
+            }
+            return result;
+        }
+
     }
 }

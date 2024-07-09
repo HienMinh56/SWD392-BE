@@ -81,5 +81,10 @@ namespace SWD392_BE.Repositories.Repositories
                 .OrderByDescending(u => u.CreatedDate)
                 .ToListAsync();
         }
+
+        public IQueryable<User> GetAll()
+        {
+            return _dbContext.Users.AsQueryable(); 
+        }
     }
 }

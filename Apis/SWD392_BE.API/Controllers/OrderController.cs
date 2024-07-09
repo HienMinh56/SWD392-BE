@@ -14,11 +14,13 @@ namespace SWD392_BE.API.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly IOrderService _order;
+        private readonly IOrderService _orderService;
+        private readonly IUserService _userService;
 
-        public OrderController(IOrderService order)
+        public OrderController(IOrderService orderService, IUserService userService)
         {
-            _order = order;
+            _orderService = orderService;
+            _userService = userService;
         }
 
         #region Get All orders
@@ -29,7 +31,7 @@ namespace SWD392_BE.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
         {
-            var result = await _order.getOrders(userId, userName, createdDate, status, storeName, sessionId);
+            var result = await _orderService.getOrders(userId, userName, createdDate, status, storeName, sessionId);
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
@@ -51,7 +53,7 @@ namespace SWD392_BE.API.Controllers
                 return BadRequest(new { message = "Start date must be less than or equal end date." });
             }
 
-            var result = await _order.getTotalOrderAmount(startDate, endDate);
+            var result = await _orderService.getTotalOrderAmount(startDate, endDate);
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
@@ -74,16 +76,16 @@ namespace SWD392_BE.API.Controllers
             {
                 case "day":
                     if (month == 0) return BadRequest(new { message = "Month is required for type 'day'." });
-                    result = await _order.getOrderAmountPerDayInMonth(year, month);
+                    result = await _orderService.getOrderAmountPerDayInMonth(year, month);
                     break;
 
                 case "week":
                     if (month == 0) return BadRequest(new { message = "Month is required for type 'week'." });
-                    result = await _order.getOrderAmountPerWeekInMonth(year, month);
+                    result = await _orderService.getOrderAmountPerWeekInMonth(year, month);
                     break;
 
                 case "month":
-                    result = await _order.getOrderAmountPerMonthInYear(year);
+                    result = await _orderService.getOrderAmountPerMonthInYear(year);
                     break;
 
                 default:
@@ -111,7 +113,7 @@ namespace SWD392_BE.API.Controllers
             // Convert the incoming model to the expected tuple format for the service layer
             var orderItems = foodItems.Select(fi => (fi.FoodId, fi.Quantity)).ToList();
 
-            var result = await _order.CreateOrderAsync(orderItems);
+            var result = await _orderService.CreateOrderAsync(orderItems);
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
@@ -122,11 +124,43 @@ namespace SWD392_BE.API.Controllers
         public async Task<IActionResult> UpdateOrderStatus(string orderId, int status)
         {
             var currentUser = HttpContext.User;
-            var result = await _order.updateOrderStatus(orderId, status, currentUser);
+            var result = await _orderService.updateOrderStatus(orderId, status, currentUser);
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
         #endregion
 
+        #region Get Total Order vs User
+        /// <summary>
+        /// Get the total Order vs User in the system.
+        /// </summary>
+        /// <returns>The total orders and user.</returns>
+        [HttpGet("dataDashboard")]
+        public async Task<IActionResult> GetTotalOrderAndUserCount()
+        {
+            var orderResult = await _orderService.GetTotalOrderCountAsync();
+            var userCount = await _userService.GetTotalUserCountAsync();
+
+            if (orderResult.IsSuccess)
+            {
+                var result = new
+                {
+                    TotalOrders = orderResult.Data,
+                    TotalUsers = userCount
+                };
+                return Ok(new ResultModel
+                {
+                    Data = result,
+                    IsSuccess = true,
+                    Message = "Success",
+                    Code = 200
+                });
+            }
+            else
+            {
+                return BadRequest(orderResult);
+            }
+        }
+        #endregion
     }
 }
