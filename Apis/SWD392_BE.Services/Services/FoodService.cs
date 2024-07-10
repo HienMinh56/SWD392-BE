@@ -51,7 +51,7 @@ namespace SWD392_BE.Services.Services
                 throw new Exception(ex.Message);
             }
         }
-        public async Task<ResultModel> addFood(string storeId, List<FoodViewModel> foodLists, ClaimsPrincipal userCreate)
+        public async Task<ResultModel> addFood(string storeId, List<FoodViewModel> foodLists, ClaimsPrincipal userCreate, int maxWidth, int maxHeight)
         {
             ResultModel result = new ResultModel();
             try
@@ -86,7 +86,7 @@ namespace SWD392_BE.Services.Services
                     if (food.Image != null)
                     {
                         string imageFileName = $"{newFoodId}_{food.Image.FileName}";
-                        newFood.Image = await _cloudStorageService.UploadFileAsync(food.Image, imageFileName);
+                        newFood.Image = await _cloudStorageService.UploadFileAsync(food.Image, imageFileName, maxWidth, maxHeight);
                     }
 
 
@@ -189,7 +189,7 @@ namespace SWD392_BE.Services.Services
 
 
 
-        public async Task<ResultModel> UpdateFoodAsync(string id, UpdateFoodViewModel model, ClaimsPrincipal userUpdate, IFormFile? image)
+        public async Task<ResultModel> UpdateFoodAsync(string id, UpdateFoodViewModel model, ClaimsPrincipal userUpdate, IFormFile? image, int maxWidth, int maxHeight)
         {
             ResultModel result = new ResultModel();
             try
@@ -225,7 +225,7 @@ namespace SWD392_BE.Services.Services
                     string fileNameToSave = $"food_{existingFood.FoodId}_{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
 
                     // Upload image to cloud storage
-                    string imageUrl = await _cloudStorageService.UploadFileAsync(image, fileNameToSave);
+                    string imageUrl = await _cloudStorageService.UploadFileAsync(image, fileNameToSave, maxWidth, maxHeight);
 
                     if (!string.IsNullOrEmpty(imageUrl))
                     {

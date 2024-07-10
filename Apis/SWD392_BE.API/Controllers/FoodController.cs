@@ -79,7 +79,7 @@ namespace SWD392_BE.API.Controllers
             };
 
                 // Call the addFood method from the service layer
-                var result = await _foodService.addFood(storeId, foodViewModels, user);
+                var result = await _foodService.addFood(storeId, foodViewModels, user, 800, 350);
 
                 if (result.IsSuccess)
                 {
@@ -114,7 +114,7 @@ namespace SWD392_BE.API.Controllers
 
             try
             {
-                var result = await _foodService.UpdateFoodAsync(id, model, user, image);
+                var result = await _foodService.UpdateFoodAsync(id, model, user, image, 800, 350);
 
                 if (result.IsSuccess)
                 {
