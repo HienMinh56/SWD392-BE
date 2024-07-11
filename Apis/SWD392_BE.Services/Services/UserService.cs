@@ -361,56 +361,6 @@ namespace SWD392_BE.Services.Services
             }
         }
 
-        public async Task<ResultModel> GetUsersSortedByCreatedDateAscending()
-        {
-            try
-            {
-                var users = await _userRepository.GetUsersSortedByCreatedDateAscending();
-                return new ResultModel
-                {
-                    IsSuccess = true,
-                    Code = 200,
-                    Message = "Success",
-                    Data = users
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ResultModel
-                {
-                    IsSuccess = false,
-                    Code = 500,
-                    Message = ex.Message,
-                    Data = null
-                };
-            }
-        }
-
-        public async Task<ResultModel> GetUsersSortedByCreatedDateDescending()
-        {
-            try
-            {
-                var users = await _userRepository.GetUsersSortedByCreatedDateDescending();
-                return new ResultModel
-                {
-                    IsSuccess = true,
-                    Code = 200,
-                    Message = "Success",
-                    Data = users
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ResultModel
-                {
-                    IsSuccess = false,
-                    Code = 500,
-                    Message = ex.Message,
-                    Data = null
-                };
-            }
-        }
-
         public async Task<ResultModel> UpdateUserBalance(string userId, int amount)
         {
             var result = new ResultModel();

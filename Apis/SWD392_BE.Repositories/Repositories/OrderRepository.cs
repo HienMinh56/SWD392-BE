@@ -48,13 +48,10 @@ namespace SWD392_BE.Repositories.Repositories
 
         public async Task<Order> CreateOrder(List<(string foodId, int quantity, string note)> foodItems, string userId, string userName)
         {
-            // Generate new OrderId
             var newOrderId = await GenerateNewOrderIdAsync();
 
-            //New Transaction
             var newTransactionId = await GenerateNewTransactionIdAsync();
           
-            // Find the session when create order
             var session = await GetCurrentSessionAsync();
 
             var order = new Order

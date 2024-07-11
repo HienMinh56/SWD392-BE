@@ -97,32 +97,6 @@ namespace SWD392_BE.API.Controllers
         }
         #endregion
 
-        #region Sort user ascending created date
-        /// <summary>
-        /// Get list of users by acsending created date 
-        /// </summary>
-        /// <returns>A list of users</returns>
-        [HttpGet("ascending")]
-        public async Task<IActionResult> GetUsersSortedByCreatedDateAscending()
-        {
-            var result = await _userService.GetUsersSortedByCreatedDateAscending();
-            return result.IsSuccess ? Ok(result) : StatusCode(result.Code, result);
-        }
-        #endregion
-
-        #region Sort user descending created date
-        /// <summary>
-        /// Get list of users by descending created date 
-        /// </summary>
-        /// <returns>A list of users</returns>
-        [HttpGet("descending")]
-        public async Task<IActionResult> GetUsersSortedByCreatedDateDescending()
-        {
-            var result = await _userService.GetUsersSortedByCreatedDateDescending();
-            return result.IsSuccess ? Ok(result) : StatusCode(result.Code, result);
-        }
-        #endregion
-
         #region Edit User
         /// <summary>
         /// Edit  user

@@ -333,7 +333,7 @@ namespace SWD392_BE.Services.Services
             }
         }
 
-        public async Task<ResultModel> GetTotalOrderCountAsync()
+        public async Task<ResultModel> getTotalOrderCount()
         {
             var result = new ResultModel();
             try
@@ -342,6 +342,35 @@ namespace SWD392_BE.Services.Services
 
                 result.Data = totalOrderCount;
                 result.Message = "Success";
+                result.IsSuccess = true;
+                result.Code = 200;
+            }
+            catch (Exception ex)
+            {
+                result.Message = $"An error occurred: {ex.Message}";
+                result.IsSuccess = false;
+                result.Code = 500;
+            }
+            return result;
+        }
+
+        public async Task<ResultModel> updateAllStatuses()
+        {
+            var result = new ResultModel();
+            try
+            {
+                var orders = await _order.GetOrders()
+                                          .Where(o => o.Status == 3)
+                                          .ToListAsync();
+
+                foreach (var order in orders)
+                {
+                    order.Status = 1;
+                }
+
+                await _order.SaveChangesAsync();
+
+                result.Message = "Updated statuses successfully";
                 result.IsSuccess = true;
                 result.Code = 200;
             }

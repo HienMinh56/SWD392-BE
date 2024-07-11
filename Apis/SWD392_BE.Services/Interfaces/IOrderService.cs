@@ -18,9 +18,9 @@ namespace SWD392_BE.Services.Interfaces
         Task<ResultModel> getOrderAmountPerDayInMonth(int year, int month);
         Task<ResultModel> getOrderAmountPerWeekInMonth(int year, int month);
         Task<ResultModel> getOrderAmountPerMonthInYear(int year);
-
         Task<ResultModel> CreateOrderAsync(List<(string FoodId, int Quantity, string Note)> foodItems);
         Task<ResultModel> updateOrderStatus(string orderId, int status, ClaimsPrincipal user);
-        Task<ResultModel> GetTotalOrderCountAsync();
+        Task<ResultModel> getTotalOrderCount();
+        Task<ResultModel> updateAllStatuses();
     }
 }

@@ -92,5 +92,19 @@ namespace SWD392_BE.API.Controllers
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
         #endregion
+
+        #region Update All Order Statuses
+        /// <summary>
+        /// Update the status of all orders 3 (wait) to 1 (cancel)
+        /// </summary>
+        /// <returns>The result of the status update process.</returns>
+        [HttpPut("AllStatuses")]
+        public async Task<IActionResult> UpdateAllStatuses()
+        {
+            var result = await _orderService.updateAllStatuses();
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+        #endregion
     }
 }

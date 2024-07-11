@@ -18,7 +18,6 @@ namespace SWD392_BE.Repositories.Repositories
             _dbContext = dbContext;
         }
 
-
         public async Task<List<User>> GetUsers()
         {
             return await _dbContext.Users
@@ -74,21 +73,6 @@ namespace SWD392_BE.Repositories.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
-
-        public async Task<List<User>> GetUsersSortedByCreatedDateAscending()
-        {
-            return await _dbContext.Users
-                .OrderBy(u => u.CreatedDate)
-                .ToListAsync();
-        }
-
-        public async Task<List<User>> GetUsersSortedByCreatedDateDescending()
-        {
-            return await _dbContext.Users
-                .OrderByDescending(u => u.CreatedDate)
-                .ToListAsync();
-        }
-
         public IQueryable<User> GetAll()
         {
             return _dbContext.Users.AsQueryable(); 
