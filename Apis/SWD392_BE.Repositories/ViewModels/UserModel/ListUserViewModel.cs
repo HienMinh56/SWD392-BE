@@ -19,6 +19,7 @@ namespace SWD392_BE.Repositories.ViewModels.UserModel
         public string Email { get; set; } = null!;
 
         public string Campus { get; set; } = null!;
+        public string Area { get; set; } = null!;
 
         public string Phone { get; set; }
 

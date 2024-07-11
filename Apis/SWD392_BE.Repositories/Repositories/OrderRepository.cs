@@ -3,10 +3,12 @@ using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Math.EC.Rfc7748;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
+using SWD392_BE.Repositories.ViewModels.OrderModel;
 using SWD392_BE.Repositories.ViewModels.ResultModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,38 +27,31 @@ namespace SWD392_BE.Repositories.Repositories
         {
             return _dbContext.Orders
                 .Include(o => o.User)
+                    .ThenInclude(u => u.Campus)
+                        .ThenInclude(c => c.Area)
                 .Include(o => o.Store)
+                .Include(o => o.Session)
                 .AsQueryable();
         }
 
         public async Task<List<Order>> GetOrdersByDateRange(DateTime startDate, DateTime endDate)
         {
             return await _dbContext.Orders
-                                 .Where(o => o.CreatedDate >= startDate && o.CreatedDate <= endDate)
-                                 .ToListAsync();
+                .Include(o => o.User)
+                    .ThenInclude(u => u.Campus)
+                        .ThenInclude(c => c.Area)
+                .Include(o => o.Store)
+                .Include(o => o.Session)
+                .Where(o => o.CreatedDate >= startDate && o.CreatedDate <= endDate)
+                .ToListAsync();
         }
 
-        public async Task<Order> CreateOrder(List<(string foodId, int quantity)> foodItems, string userId, string userName)
+        public async Task<Order> CreateOrder(List<(string foodId, int quantity, string note)> foodItems, string userId, string userName)
         {
-            // Generate new OrderId
             var newOrderId = await GenerateNewOrderIdAsync();
 
-            //New Transaction
             var newTransactionId = await GenerateNewTransactionIdAsync();
-
-            var newTransaction = new Transaction
-            {
-                TransactionId = newTransactionId,
-                UserId = userId,
-                Type = 1,
-                Status = 2,
-                CreatedDate = DateTime.Now,
-                CreatTime = DateTime.Now.TimeOfDay
-            };
-            _dbContext.Transactions.Add(newTransaction);
-            await _dbContext.SaveChangesAsync();
-
-            // Find the session when create order
+          
             var session = await GetCurrentSessionAsync();
 
             var order = new Order
@@ -89,7 +84,7 @@ namespace SWD392_BE.Repositories.Repositories
                     Price = food.Price * item.quantity,
                     OrderId = order.OrderId,
                     Status = 1,
-                    Note = null
+                    Note = item.note
                 };
 
                 totalPrice += orderDetail.Price;
@@ -98,6 +93,18 @@ namespace SWD392_BE.Repositories.Repositories
 
             order.Price = totalPrice;
             order.Quantity = foodItems.Sum(item => item.quantity);
+            var newTransaction = new Transaction
+            {
+                TransactionId = newTransactionId,
+                UserId = userId,
+                Type = 1,
+                Status = 1,
+                Amount = totalPrice,
+                CreatedDate = DateTime.Now,
+                CreatTime = DateTime.Now.TimeOfDay
+            };
+            _dbContext.Transactions.Add(newTransaction);
+            await _dbContext.SaveChangesAsync();
 
             try
             {
@@ -115,9 +122,19 @@ namespace SWD392_BE.Repositories.Repositories
 
         private async Task<string> GenerateNewOrderIdAsync()
         {
-            var lastOrder = await _dbContext.Orders.OrderByDescending(o => o.OrderId).FirstOrDefaultAsync();
-            var lastOrderIdNumber = lastOrder != null ? int.Parse(lastOrder.OrderId[5..]) : 0;
-            return $"ORDER{lastOrderIdNumber + 1:D6}";
+            try
+            {
+                var lastOrder = await _dbContext.Orders.OrderByDescending(o => o.Id).FirstOrDefaultAsync();
+                var lastOrderIdNumber = lastOrder != null ? lastOrder.Id : 0;
+
+                // Tạo mã ORDERID dựa trên số tự tăng Id của đơn hàng
+                return $"ORDER{lastOrderIdNumber + 1:D6}";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while generating new order ID: {ex.Message}");
+                throw; // Ném ngoại lệ để xử lý ở lớp gọi
+            }
         }
 
         private async Task<Session> GetCurrentSessionAsync()
@@ -140,6 +157,51 @@ namespace SWD392_BE.Repositories.Repositories
             return $"TRANS{numericPart:D3}";
         }
 
+        public async Task<List<OrderAmountPerMonthViewModel>> GetOrderAmountPerMonthInYear(int year)
+        {
+            var orders = await _dbContext.Orders
+                .Where(o => o.CreatedDate.HasValue && o.CreatedDate.Value.Year == year)
+                .ToListAsync();
+
+            var data = orders
+                .GroupBy(o => o.CreatedDate.Value.Month)
+                .Select(g => new OrderAmountPerMonthViewModel
+                {
+                    Month = g.Key.ToString("00"),
+                    TotalAmount = g.Sum(o => o.Price)
+                })
+                .ToList();
+
+            return data;
+        }
+
+        public async Task<List<OrderAmountPerWeekViewModel>> GetOrderAmountPerWeekInMonth(int year, int month)
+        {
+            var startDate = new DateTime(year, month, 1);
+            var endDate = startDate.AddMonths(1).AddDays(-1);
+
+            var orders = await _dbContext.Orders
+                .Where(o => o.CreatedDate.HasValue && o.CreatedDate.Value >= startDate && o.CreatedDate.Value <= endDate)
+                .ToListAsync();
+
+            var weekNumber = 1;
+            var weeks = new List<OrderAmountPerWeekViewModel>();
+
+            var groupedOrders = orders
+                .GroupBy(o => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(o.CreatedDate.Value, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
+                .OrderBy(g => g.Key);
+
+            foreach (var group in groupedOrders)
+            {
+                weeks.Add(new OrderAmountPerWeekViewModel
+                {
+                    WeekNumber = $"Week {weekNumber}",
+                    TotalAmount = group.Sum(o => o.Price)
+                });
+                weekNumber++;
+            }
+
+            return weeks;
+        }
     }
 }
-

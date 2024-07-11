@@ -12,17 +12,21 @@ namespace SWD392_BE.Services
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly TimeSpan[] _scheduledTimes;
+        private readonly TimeZoneInfo _vietnamTimeZone;
 
         public StoreStatusBackgroundService(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
             _scheduledTimes = new[]
             {
-                new TimeSpan(4, 1, 0),    // 4:00 AM
-                new TimeSpan(8, 36, 0),   // 8:35 AM
-                new TimeSpan(11, 1, 0),    // 11:00 AM
-                new TimeSpan(23, 1, 0)      //test 20h
+                new TimeSpan(4, 1, 0),    // 4:01 AM
+                new TimeSpan(8, 36, 0),   // 8:36 AM
+                new TimeSpan(11, 31, 0),  // 11:31 AM
+                new TimeSpan(13, 00, 0),   // 4:01 PM
+                new TimeSpan(23, 1, 0)    // 11:01 PM
             };
+
+            _vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,7 +34,7 @@ namespace SWD392_BE.Services
             while (!stoppingToken.IsCancellationRequested)
             {
                 var nextRunTime = GetNextRunTime();
-                var delay = nextRunTime - DateTime.Now;
+                var delay = nextRunTime - TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _vietnamTimeZone);
 
                 if (delay.TotalMilliseconds > 0)
                 {
@@ -47,7 +51,7 @@ namespace SWD392_BE.Services
 
         private DateTime GetNextRunTime()
         {
-            var now = DateTime.Now;
+            var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, _vietnamTimeZone);
             var todayRunTimes = _scheduledTimes.Select(t => DateTime.Today.Add(t)).ToList();
             var nextRun = todayRunTimes.FirstOrDefault(t => t > now);
 

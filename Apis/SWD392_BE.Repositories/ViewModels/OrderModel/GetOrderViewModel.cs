@@ -21,6 +21,5 @@ namespace SWD392_BE.Repositories.ViewModels.OrderModel
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
-        // Add other properties as needed
     }
 }

@@ -64,7 +64,7 @@ namespace SWD392_BE.API.Controllers
         [HttpGet("total")]
         public async Task<IActionResult> GetTotalOrderAndUserCount()
         {
-            var orderResult = await _orderService.GetTotalOrderCountAsync();
+            var orderResult = await _orderService.getTotalOrderCount();
             var userCount = await _userService.GetTotalUserCountAsync();
 
             if (orderResult.IsSuccess)

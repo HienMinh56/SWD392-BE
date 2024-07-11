@@ -18,12 +18,12 @@ namespace SWD392_BE.Repositories.Repositories
             _dbContext = dbContext;
         }
 
-
         public async Task<List<User>> GetUsers()
         {
             return await _dbContext.Users
                 .Include(x => x.Campus)
-                .Include(x => x.Orders)
+                .ThenInclude(c => c.Area)
+                .Include(x => x.Orders)              
                 .Select(x => new User
                 {
                     UserId = x.UserId,
@@ -33,7 +33,13 @@ namespace SWD392_BE.Repositories.Repositories
                     Email = x.Email,
                     Campus = new Campus
                     {
-                        Name = x.Campus.Name
+                        CampusId = x.Campus.CampusId,
+                        Name = x.Campus.Name,
+                        Area = new Area
+                        {
+                            AreaId = x.Campus.Area.AreaId,
+                            Name = x.Campus.Area.Name
+                        }
                     },
                     Phone = x.Phone,
                     Role = x.Role,
@@ -67,21 +73,6 @@ namespace SWD392_BE.Repositories.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
-
-        public async Task<List<User>> GetUsersSortedByCreatedDateAscending()
-        {
-            return await _dbContext.Users
-                .OrderBy(u => u.CreatedDate)
-                .ToListAsync();
-        }
-
-        public async Task<List<User>> GetUsersSortedByCreatedDateDescending()
-        {
-            return await _dbContext.Users
-                .OrderByDescending(u => u.CreatedDate)
-                .ToListAsync();
-        }
-
         public IQueryable<User> GetAll()
         {
             return _dbContext.Users.AsQueryable(); 

@@ -15,5 +15,6 @@ namespace SWD392_BE.Repositories.ViewModels.OrderModel
         public int Quantity { get; set; }
         public decimal Price { get; set; }
         public string? Image { get; set; }
+        public string? Note{ get; set; }
     }
 }

@@ -32,7 +32,7 @@ namespace SWD392_BE.Services.Services
             _mapper = mapper;
         }
 
-        public async Task<ResultModel> GetUserList(string? userId, string? Name, string? email, string? phone, int? status, string? campusName)
+        public async Task<ResultModel> GetUserList(string? userId, string? name, string? email, string? phone, int? status, string? campusName, string? areaName)
         {
             var result = new ResultModel();
             try
@@ -41,22 +41,22 @@ namespace SWD392_BE.Services.Services
 
                 if (!string.IsNullOrEmpty(userId))
                 {
-                    users = users.Where(u => u.UserId.ToLower() == userId.ToLower()).ToList();
+                    users = users.Where(u => u.UserId.ToLowerInvariant() == userId.ToLowerInvariant()).ToList();
                 }
 
-                if (!string.IsNullOrEmpty(Name))
+                if (!string.IsNullOrEmpty(name))
                 {
-                    users = users.Where(u => u.Name.ToLower() == Name.ToLower()).ToList();
+                    users = users.Where(u => u.Name.ToLowerInvariant() == name.ToLowerInvariant()).ToList();
                 }
 
                 if (!string.IsNullOrEmpty(email))
                 {
-                    users = users.Where(u => u.Email.ToLower() == email.ToLower()).ToList();
+                    users = users.Where(u => u.Email.ToLowerInvariant() == email.ToLowerInvariant()).ToList();
                 }
 
                 if (!string.IsNullOrEmpty(phone))
                 {
-                    users = users.Where(u => u.Phone.ToLower() == phone.ToLower()).ToList();
+                    users = users.Where(u => u.Phone.ToLowerInvariant() == phone.ToLowerInvariant()).ToList();
                 }
 
                 if (status.HasValue)
@@ -66,7 +66,12 @@ namespace SWD392_BE.Services.Services
 
                 if (!string.IsNullOrEmpty(campusName))
                 {
-                    users = users.Where(u => u.Campus.Name.ToLower() == campusName.ToLower()).ToList();
+                    users = users.Where(u => u.Campus.Name.ToLowerInvariant() == campusName.ToLowerInvariant()).ToList();
+                }
+
+                if (!string.IsNullOrEmpty(areaName))
+                {
+                    users = users.Where(u => u.Campus.Area.Name.ToLowerInvariant() == areaName.ToLowerInvariant()).ToList();
                 }
 
                 if (!users.Any())
@@ -85,6 +90,7 @@ namespace SWD392_BE.Services.Services
                         Password = u.Password,
                         Email = u.Email,
                         Campus = u.Campus.Name,
+                        Area = u.Campus.Area.Name,
                         Phone = u.Phone,
                         Role = u.Role,
                         Balance = u.Balance,
@@ -105,6 +111,7 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
+
 
         public User GetUserById(string id)
         {
@@ -351,56 +358,6 @@ namespace SWD392_BE.Services.Services
                 result.Message = ex.Message;
                 result.Code = 404;
                 return result;
-            }
-        }
-
-        public async Task<ResultModel> GetUsersSortedByCreatedDateAscending()
-        {
-            try
-            {
-                var users = await _userRepository.GetUsersSortedByCreatedDateAscending();
-                return new ResultModel
-                {
-                    IsSuccess = true,
-                    Code = 200,
-                    Message = "Success",
-                    Data = users
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ResultModel
-                {
-                    IsSuccess = false,
-                    Code = 500,
-                    Message = ex.Message,
-                    Data = null
-                };
-            }
-        }
-
-        public async Task<ResultModel> GetUsersSortedByCreatedDateDescending()
-        {
-            try
-            {
-                var users = await _userRepository.GetUsersSortedByCreatedDateDescending();
-                return new ResultModel
-                {
-                    IsSuccess = true,
-                    Code = 200,
-                    Message = "Success",
-                    Data = users
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ResultModel
-                {
-                    IsSuccess = false,
-                    Code = 500,
-                    Message = ex.Message,
-                    Data = null
-                };
             }
         }
 

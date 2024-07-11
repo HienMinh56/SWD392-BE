@@ -28,7 +28,7 @@ namespace SWD392_BE.Services.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<ResultModel> getOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
+        public async Task<ResultModel> getOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId, string? campusName, string? areaName)
         {
             var result = new ResultModel();
             try
@@ -47,7 +47,7 @@ namespace SWD392_BE.Services.Services
 
                 if (createdDate.HasValue)
                 {
-                    orders = orders.Where(o => o.CreatedDate == createdDate.Value);
+                    orders = orders.Where(o => o.CreatedDate.HasValue && o.CreatedDate.Value.Date == createdDate.Value.Date);
                 }
 
                 if (status.HasValue)
@@ -65,6 +65,16 @@ namespace SWD392_BE.Services.Services
                     orders = orders.Where(o => o.SessionId == sessionId);
                 }
 
+                if (!string.IsNullOrEmpty(campusName))
+                {
+                    orders = orders.Where(o => o.User.Campus.Name.ToLower() == campusName.ToLower());
+                }
+
+                if (!string.IsNullOrEmpty(areaName))
+                {
+                    orders = orders.Where(o => o.User.Campus.Area.Name.ToLower() == areaName.ToLower());
+                }
+
                 if (!orders.Any())
                 {
                     result.Message = "Data not found";
@@ -73,7 +83,7 @@ namespace SWD392_BE.Services.Services
                 }
                 else
                 {
-                    var orderViewModels = orders.Select(o => new OrderListViewModel
+                    var orderViewModels = await orders.Select(o => new OrderListViewModel
                     {
                         OrderId = o.OrderId,
                         Name = o.User.Name,
@@ -85,7 +95,9 @@ namespace SWD392_BE.Services.Services
                         Status = o.Status,
                         CreatedTime = o.CreatedTime,
                         CreatedDate = o.CreatedDate,
-                    }).ToList();
+                        CampusName = o.User.Campus.Name,
+                        AreaName = o.User.Campus.Area.Name
+                    }).ToListAsync();
 
                     result.Data = orderViewModels;
                     result.Message = "Success";
@@ -97,6 +109,7 @@ namespace SWD392_BE.Services.Services
             {
                 result.Message = ex.Message;
                 result.IsSuccess = false;
+                result.Code = 500;
             }
             return result;
         }
@@ -156,23 +169,20 @@ namespace SWD392_BE.Services.Services
             var result = new ResultModel();
             try
             {
-                var data = new List<OrderAmountPerDayViewModel>();
-                var daysInMonth = DateTime.DaysInMonth(year, month);
+                var startDate = new DateTime(year, month, 1);
+                var endDate = startDate.AddMonths(1).AddTicks(-1);
 
-                for (int day = 1; day <= daysInMonth; day++)
-                {
-                    var startDate = new DateTime(year, month, day);
-                    var endDate = startDate.AddDays(1).AddTicks(-1);
+                var orders = await _order.GetOrdersByDateRange(startDate, endDate);
 
-                    var orders = await _order.GetOrdersByDateRange(startDate, endDate);
-                    var totalAmount = orders.Sum(o => o.Price);
-
-                    data.Add(new OrderAmountPerDayViewModel
+                var data = orders
+                    .Where(o => o.CreatedDate.HasValue)
+                    .GroupBy(o => o.CreatedDate.Value.Date)
+                    .Select(g => new OrderAmountPerDayViewModel
                     {
-                        Day = startDate.ToString("yyyy-MM-dd"), // Chuyển ngày thành chuỗi định dạng "yyyy-MM-dd"
-                        TotalAmount = totalAmount
-                    });
-                }
+                        Day = g.Key.ToString("yyyy-MM-dd"),
+                        TotalAmount = g.Sum(o => o.Price)
+                    })
+                    .ToList();
 
                 result.Data = data;
                 result.Message = "Success";
@@ -188,7 +198,7 @@ namespace SWD392_BE.Services.Services
             return result;
         }
 
-        public async Task<ResultModel> CreateOrderAsync(List<(string FoodId, int Quantity)> foodItems)
+        public async Task<ResultModel> CreateOrderAsync(List<(string FoodId, int Quantity, string Note)> foodItems)
         {
             var result = new ResultModel();
             try
@@ -228,25 +238,9 @@ namespace SWD392_BE.Services.Services
             var result = new ResultModel();
             try
             {
-                var weeks = getWeeksInMonth(year, month);
-                var orderAmountPerWeek = new List<OrderAmountPerWeekViewModel>();
-                int weekNumber = 1;
+                var data = await _order.GetOrderAmountPerWeekInMonth(year, month);
 
-                foreach (var week in weeks)
-                {
-                    var orders = await _order.GetOrdersByDateRange(week.StartDate, week.EndDate);
-                    var totalAmount = orders.Sum(o => o.Price);
-
-                    orderAmountPerWeek.Add(new OrderAmountPerWeekViewModel
-                    {
-                        WeekNumber = $"Week {weekNumber}",
-                        TotalAmount = totalAmount
-                    });
-
-                    weekNumber++;
-                }
-
-                result.Data = orderAmountPerWeek;
+                result.Data = data;
                 result.Message = "Success";
                 result.IsSuccess = true;
                 result.Code = 200;
@@ -265,22 +259,7 @@ namespace SWD392_BE.Services.Services
             var result = new ResultModel();
             try
             {
-                var data = new List<OrderAmountPerMonthViewModel>();
-
-                for (int month = 1; month <= 12; month++)
-                {
-                    var startDate = new DateTime(year, month, 1);
-                    var endDate = startDate.AddMonths(1).AddDays(-1);
-
-                    var orders = await _order.GetOrdersByDateRange(startDate, endDate);
-                    var totalAmount = orders.Sum(o => o.Price);
-
-                    data.Add(new OrderAmountPerMonthViewModel
-                    {
-                        Month = startDate.ToString("MM"),
-                        TotalAmount = totalAmount
-                    });
-                }
+                var data = await _order.GetOrderAmountPerMonthInYear(year);
 
                 result.Data = data;
                 result.Message = "Success";
@@ -354,7 +333,7 @@ namespace SWD392_BE.Services.Services
             }
         }
 
-        public async Task<ResultModel> GetTotalOrderCountAsync()
+        public async Task<ResultModel> getTotalOrderCount()
         {
             var result = new ResultModel();
             try
@@ -375,5 +354,33 @@ namespace SWD392_BE.Services.Services
             return result;
         }
 
+        public async Task<ResultModel> updateAllStatuses()
+        {
+            var result = new ResultModel();
+            try
+            {
+                var orders = await _order.GetOrders()
+                                          .Where(o => o.Status == 3)
+                                          .ToListAsync();
+
+                foreach (var order in orders)
+                {
+                    order.Status = 1;
+                }
+
+                await _order.SaveChangesAsync();
+
+                result.Message = "Updated statuses successfully";
+                result.IsSuccess = true;
+                result.Code = 200;
+            }
+            catch (Exception ex)
+            {
+                result.Message = $"An error occurred: {ex.Message}";
+                result.IsSuccess = false;
+                result.Code = 500;
+            }
+            return result;
+        }
     }
 }

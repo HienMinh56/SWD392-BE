@@ -29,9 +29,9 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of orders</returns>
         [HttpGet]
-        public async Task<IActionResult> GetOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
+        public async Task<IActionResult> GetOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId, string? campusName, string? areaName)
         {
-            var result = await _orderService.getOrders(userId, userName, createdDate, status, storeName, sessionId);
+            var result = await _orderService.getOrders(userId, userName, createdDate, status, storeName, sessionId, campusName, areaName);
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
@@ -74,7 +74,7 @@ namespace SWD392_BE.API.Controllers
             }
 
             // Convert the incoming model to the expected tuple format for the service layer
-            var orderItems = foodItems.Select(fi => (fi.FoodId, fi.Quantity)).ToList();
+            var orderItems = foodItems.Select(fi => (fi.FoodId, fi.Quantity, fi.Note)).ToList();
 
             var result = await _orderService.CreateOrderAsync(orderItems);
 
@@ -88,6 +88,20 @@ namespace SWD392_BE.API.Controllers
         {
             var currentUser = HttpContext.User;
             var result = await _orderService.updateOrderStatus(orderId, status, currentUser);
+
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+        #endregion
+
+        #region Update All Order Statuses
+        /// <summary>
+        /// Update the status of all orders 3 (wait) to 1 (cancel)
+        /// </summary>
+        /// <returns>The result of the status update process.</returns>
+        [HttpPut("AllStatuses")]
+        public async Task<IActionResult> UpdateAllStatuses()
+        {
+            var result = await _orderService.updateAllStatuses();
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
