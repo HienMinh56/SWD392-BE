@@ -34,7 +34,7 @@ namespace SWD392_BE.Repositories.Repositories
 
         public async Task<string> GetNextUserId()
         {
-            var lastUser = await _dbContext.Users.OrderByDescending(u => u.Id).FirstOrDefaultAsync();
+            var lastUser = await _dbContext.Users.OrderByDescending(u => u.UserId).FirstOrDefaultAsync();
 
             if (lastUser == null || string.IsNullOrEmpty(lastUser.UserId) || !lastUser.UserId.StartsWith("USER"))
             {
