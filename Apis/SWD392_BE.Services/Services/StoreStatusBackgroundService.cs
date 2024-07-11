@@ -22,7 +22,7 @@ namespace SWD392_BE.Services
                 new TimeSpan(4, 1, 0),    // 4:01 AM
                 new TimeSpan(8, 36, 0),   // 8:36 AM
                 new TimeSpan(11, 31, 0),  // 11:31 AM
-                new TimeSpan(16, 1, 0),   // 4:01 PM
+                new TimeSpan(13, 00, 0),   // 4:01 PM
                 new TimeSpan(23, 1, 0)    // 11:01 PM
             };
 
