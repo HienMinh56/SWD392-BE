@@ -23,7 +23,8 @@ namespace SWD392_BE.Repositories.Repositories
         {
             return await _dbContext.Users
                 .Include(x => x.Campus)
-                .Include(x => x.Orders)
+                .ThenInclude(c => c.Area)
+                .Include(x => x.Orders)              
                 .Select(x => new User
                 {
                     UserId = x.UserId,
@@ -33,7 +34,13 @@ namespace SWD392_BE.Repositories.Repositories
                     Email = x.Email,
                     Campus = new Campus
                     {
-                        Name = x.Campus.Name
+                        CampusId = x.Campus.CampusId,
+                        Name = x.Campus.Name,
+                        Area = new Area
+                        {
+                            AreaId = x.Campus.Area.AreaId,
+                            Name = x.Campus.Area.Name
+                        }
                     },
                     Phone = x.Phone,
                     Role = x.Role,
