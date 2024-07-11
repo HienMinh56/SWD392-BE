@@ -392,7 +392,9 @@ namespace SWD392_BE.Services.Services
         public async Task UpdateStoreStatusAsync()
         {
             var stores = await _storeRepository.GetAllStoresWithSessionsAsync();
-            var currentTime = DateTime.Now.TimeOfDay;
+
+            var vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+            var localTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, vietnamTimeZone).TimeOfDay;
 
             foreach (var store in stores)
             {
@@ -402,8 +404,8 @@ namespace SWD392_BE.Services.Services
                 {
                     var session = storeSession.Session;
 
-                    if (currentTime >= store.OpenTime && currentTime <= store.CloseTime &&
-                        currentTime >= session.StartTime && currentTime <= session.EndTime)
+                    if (localTime >= store.OpenTime && localTime <= store.CloseTime &&
+                        localTime >= session.StartTime && localTime <= session.EndTime)
                     {
                         isOpen = true;
                         break;
