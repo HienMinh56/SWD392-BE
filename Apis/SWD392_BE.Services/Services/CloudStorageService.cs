@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
 using SWD392_BE.Repositories.Utils.ConfigOptions;
 using SWD392_BE.Services.Interfaces;
 using System;
@@ -88,17 +91,41 @@ namespace SWD392_BE.Services.Services
             }
         }
 
-        public async Task<string> UploadFileAsync(IFormFile fileToUpload, string fileNameToSave)
+        public async Task<string> UploadFileAsync(IFormFile fileToUpload, string fileNameToSave, int maxWidth, int maxHeight)
         {
             try
             {
                 _logger.LogInformation($"Uploading: file {fileNameToSave} to storage {_options.GoogleCloudStorageBucketName}");
+
                 using (var memoryStream = new MemoryStream())
                 {
+                    // Copy the uploaded file to memory stream
                     await fileToUpload.CopyToAsync(memoryStream);
+
+                    // Use ImageSharp to resize the image
+                    memoryStream.Position = 0;
+                    using (var image = Image.Load(memoryStream))
+                    {
+                        // Resize image if it exceeds maxWidth or maxHeight
+                        if (image.Width > maxWidth || image.Height > maxHeight)
+                        {
+                            image.Mutate(x => x.Resize(maxWidth, maxHeight));
+                        }
+
+                        // Save the resized image back to memory stream
+                        memoryStream.Position = 0;
+                        memoryStream.SetLength(0);
+                        await image.SaveAsync(memoryStream, new PngEncoder()); // Use appropriate encoder based on your needs
+                    }
+
+                    // Upload the resized image to Google Cloud Storage
                     using (var storageClient = StorageClient.Create(_googleCredential))
                     {
-                        var uploadedFile = await storageClient.UploadObjectAsync(_options.GoogleCloudStorageBucketName, fileNameToSave, fileToUpload.ContentType, memoryStream);
+                        var uploadedFile = await storageClient.UploadObjectAsync(
+                            _options.GoogleCloudStorageBucketName,
+                            fileNameToSave,
+                            fileToUpload.ContentType,
+                            memoryStream);
                         _logger.LogInformation($"Uploaded: file {fileNameToSave} to storage {_options.GoogleCloudStorageBucketName}");
                         return uploadedFile.MediaLink;
                     }
