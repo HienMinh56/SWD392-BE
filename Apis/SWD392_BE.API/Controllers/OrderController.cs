@@ -29,9 +29,9 @@ namespace SWD392_BE.API.Controllers
         /// </summary>
         /// <returns>A list of orders</returns>
         [HttpGet]
-        public async Task<IActionResult> GetOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
+        public async Task<IActionResult> GetOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId, string? campusName, string? areaName)
         {
-            var result = await _orderService.getOrders(userId, userName, createdDate, status, storeName, sessionId);
+            var result = await _orderService.getOrders(userId, userName, createdDate, status, storeName, sessionId, campusName, areaName);
 
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }

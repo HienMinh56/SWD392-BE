@@ -16,6 +16,5 @@ namespace SWD392_BE.Repositories.Interfaces
         Task<Order> CreateOrder(List<(string foodId, int quantity, string note)> foodItems, string userId, string userName);
         Task<List<OrderAmountPerMonthViewModel>> GetOrderAmountPerMonthInYear(int year);
         Task<List<OrderAmountPerWeekViewModel>> GetOrderAmountPerWeekInMonth(int year, int month);
-
     }
 }

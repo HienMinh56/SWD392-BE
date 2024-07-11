@@ -28,7 +28,7 @@ namespace SWD392_BE.Services.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<ResultModel> getOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId)
+        public async Task<ResultModel> getOrders(string? userId, string? userName, DateTime? createdDate, int? status, string? storeName, string? sessionId, string? campusName, string? areaName)
         {
             var result = new ResultModel();
             try
@@ -47,7 +47,7 @@ namespace SWD392_BE.Services.Services
 
                 if (createdDate.HasValue)
                 {
-                    orders = orders.Where(o => o.CreatedDate == createdDate.Value);
+                    orders = orders.Where(o => o.CreatedDate.HasValue && o.CreatedDate.Value.Date == createdDate.Value.Date);
                 }
 
                 if (status.HasValue)
@@ -65,6 +65,16 @@ namespace SWD392_BE.Services.Services
                     orders = orders.Where(o => o.SessionId == sessionId);
                 }
 
+                if (!string.IsNullOrEmpty(campusName))
+                {
+                    orders = orders.Where(o => o.User.Campus.Name.ToLower() == campusName.ToLower());
+                }
+
+                if (!string.IsNullOrEmpty(areaName))
+                {
+                    orders = orders.Where(o => o.User.Campus.Area.Name.ToLower() == areaName.ToLower());
+                }
+
                 if (!orders.Any())
                 {
                     result.Message = "Data not found";
@@ -73,7 +83,7 @@ namespace SWD392_BE.Services.Services
                 }
                 else
                 {
-                    var orderViewModels = orders.Select(o => new OrderListViewModel
+                    var orderViewModels = await orders.Select(o => new OrderListViewModel
                     {
                         OrderId = o.OrderId,
                         Name = o.User.Name,
@@ -85,7 +95,9 @@ namespace SWD392_BE.Services.Services
                         Status = o.Status,
                         CreatedTime = o.CreatedTime,
                         CreatedDate = o.CreatedDate,
-                    }).ToList();
+                        CampusName = o.User.Campus.Name,
+                        AreaName = o.User.Campus.Area.Name
+                    }).ToListAsync();
 
                     result.Data = orderViewModels;
                     result.Message = "Success";
@@ -97,6 +109,7 @@ namespace SWD392_BE.Services.Services
             {
                 result.Message = ex.Message;
                 result.IsSuccess = false;
+                result.Code = 500;
             }
             return result;
         }
@@ -340,6 +353,5 @@ namespace SWD392_BE.Services.Services
             }
             return result;
         }
-
     }
 }

@@ -27,15 +27,23 @@ namespace SWD392_BE.Repositories.Repositories
         {
             return _dbContext.Orders
                 .Include(o => o.User)
+                    .ThenInclude(u => u.Campus)
+                        .ThenInclude(c => c.Area)
                 .Include(o => o.Store)
+                .Include(o => o.Session)
                 .AsQueryable();
         }
 
         public async Task<List<Order>> GetOrdersByDateRange(DateTime startDate, DateTime endDate)
         {
             return await _dbContext.Orders
-                                 .Where(o => o.CreatedDate >= startDate && o.CreatedDate <= endDate)
-                                 .ToListAsync();
+                .Include(o => o.User)
+                    .ThenInclude(u => u.Campus)
+                        .ThenInclude(c => c.Area)
+                .Include(o => o.Store)
+                .Include(o => o.Session)
+                .Where(o => o.CreatedDate >= startDate && o.CreatedDate <= endDate)
+                .ToListAsync();
         }
 
         public async Task<Order> CreateOrder(List<(string foodId, int quantity, string note)> foodItems, string userId, string userName)
@@ -45,9 +53,7 @@ namespace SWD392_BE.Repositories.Repositories
 
             //New Transaction
             var newTransactionId = await GenerateNewTransactionIdAsync();
-
-            
-
+          
             // Find the session when create order
             var session = await GetCurrentSessionAsync();
 
@@ -133,7 +139,6 @@ namespace SWD392_BE.Repositories.Repositories
                 throw; // Ném ngoại lệ để xử lý ở lớp gọi
             }
         }
-
 
         private async Task<Session> GetCurrentSessionAsync()
         {

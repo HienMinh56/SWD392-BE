@@ -23,6 +23,8 @@ namespace SWD392_BE.Repositories.ViewModels.OrderModel
         public string TransationId { get; set; } = null!;
 
         public int Status { get; set; }
+        public string CampusName { get; set; }
+        public string AreaName { get; set; }
 
         public TimeSpan CreatedTime { get; set; }
 
