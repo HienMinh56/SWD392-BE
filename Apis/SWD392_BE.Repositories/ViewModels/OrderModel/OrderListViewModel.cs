@@ -29,5 +29,7 @@ namespace SWD392_BE.Repositories.ViewModels.OrderModel
         public TimeSpan CreatedTime { get; set; }
 
         public DateTime? CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public string? ModifiedBy{ get; set; }
     }
 }

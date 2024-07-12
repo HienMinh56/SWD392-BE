@@ -83,23 +83,23 @@ namespace SWD392_BE.Services.Services
                 }
                 else
                 {
-                    var orderViewModels = await orders.OrderByDescending(o => o.CreatedDate)
-                                                      .ThenByDescending(o => o.OrderId) 
-                                                      .Select(o => new OrderListViewModel
-                                                      {
-                                                          OrderId = o.OrderId,
-                                                          Name = o.User.Name,
-                                                          SessionId = o.SessionId,
-                                                          Price = o.Price,
-                                                          Quantity = o.Quantity,
-                                                          StoreName = o.Store.Name,
-                                                          TransationId = o.TransactionId,
-                                                          Status = o.Status,
-                                                          CreatedTime = o.CreatedTime,
-                                                          CreatedDate = o.CreatedDate,
-                                                          CampusName = o.User.Campus.Name,
-                                                          AreaName = o.User.Campus.Area.Name
-                                                      }).ToListAsync();
+                    var orderViewModels = await orders.Select(o => new OrderListViewModel
+                    {
+                        OrderId = o.OrderId,
+                        Name = o.User.Name,
+                        SessionId = o.SessionId,
+                        Price = o.Price,
+                        Quantity = o.Quantity,
+                        StoreName = o.Store.Name,
+                        TransationId = o.TransactionId,
+                        Status = o.Status,
+                        CreatedTime = o.CreatedTime,
+                        CreatedDate = o.CreatedDate,
+                        CampusName = o.User.Campus.Name,
+                        AreaName = o.User.Campus.Area.Name,
+                        ModifiedBy = o.ModifiedBy,
+                        ModifiedDate = o.ModifiedDate,
+                    }).ToListAsync();
 
                     result.Data = orderViewModels;
                     result.Message = "Success";
