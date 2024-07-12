@@ -96,7 +96,9 @@ namespace SWD392_BE.Services.Services
                         CreatedTime = o.CreatedTime,
                         CreatedDate = o.CreatedDate,
                         CampusName = o.User.Campus.Name,
-                        AreaName = o.User.Campus.Area.Name
+                        AreaName = o.User.Campus.Area.Name,
+                        ModifiedBy = o.ModifiedBy,
+                        ModifiedDate = o.ModifiedDate
                     }).ToListAsync();
 
                     result.Data = orderViewModels;
