@@ -305,7 +305,7 @@ namespace SWD392_BE.Services.Services
             else
             {
                    order.Status = status;
-                order.ModifiedBy = user.Claims.FirstOrDefault(c => c.Type == "UserName")?.Value;
+                order.ModifiedBy = user.FindFirst("UserName")?.Value;
                 order.ModifiedDate = DateTime.Now;
                 _order.Update(order);
                 _order.SaveChanges();
