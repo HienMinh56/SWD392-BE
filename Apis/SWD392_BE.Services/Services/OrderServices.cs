@@ -121,7 +121,7 @@ namespace SWD392_BE.Services.Services
             {
                 var totalAmount = await _order.GetOrders()
                                                         .Where(o => o.CreatedDate.HasValue && o.CreatedDate.Value.Date >= startDate.Date && o.CreatedDate.Value.Date <= endDate.Date)
-                                                        .SumAsync(o => o.Price);
+                                                        .SumAsync(o => o.Price * 1000);
 
                 decimal percentageDifference = 0;
                 decimal previousTotalAmount = 0;
@@ -133,7 +133,7 @@ namespace SWD392_BE.Services.Services
                     previousTotalAmount = await _order.GetOrders()
                                                       .Where(o => o.CreatedDate.HasValue
                                                               && o.CreatedDate.Value.Date == previousDate.Date)
-                                                      .SumAsync(o => o.Price);
+                                                      .SumAsync(o => o.Price * 1000);
 
                     decimal combinedAmount = totalAmount + previousTotalAmount;
 
@@ -180,7 +180,7 @@ namespace SWD392_BE.Services.Services
                     .Select(g => new OrderAmountPerDayViewModel
                     {
                         Day = g.Key.ToString("yyyy-MM-dd"),
-                        TotalAmount = g.Sum(o => o.Price)
+                        TotalAmount = g.Sum(o => o.Price * 1000)
                     })
                     .ToList();
 
