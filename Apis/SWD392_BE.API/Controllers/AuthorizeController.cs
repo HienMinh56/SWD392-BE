@@ -56,7 +56,7 @@ namespace SWD392_BE.API.Controllers
                 issuer: "YourIssuer",
                 audience: "YourAudience",
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.Now.AddMinutes(60),
                 signingCredentials: credentials);
 
             var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
