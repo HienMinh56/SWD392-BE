@@ -205,10 +205,6 @@ namespace SWD392_BE.Services.Services
 
                 // Update the additional fields
                 existingUser.Name = model.Name;
-                if (existingUser.Password != "")
-                {
-                    existingUser.Password = PasswordHasher.HashPassword(existingUser.Password);
-                }
                 existingUser.Email = model.Email;
                 existingUser.CampusId = model.CampusId;
                 existingUser.Phone = model.Phone;
