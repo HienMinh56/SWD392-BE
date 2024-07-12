@@ -183,7 +183,7 @@ namespace SWD392_BE.Services.Services
                     .Select(g => new OrderAmountPerDayViewModel
                     {
                         Day = g.Key.ToString("yyyy-MM-dd"),
-                        TotalAmount = g.Sum(o => o.Price * 1000)
+                        TotalAmount = g.Sum(o => o.Price) * 1000
                     })
                     .ToList();
 
@@ -243,7 +243,13 @@ namespace SWD392_BE.Services.Services
             {
                 var data = await _order.GetOrderAmountPerWeekInMonth(year, month);
 
-                result.Data = data;
+                var updatedData = data.Select(d => new OrderAmountPerWeekViewModel
+                {
+                    WeekNumber = d.WeekNumber, 
+                    TotalAmount = d.TotalAmount * 1000
+                }).ToList();
+
+                result.Data = updatedData;
                 result.Message = "Success";
                 result.IsSuccess = true;
                 result.Code = 200;
@@ -264,6 +270,12 @@ namespace SWD392_BE.Services.Services
             {
                 var data = await _order.GetOrderAmountPerMonthInYear(year);
 
+                var updatedData = data.Select(d => new OrderAmountPerMonthViewModel
+                {
+                    Month = d.Month,
+                    TotalAmount = d.TotalAmount * 1000
+                }).ToList();
+
                 result.Data = data;
                 result.Message = "Success";
                 result.IsSuccess = true;
@@ -276,36 +288,6 @@ namespace SWD392_BE.Services.Services
                 result.Code = 500;
             }
             return result;
-        }
-
-        private List<(DateTime StartDate, DateTime EndDate)> getWeeksInMonth(int year, int month, DayOfWeek startOfWeek = DayOfWeek.Monday)
-        {
-            var weeks = new List<(DateTime StartDate, DateTime EndDate)>();
-            var firstDayOfMonth = new DateTime(year, month, 1);
-            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
-
-            var currentStartOfWeek = firstDayOfMonth;
-            while (currentStartOfWeek.DayOfWeek != startOfWeek)
-            {
-                currentStartOfWeek = currentStartOfWeek.AddDays(-1);
-            }
-
-            var currentEndOfWeek = currentStartOfWeek.AddDays(6);
-
-            while (currentStartOfWeek <= lastDayOfMonth)
-            {
-                if (currentEndOfWeek > lastDayOfMonth)
-                {
-                    currentEndOfWeek = lastDayOfMonth;
-                }
-
-                weeks.Add((currentStartOfWeek, currentEndOfWeek));
-
-                currentStartOfWeek = currentStartOfWeek.AddDays(7);
-                currentEndOfWeek = currentStartOfWeek.AddDays(6);
-            }
-
-            return weeks;
         }
 
         public Task<ResultModel> updateOrderStatus(string orderId, int status, ClaimsPrincipal user)

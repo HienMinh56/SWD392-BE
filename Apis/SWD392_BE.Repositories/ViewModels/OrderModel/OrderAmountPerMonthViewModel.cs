@@ -9,6 +9,6 @@ namespace SWD392_BE.Repositories.ViewModels.OrderModel
     public class OrderAmountPerMonthViewModel
     {
         public string Month { get; set; }
-        public decimal TotalAmount { get; set; }
+        public int TotalAmount { get; set; }
     }
 }
