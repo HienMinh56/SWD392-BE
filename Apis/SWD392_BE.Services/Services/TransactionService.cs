@@ -25,6 +25,7 @@ namespace SWD392_BE.Services.Services
             try
             {
                 var transactions = await _transactionRepo.GetTransaction(userId, createdDate);
+
                 if (transactions == null || transactions.Count == 0)
                 {
                     result.IsSuccess = false;
@@ -34,45 +35,24 @@ namespace SWD392_BE.Services.Services
                 }
                 else
                 {
+                    transactions = transactions.OrderByDescending(t => t.CreatedDate)
+                                       .ThenByDescending(t => t.TransationId)
+                                       .ToList();
+
                     result.IsSuccess = true;
                     result.Code = 200;
                     result.Data = transactions;
                     result.Message = "Transactions retrieved successfully.";
-                };
+                }
             }
             catch (Exception ex)
             {
-                {
-                    result.IsSuccess = false;
-                    result.Code = 500;
-                    result.Data = null;
-                    result.Message = $"An error occurred: {ex.Message}";
-                };
+                result.IsSuccess = false;
+                result.Code = 500;
+                result.Data = null;
+                result.Message = $"An error occurred: {ex.Message}";
             }
             return result;
-        }
-
-        public async Task<string> CheckLatestTransactionStatusByUserIdAndType(string userId, int type)
-        {
-            var transactions = await _transactionRepo.GetAllTransactionsAsync();
-            var latestTransaction = transactions?
-                .Where(t => t.UserId == userId && t.Type == type)
-                .OrderByDescending(t => t.Id)
-                .FirstOrDefault();
-
-            if (latestTransaction != null)
-            {
-                if (latestTransaction.Status == 1)
-                {
-                    return "Thành công";
-                }
-                else if (latestTransaction.Status == 2)
-                {
-                    return "Thất bại";
-                }
-            }
-
-            return "Không tìm thấy giao dịch";
         }
     }
 }

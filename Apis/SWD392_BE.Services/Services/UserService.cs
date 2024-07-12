@@ -82,6 +82,8 @@ namespace SWD392_BE.Services.Services
                 }
                 else
                 {
+                    users = users.OrderByDescending(u => u.UserId).ToList();
+
                     var userViewModels = users.Select(u => new ListUserViewModel
                     {
                         UserId = u.UserId,
@@ -108,9 +110,11 @@ namespace SWD392_BE.Services.Services
             {
                 result.Message = ex.Message;
                 result.IsSuccess = false;
+                result.Code = 500; // Add the status code for error
             }
             return result;
         }
+
 
 
         public User GetUserById(string id)

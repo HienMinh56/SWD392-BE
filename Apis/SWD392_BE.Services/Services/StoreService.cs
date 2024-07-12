@@ -186,8 +186,6 @@ namespace SWD392_BE.Services.Services
                     stores = stores.Where(s => s.StoreSessions.Any(ss => ss.SessionId.ToLower() == sessionId.ToLower())).ToList();
                 }
 
-
-
                 if (!stores.Any())
                 {
                     result.IsSuccess = true;
@@ -196,6 +194,8 @@ namespace SWD392_BE.Services.Services
                 }
                 else
                 {
+                    stores = stores.OrderByDescending(s => s.StoreId).ToList();
+
                     var storeViewModels = stores.Select(s => new GetStoreViewModel
                     {
                         StoreId = s.StoreId,
@@ -209,8 +209,6 @@ namespace SWD392_BE.Services.Services
                         AreaName = s.Area.Name,
                         Session = s.StoreSessions.Select(ss => ss.SessionId.ToString()).ToList()
                     }).ToList();
-
-
 
                     result.IsSuccess = true;
                     result.Code = 200;
