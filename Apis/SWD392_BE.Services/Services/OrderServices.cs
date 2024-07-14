@@ -276,7 +276,7 @@ namespace SWD392_BE.Services.Services
                     TotalAmount = d.TotalAmount * 1000
                 }).ToList();
 
-                result.Data = data;
+                result.Data = updatedData;
                 result.Message = "Success";
                 result.IsSuccess = true;
                 result.Code = 200;
