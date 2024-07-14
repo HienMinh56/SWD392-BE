@@ -139,6 +139,7 @@ namespace SWD392_BE.Services.Services
                     ModifiedBy = f.ModifiedBy,
                     DeletedDate = f.DeletedDate,
                     DeletedBy = f.DeletedBy,
+                    OrderCount = 0
                 }).ToList();
 
                 if (!string.IsNullOrEmpty(foodId))
@@ -156,6 +157,14 @@ namespace SWD392_BE.Services.Services
 
                 // Calculate total number of orders
                 int totalOrders = await _foodRepository.GetTotalOrdersAsync(storeId);
+
+                var foodOrderCounts = await _foodRepository.GetFoodOrderCountsAsync(storeId);
+                foreach (var food in filteredFoods)
+                {
+                    var orderCount = foodOrderCounts.FirstOrDefault(o => o.FoodId == food.FoodId)?.OrderCount ?? 0;
+                    food.OrderCount = orderCount;
+                }
+
 
                 if (filteredFoods == null)
                 {

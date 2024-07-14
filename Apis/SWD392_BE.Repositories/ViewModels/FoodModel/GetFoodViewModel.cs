@@ -42,5 +42,6 @@ namespace SWD392_BE.Repositories.ViewModels.FoodModel
         public DateTime? DeletedDate { get; set; }
 
         public string? DeletedBy { get; set; }
+        public int OrderCount { get; set; }
     }
 }
