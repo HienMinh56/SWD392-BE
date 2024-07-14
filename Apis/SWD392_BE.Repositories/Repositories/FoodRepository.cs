@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SWD392_BE.Repositories.Entities;
 using SWD392_BE.Repositories.Interfaces;
+using SWD392_BE.Repositories.ViewModels.FoodModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,6 +56,18 @@ namespace SWD392_BE.Repositories.Repositories
         public Task<Food> GetAsync(Expression<Func<Food, bool>> predicate)
         {
             return _context.Foods.FirstOrDefaultAsync(predicate);
+        }
+        public async Task<List<FoodOrderCount>> GetFoodOrderCountsAsync(string storeId)
+        {
+            return await _context.OrderDetails
+                .Where(o => o.Food.StoreId == storeId)
+                .GroupBy(o => o.FoodId)
+                .Select(g => new FoodOrderCount
+                {
+                    FoodId = g.Key,
+                    OrderCount = g.Count()
+                })
+                .ToListAsync();
         }
     }
 }
