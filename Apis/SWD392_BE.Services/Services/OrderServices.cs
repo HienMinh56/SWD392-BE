@@ -75,11 +75,13 @@ namespace SWD392_BE.Services.Services
                     orders = orders.Where(o => o.User.Campus.Area.Name.ToLower() == areaName.ToLower());
                 }
 
+                var totalCount = await orders.CountAsync();
                 if (!orders.Any())
                 {
                     result.Message = "Data not found";
                     result.IsSuccess = false;
                     result.Code = 404;
+                    result.TotalOrderToday = 0;
                 }
                 else
                 {
@@ -105,6 +107,7 @@ namespace SWD392_BE.Services.Services
                     result.Message = "Success";
                     result.IsSuccess = true;
                     result.Code = 200;
+                    result.TotalOrderToday = totalCount;
                 }
             }
             catch (Exception ex)
@@ -112,10 +115,10 @@ namespace SWD392_BE.Services.Services
                 result.Message = ex.Message;
                 result.IsSuccess = false;
                 result.Code = 500;
+                result.TotalOrderToday = 0;
             }
             return result;
         }
-
 
         public async Task<ResultModel> getTotalOrderAmount(DateTime startDate, DateTime endDate)
         {
