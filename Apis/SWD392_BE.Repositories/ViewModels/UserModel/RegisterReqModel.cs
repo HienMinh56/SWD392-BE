@@ -16,7 +16,7 @@ namespace SWD392_BE.Repositories.ViewModels.UserModel
         [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "The Name field cannot contain special characters.")]
         public string Name { get; set; } = null!;
         public string CampusId { get; set; } = null!;
-        [RegularExpression(@"^\d{12}$", ErrorMessage = "Phone number must have 12 numbers.")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must have 10 numbers.")]
         public string? Phone { get; set; }
         public int Role {  get; set; }
     }
