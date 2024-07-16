@@ -75,7 +75,7 @@ namespace SWD392_BE.Services.Services
                 var user = _mapper.Map<User>(model);
 
                 // Generate the next user ID
-                user.UserId = await _accountRepo.GetNextUserId();
+                user.UserId = await _accountRepo.GenerateNewUserId();
 
                 // Hash the password using PasswordHasher
                 user.Password = PasswordHasher.HashPassword(model.Password);
@@ -87,7 +87,7 @@ namespace SWD392_BE.Services.Services
 
                 // Add the user to the repository and save changes
                 _accountRepo.Add(user);
-                await _accountRepo.SaveChangesAsync();
+                _accountRepo.SaveChanges();
                 result.IsSuccess = true;
                 result.Code = 200;
                 result.Message = "Add New User Success";
@@ -148,7 +148,7 @@ namespace SWD392_BE.Services.Services
                 var user = _mapper.Map<User>(model);
 
                 // Generate the next user ID
-                user.UserId = await _accountRepo.GetNextUserId();
+                user.UserId = await _accountRepo.GenerateNewUserId();
 
                 // Hash the password using PasswordHasher
                 user.Password = PasswordHasher.HashPassword(model.Password);

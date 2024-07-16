@@ -32,26 +32,51 @@ namespace SWD392_BE.Repositories.Repositories
                 .FirstOrDefaultAsync(x => x.UserName.Equals(userName) && x.Password.Equals(password));
         }
 
-        public async Task<string> GetNextUserId()
+        public async Task<string> GenerateNewUserId()
         {
-            var lastUser = await _dbContext.Users.OrderByDescending(u => u.UserId).FirstOrDefaultAsync();
+            const int maxRetryCount = 5;
+            int retryCount = 0;
 
-            if (lastUser == null || string.IsNullOrEmpty(lastUser.UserId) || !lastUser.UserId.StartsWith("USER"))
+            while (retryCount < maxRetryCount)
             {
-                return "USER001";
+                var lastUser = await _dbContext.Users
+                                               .Where(u => u.UserId.StartsWith("USER"))
+                                               .OrderByDescending(u => u.UserId)
+                                               .FirstOrDefaultAsync();
+
+                if (lastUser == null || string.IsNullOrEmpty(lastUser.UserId))
+                {
+                    return "USER001";
+                }
+
+                int newId;
+                bool success = int.TryParse(lastUser.UserId.Substring(4), out newId);
+
+                if (!success)
+                {
+                    throw new InvalidOperationException("Failed to parse UserId.");
+                }
+
+                newId += 1;
+                string newUserId = $"USER{newId:D3}";
+
+                // Check if the generated userId already exists
+                var existingUser = await _dbContext.Users
+                                                   .Where(u => u.UserId == newUserId)
+                                                   .FirstOrDefaultAsync();
+
+                if (existingUser == null)
+                {
+                    return newUserId;
+                }
+
+                // Increment retry count and try again
+                retryCount++;
             }
 
-            int newId;
-            bool success = int.TryParse(lastUser.UserId.Substring(4), out newId);
-
-            if (!success)
-            {
-                throw new InvalidOperationException("Failed to parse UserId.");
-            }
-
-            newId += 1;
-
-            return $"USER{newId:D3}";
+            throw new InvalidOperationException("Failed to generate a unique UserId after multiple attempts.");
         }
+
+
     }
 }

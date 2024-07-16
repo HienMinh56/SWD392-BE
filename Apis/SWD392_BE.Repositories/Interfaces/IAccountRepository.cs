@@ -7,6 +7,6 @@ namespace SWD392_BE.Repositories.Interfaces
         public Task<User> GetUserByUserName(string userName);
 
         public Task<User> CheckLogin(string userName, string password);
-        public Task<string> GetNextUserId();
+        public Task<string> GenerateNewUserId();
     }
 }
